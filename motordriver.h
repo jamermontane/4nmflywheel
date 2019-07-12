@@ -38,22 +38,26 @@ public slots:
     void ctlMotorSpd(double spd = 0);
     void ctlMotorTor(double tor = 0);
     void getMotorData();
-
+    void getDataFromSerialport();
 private:
 
     QSerialPort     serial_port_;
     bool            isInit;
 
     union spd_array{
-        uchar          array[2];
-        qint16         spd;
+        uchar   array[2];
+        qint16  spd;
     }spd_array_;
 
     union tor_array{
-        uchar          array[2];
-        qint16         torque;
+        uchar   array[2];
+        qint16  torque;
     }tor_array_;
 
+    union recv_spd{
+        qint32  spd;
+        uchar   array[4];
+    }recv_spd_;
 };
 
 #endif // MOTORDRIVER_H

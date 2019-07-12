@@ -5,6 +5,9 @@ MotorDriver::MotorDriver(QObject *parent) : QObject(parent)
 {
     spd_array_.spd = 0;
     tor_array_.torque = 0;
+    recv_spd_.spd = 0;
+    connect(&this->serial_port_,SIGNAL(readyRead()),this,SLOT(getDataFromSerialport()));
+
 }
 
 bool MotorDriver::init(QString port_name,QString baud_rate)
@@ -122,5 +125,55 @@ void MotorDriver::ctlMotorTor(double tor)
 
 void MotorDriver::getMotorData()
 {
+    QByteArray get_str;
+    get_str.resize(1);
+    get_str[0] = 0xa5;
+    serial_port_.write(get_str);
+}
+
+void MotorDriver::getDataFromSerialport()
+{
+    static QByteArray recv_data_buf;
+    QByteArray tmp_data = serial_port_.readAll();
+    for (int i = 0;i < tmp_data.size();++i){
+        recv_data_buf.push_back(tmp_data.at(i));
+        //a full frame detected
+        if (recv_data_buf.size() >= 7){
+            //check frame
+            uchar t = 0x00;
+            for (uint i = 0; i < 6;++i){
+                t += recv_data_buf[i];
+            }
+            if (t != recv_data_buf[6]){
+                recv_data_buf = recv_data_buf.mid(1);
+                emit sendErrText("recv message error! chack communication!");
+                return;
+            }
+
+
+            recv_spd_.array[0] = 0;
+            recv_spd_.array[3] = recv_data_buf[0];
+            recv_spd_.array[2] = recv_data_buf[1];
+            recv_spd_.array[1] = recv_data_buf[2];
+            emit sendMotorSpd(recv_spd_.spd/16 * 0.05);
+
+            quint8 cur = recv_data_buf[3];
+            emit sendMotorCur(cur * 0.024);
+
+            uchar tmp = recv_data_buf[4];
+            emit sendMotorTmp(tmp);
+
+            uchar status = recv_data_buf[5];
+            emit sendMotorStatus(status);
+
+            if (recv_data_buf.size() == 7){
+                recv_data_buf.clear();
+            }
+            else{
+                recv_data_buf = recv_data_buf.mid(7);
+            }
+        }
+
+    }
 
 }
