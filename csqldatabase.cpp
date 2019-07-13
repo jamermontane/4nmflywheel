@@ -12,18 +12,18 @@ bool SqlDataBase::sqlInit()
 
     if (QSqlDatabase::contains("qt_sql_default_connection")) //判断是否存在这个连接
     {
-        data_base_ = QSqlDatabase::database("qt_sql_default_connection");
+        m_data_base_ = QSqlDatabase::database("qt_sql_default_connection");
     }
     else
     {
-        data_base_ = QSqlDatabase::addDatabase("QSQLITE"); //是SQLite对应的驱动名，不能改 第二个参数被省略了，
-        data_base_.setUserName("HDU");        //第二个参数的默认参数就是上面提到的Qt默认连接名称qt_sql_default_connection。
-        data_base_.setDatabaseName("motionDataBase.db");//如果需要使用自定义的连接名称
+        m_data_base_ = QSqlDatabase::addDatabase("QSQLITE"); //是SQLite对应的驱动名，不能改 第二个参数被省略了，
+        m_data_base_.setUserName("HDU");        //第二个参数的默认参数就是上面提到的Qt默认连接名称qt_sql_default_connection。
+        m_data_base_.setDatabaseName("motionDataBase.db");//如果需要使用自定义的连接名称
                                                    //（如果程序需要处理多个数据库文件的话就会这样），则应该加入第二个参数
 
-        data_base_.setPassword("123456");
+        m_data_base_.setPassword("123456");
     }
-    if (!data_base_.open()){
+    if (!m_data_base_.open()){
         qDebug()<<" sql init error!";
         return false;
     }
@@ -44,13 +44,13 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
     if (exp_no.isEmpty()){
         exp_name = "null";
     }
-    if(!data_base_.tables().contains("MOTOR1"))
+    if(!m_data_base_.tables().contains("MOTOR1"))
     {
         QString tempsql = "CREATE TABLE MOTOR1";
         tempsql.append("([EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
-        QSqlQuery sql_query(data_base_);
+        QSqlQuery sql_query(m_data_base_);
         if (!sql_query.exec(tempsql))
         {
             qDebug() << sql_query.lastError().text();
@@ -80,7 +80,7 @@ void SqlDataBase::insertIntoDB(const QString &exp_name,const QString &usr_name,c
     QString query_str = makeSaveString(exp_name,usr_name,exp_no,QString::number(id),QString::number(cur),
                                       QString::number(vol),QString::number(set_spd),
                                       QString::number(spd));
-    static QSqlQuery sql_query(data_base_);
+    static QSqlQuery sql_query(m_data_base_);
     if(!sql_query.exec(query_str))
     {
         qDebug() << sql_query.lastError().text();
@@ -90,7 +90,7 @@ void SqlDataBase::insertIntoDB(const QString &exp_name,const QString &usr_name,c
 void SqlDataBase::queryFromDB(QString query_string)
 {
 
-    QSharedPointer<QSqlQuery> pspl_query = QSharedPointer<QSqlQuery>(new QSqlQuery(data_base_));
+    QSharedPointer<QSqlQuery> pspl_query = QSharedPointer<QSqlQuery>(new QSqlQuery(m_data_base_));
 
 
     if (!pspl_query->exec(query_string))

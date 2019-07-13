@@ -6,31 +6,32 @@ MotorDriver::MotorDriver(QObject *parent) : QObject(parent)
     spd_array_.spd = 0;
     tor_array_.torque = 0;
     recv_spd_.spd = 0;
-    connect(&this->serial_port_,SIGNAL(readyRead()),this,SLOT(getDataFromSerialport()));
+    serial_port_ = nullptr;
+
 
 }
 
-bool MotorDriver::init(QString port_name,QString baud_rate)
+bool MotorDriver::init()
 {
-    if (!serial_port_.isOpen()){
+    serial_port_ = new QSerialPort;
+    connect(this->serial_port_,SIGNAL(readyRead()),this,SLOT(resolveDataFromSerialport()));
 
-        serial_port_.setPortName(port_name);
-        serial_port_.setBaudRate(baud_rate.toInt());
-        serial_port_.setParity(QSerialPort::OddParity);
+    if (!serial_port_->isOpen()){
+
+        serial_port_->setPortName(port_name);
+        serial_port_->setBaudRate(baud_rate.toInt());
+        serial_port_->setParity(QSerialPort::OddParity);
 
 
-        if(!serial_port_.open(QIODevice::ReadWrite)){
+        if(!serial_port_->open(QIODevice::ReadWrite)){
 
-            emit sendErrText(serial_port_.errorString());
+            emit sendErrText(serial_port_->errorString());
             return false;
 
         }
 
     }
-    else{
-
-    }
-
+    qDebug()<<port_name<<" has init";
     isInit = true;
     return true;
 }
@@ -106,7 +107,7 @@ void MotorDriver::ctlMotorSpd(double spd)
         emit sendErrText(QString("driver not init"));
     }
     QByteArray spd_str = calSpdData(QString::number(spd));
-    if(serial_port_.write(spd_str) != spd_str.size()){
+    if(serial_port_->write(spd_str) != spd_str.size()){
         emit sendErrText(QString("driver control error"));
     }
 
@@ -118,7 +119,7 @@ void MotorDriver::ctlMotorTor(double tor)
         emit sendErrText(QString("driver not init"));
     }
     QByteArray tor_str = calTorData(QString::number(tor));
-    if(serial_port_.write(tor_str) != tor_str.size()){
+    if(serial_port_->write(tor_str) != tor_str.size()){
         emit sendErrText(QString("driver control error"));
     }
 }
@@ -128,13 +129,13 @@ void MotorDriver::getMotorData()
     QByteArray get_str;
     get_str.resize(1);
     get_str[0] = 0xa5;
-    serial_port_.write(get_str);
+    serial_port_->write(get_str);
 }
 
-void MotorDriver::getDataFromSerialport()
+void MotorDriver::resolveDataFromSerialport()
 {
     static QByteArray recv_data_buf;
-    QByteArray tmp_data = serial_port_.readAll();
+    QByteArray tmp_data = serial_port_->readAll();
     for (int i = 0;i < tmp_data.size();++i){
         recv_data_buf.push_back(tmp_data.at(i));
         //a full frame detected

@@ -152,12 +152,11 @@ public:
     QCustomPlot *qcp_motor_tmp_1;
     QGroupBox *groupBox_4;
     QGridLayout *gridLayout_13;
-    QLabel *label_33;
     QComboBox *comboBox_motor_test_mode_1;
     QLabel *label_34;
     QDoubleSpinBox *doubleSpinBox_motor_test_spd_1;
-    QLabel *label_35;
-    QDoubleSpinBox *doubleSpinBox_motor_test_acc_1;
+    QLabel *label_33;
+    QPushButton *pushButton_single_test_mode_1;
     QGroupBox *groupBox_6;
     QGridLayout *gridLayout_2;
     QCheckBox *checkBox_noair_1;
@@ -898,13 +897,6 @@ public:
         gridLayout_13->setSpacing(6);
         gridLayout_13->setContentsMargins(11, 11, 11, 11);
         gridLayout_13->setObjectName(QStringLiteral("gridLayout_13"));
-        label_33 = new QLabel(groupBox_4);
-        label_33->setObjectName(QStringLiteral("label_33"));
-        sizePolicy4.setHeightForWidth(label_33->sizePolicy().hasHeightForWidth());
-        label_33->setSizePolicy(sizePolicy4);
-
-        gridLayout_13->addWidget(label_33, 0, 0, 1, 1);
-
         comboBox_motor_test_mode_1 = new QComboBox(groupBox_4);
         comboBox_motor_test_mode_1->setObjectName(QStringLiteral("comboBox_motor_test_mode_1"));
         comboBox_motor_test_mode_1->setMaximumSize(QSize(100, 16777215));
@@ -921,21 +913,23 @@ public:
         doubleSpinBox_motor_test_spd_1 = new QDoubleSpinBox(groupBox_4);
         doubleSpinBox_motor_test_spd_1->setObjectName(QStringLiteral("doubleSpinBox_motor_test_spd_1"));
         doubleSpinBox_motor_test_spd_1->setMaximumSize(QSize(100, 16777215));
+        doubleSpinBox_motor_test_spd_1->setMinimum(-6000);
+        doubleSpinBox_motor_test_spd_1->setMaximum(6000);
+        doubleSpinBox_motor_test_spd_1->setSingleStep(10);
 
         gridLayout_13->addWidget(doubleSpinBox_motor_test_spd_1, 1, 1, 1, 1);
 
-        label_35 = new QLabel(groupBox_4);
-        label_35->setObjectName(QStringLiteral("label_35"));
-        sizePolicy4.setHeightForWidth(label_35->sizePolicy().hasHeightForWidth());
-        label_35->setSizePolicy(sizePolicy4);
+        label_33 = new QLabel(groupBox_4);
+        label_33->setObjectName(QStringLiteral("label_33"));
+        sizePolicy4.setHeightForWidth(label_33->sizePolicy().hasHeightForWidth());
+        label_33->setSizePolicy(sizePolicy4);
 
-        gridLayout_13->addWidget(label_35, 2, 0, 1, 1);
+        gridLayout_13->addWidget(label_33, 0, 0, 1, 1);
 
-        doubleSpinBox_motor_test_acc_1 = new QDoubleSpinBox(groupBox_4);
-        doubleSpinBox_motor_test_acc_1->setObjectName(QStringLiteral("doubleSpinBox_motor_test_acc_1"));
-        doubleSpinBox_motor_test_acc_1->setMaximumSize(QSize(100, 16777215));
+        pushButton_single_test_mode_1 = new QPushButton(groupBox_4);
+        pushButton_single_test_mode_1->setObjectName(QStringLiteral("pushButton_single_test_mode_1"));
 
-        gridLayout_13->addWidget(doubleSpinBox_motor_test_acc_1, 2, 1, 1, 1);
+        gridLayout_13->addWidget(pushButton_single_test_mode_1, 0, 2, 1, 1);
 
 
         gridLayout_17->addWidget(groupBox_4, 1, 0, 1, 1);
@@ -1103,9 +1097,9 @@ public:
         pushButton_system_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\345\256\236\346\227\266\346\230\276\347\244\272", 0));
         groupBox_4->setTitle(QApplication::translate("MainWindow", "\345\215\225\346\234\272\346\265\213\350\257\225\346\216\247\345\210\266", 0));
-        label_33->setText(QApplication::translate("MainWindow", "\351\200\211\346\213\251\346\250\241\345\274\217", 0));
         label_34->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\200\237\345\272\246", 0));
-        label_35->setText(QApplication::translate("MainWindow", "\350\275\254\351\200\237\345\242\236\351\207\217", 0));
+        label_33->setText(QApplication::translate("MainWindow", "\351\200\211\346\213\251\346\250\241\345\274\217", 0));
+        pushButton_single_test_mode_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_6->setTitle(QApplication::translate("MainWindow", "\344\270\200\351\224\256\346\265\213\350\257\225", 0));
         checkBox_noair_1->setText(QApplication::translate("MainWindow", "\351\235\236\347\234\237\347\251\272\346\200\247\350\203\275\346\265\213\350\257\225", 0));
         pushButton_auto_test_with_air_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));

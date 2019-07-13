@@ -8,7 +8,7 @@ class Motor : public QObject{
     Q_OBJECT
 
 public:
-    Motor(): id_(0),vol_(0),cur_(0),spd_(0),acc_(0.1),setSpd_(0)
+    Motor(): id_(0),vol_(0),cur_(0),spd_(0),acc_(0.1),setSpd_(0),isRunning_(false)
     {
 
     }
