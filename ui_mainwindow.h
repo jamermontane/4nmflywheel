@@ -178,6 +178,7 @@ public:
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
         MainWindow->resize(1410, 755);
+        MainWindow->setAutoFillBackground(false);
         actionSetting = new QAction(MainWindow);
         actionSetting->setObjectName(QStringLiteral("actionSetting"));
         centralWidget = new QWidget(MainWindow);

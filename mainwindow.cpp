@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initDriver1();
 
 
-    m_timer_get_data_.setInterval(100); //geet data timer: 0.1s
+    m_timer_get_data_.setInterval(100); //get data timer: 0.1s
 }
 
 MainWindow::~MainWindow()
@@ -39,7 +39,15 @@ bool MainWindow::initDriver1()
     p_driver1_->setBaudRate("115200");
     p_driver_thread1_->start();
 
+    //get data timer init
     connect(&m_timer_get_data_,&QTimer::timeout,p_driver1_,&MotorDriver::getMotorData);
+    //control init
+    connect(&m_motor1_,&Motor::sendMoTorSpd,p_driver1_,&MotorDriver::ctlMotorSpd);
+    connect(&m_motor1_,&Motor::sendMoTorTor,p_driver1_,&MotorDriver::ctlMotorTor);
+    connect(p_driver1_,&MotorDriver::sendMotorSpd,&m_motor1_,&Motor::setSpeed);
+    connect(p_driver1_,&MotorDriver::sendMotorCur,&m_motor1_,&Motor::setCurrent);
+    connect(p_driver1_,&MotorDriver::sendMotorTmp,&m_motor1_,&Motor::setTemperature);
+
 
     return true;
 }
@@ -85,6 +93,12 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
     }
     else{
         if(!m_motor1_.getIsRunning() && !this_mode_running){
+            switch(ui->comboBox_motor_test_mode_1->currentIndex()){
+            case 0: m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()); break;
+            case 1: m_motor1_.setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
+            default:
+                break;
+            }
             m_motor1_.setIsRunning(true);
             m_timer_get_data_.start();
             this_mode_running = true;

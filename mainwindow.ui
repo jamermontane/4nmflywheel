@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>飞轮整机测试软件</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_10">
     <item row="0" column="0">

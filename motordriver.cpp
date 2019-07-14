@@ -103,24 +103,28 @@ QByteArray MotorDriver::calTorData(QString tor)
 
 void MotorDriver::ctlMotorSpd(double spd)
 {
-    if (isInit){
+    if (!isInit){
         emit sendErrText(QString("driver not init"));
     }
-    QByteArray spd_str = calSpdData(QString::number(spd));
-    if(serial_port_->write(spd_str) != spd_str.size()){
-        emit sendErrText(QString("driver control error"));
+    else{
+        QByteArray spd_str = calSpdData(QString::number(spd));
+        if(serial_port_->write(spd_str) != spd_str.size()){
+            emit sendErrText(QString("driver control error"));
+        }
     }
 
 }
 
 void MotorDriver::ctlMotorTor(double tor)
 {
-    if (isInit){
+    if (!isInit){
         emit sendErrText(QString("driver not init"));
     }
-    QByteArray tor_str = calTorData(QString::number(tor));
-    if(serial_port_->write(tor_str) != tor_str.size()){
-        emit sendErrText(QString("driver control error"));
+    else{
+        QByteArray tor_str = calTorData(QString::number(tor));
+        if(serial_port_->write(tor_str) != tor_str.size()){
+            emit sendErrText(QString("driver control error"));
+        }
     }
 }
 
