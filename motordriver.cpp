@@ -38,7 +38,7 @@ bool MotorDriver::init()
 
 QByteArray MotorDriver::calSpdData(QString spd)
 {
-    static QByteArray spd_arr;
+    QByteArray spd_arr;
     spd_array_.spd = spd.toInt() * 2;
     if (spd_arr.isEmpty()){
         spd_arr.resize(7);
@@ -70,7 +70,7 @@ QByteArray MotorDriver::calSpdData(QString spd)
 
 QByteArray MotorDriver::calTorData(QString tor)
 {
-    static QByteArray tor_arr;
+    QByteArray tor_arr;
     tor_array_.torque = tor.toInt() / 0.058;
     if (tor_arr.isEmpty()){
         tor_arr.resize(7);
@@ -138,7 +138,6 @@ void MotorDriver::getMotorData()
 
 void MotorDriver::resolveDataFromSerialport()
 {
-    static QByteArray recv_data_buf;
     QByteArray tmp_data = serial_port_->readAll();
     for (int i = 0;i < tmp_data.size();++i){
         recv_data_buf.push_back(tmp_data.at(i));

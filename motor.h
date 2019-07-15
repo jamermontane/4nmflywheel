@@ -3,18 +3,18 @@
 
 #include <QObject>
 
-class Motor : public QObject{
+class MotorBasic : public QObject{
 
     Q_OBJECT
 
 public:
-    Motor(): id_(0),vol_(0),cur_(0),spd_(0),acc_(0.1),setSpd_(0),torque_(0),setTorque_(0),isRunning_(false)
+    MotorBasic(): id_(0),vol_(0),cur_(0),spd_(0),acc_(0.1),setSpd_(0),torque_(0),setTorque_(0),isRunning_(false)
     {
 
     }
 
 
-    ~Motor(){
+    ~MotorBasic(){
 
     }
 signals:
@@ -105,7 +105,9 @@ public:
     double getTorque() const{
         return this->torque_;
     }
-
+    double getWate() const{
+        return wate_;
+    }
 private:
     uint id_;
     double vol_;
@@ -116,11 +118,24 @@ private:
     double tempurature_;
     double torque_;
     double setTorque_;
+    double wate_;
     bool isRunning_;
 
 
 
 };
 
+class Motor : public MotorBasic{
+public:
+    Motor(){
+
+    }
+    ~Motor(){
+
+    }
+
+private:
+
+};
 
 #endif // MOTOR_H

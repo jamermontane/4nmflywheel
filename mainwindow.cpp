@@ -7,11 +7,18 @@ MainWindow::MainWindow(QWidget *parent) :
     m_sys_status_1_(false)
 {
     ui->setupUi(this);
+
     initCombox();
     initDriver1();
 
 
-    m_timer_get_data_.setInterval(100); //get data timer: 0.1s
+    m_timer_get_data_.setInterval(100); //get data timer 0.1s
+
+
+    m_timer_update_.setInterval(500);   //update view every 0.5s
+    connect(&m_timer_update_,SIGNAL(timeout()),this,SLOT(updateMotor()));
+    m_timer_update_.start();
+
 }
 
 MainWindow::~MainWindow()
@@ -57,6 +64,8 @@ void MainWindow::initCombox()
     ui->comboBox_motor_test_mode_1->addItem("速度模式");
     ui->comboBox_motor_test_mode_1->addItem("力矩模式");
 }
+
+
 
 void MainWindow::logMsg(QString text)
 {
@@ -116,5 +125,54 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
                 QMessageBox::warning(this,"警告","其它模式运行中。");
             }
         }
+    }
+}
+
+void MainWindow::updateMotor()
+{
+    if (m_motor1_.getIsRunning()){
+        //更新显示界面
+        updateMotor1();
+        //更新数据库
+    }
+
+    //...etc motor
+}
+
+void MainWindow::updateMotor1()
+{
+    ui->lineEdit_motor_set_spd_1->setText(QString::number(m_motor1_.getSetSpeed()));
+    ui->lineEdit_motor_act_spd_1->setText(QString::number(m_motor1_.getSpeed()));
+    ui->lineEdit_sys_cur_1->setText(QString::number(m_motor1_.getCurrent()));
+
+
+
+}
+
+void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
+{
+    if(m_motor1_.getIsRunning()){
+        switch(ui->comboBox_motor_test_mode_1->currentIndex()){
+        case 0: m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()); break;
+        case 1: m_motor1_.setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
+        default:
+            break;
+        }
+    }
+}
+
+void MainWindow::on_comboBox_motor_test_mode_1_currentIndexChanged(int index)
+{
+    switch (index) {
+    case 0:
+        ui->label_setval_1->setText("设置速度");
+        ui->label_setval_right_1->setText("设置速度");
+        break;
+    case 1:
+        ui->label_setval_1->setText("设置力矩");
+        ui->label_setval_right_1->setText("设置力矩");
+        break;
+    default:
+        break;
     }
 }

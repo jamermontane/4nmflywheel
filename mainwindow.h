@@ -24,7 +24,7 @@ public:
     ~MainWindow();
     bool initDriver1();
     void initCombox();
-
+    void updateMotor1();
 public slots:
     void logMsg(QString);
 
@@ -33,6 +33,11 @@ private slots:
     void on_pushButton_system_power_1_clicked();
 
     void on_pushButton_single_test_mode_1_clicked();
+
+    void updateMotor();
+    void on_doubleSpinBox_motor_test_spd_1_editingFinished();
+
+    void on_comboBox_motor_test_mode_1_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
@@ -58,6 +63,8 @@ private:
     bool m_sys_status_1_;
 
     QTimer m_timer_get_data_;
+
+    QTimer m_timer_update_;
 
 };
 

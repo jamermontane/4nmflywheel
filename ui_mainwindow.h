@@ -117,7 +117,7 @@ public:
     QLabel *label_37;
     QLabel *label_38;
     QLabel *label_51;
-    QLabel *label_39;
+    QLabel *label_setval_right_1;
     QLabel *label_50;
     QLabel *label_53;
     QLabel *label_54;
@@ -153,7 +153,7 @@ public:
     QGroupBox *groupBox_4;
     QGridLayout *gridLayout_13;
     QComboBox *comboBox_motor_test_mode_1;
-    QLabel *label_34;
+    QLabel *label_setval_1;
     QDoubleSpinBox *doubleSpinBox_motor_test_spd_1;
     QLabel *label_33;
     QPushButton *pushButton_single_test_mode_1;
@@ -644,10 +644,10 @@ public:
 
         gridLayout_16->addWidget(label_51, 2, 4, 1, 1);
 
-        label_39 = new QLabel(groupBox_5);
-        label_39->setObjectName(QStringLiteral("label_39"));
+        label_setval_right_1 = new QLabel(groupBox_5);
+        label_setval_right_1->setObjectName(QStringLiteral("label_setval_right_1"));
 
-        gridLayout_16->addWidget(label_39, 3, 0, 1, 1);
+        gridLayout_16->addWidget(label_setval_right_1, 3, 0, 1, 1);
 
         label_50 = new QLabel(groupBox_5);
         label_50->setObjectName(QStringLiteral("label_50"));
@@ -904,12 +904,12 @@ public:
 
         gridLayout_13->addWidget(comboBox_motor_test_mode_1, 0, 1, 1, 1);
 
-        label_34 = new QLabel(groupBox_4);
-        label_34->setObjectName(QStringLiteral("label_34"));
-        sizePolicy4.setHeightForWidth(label_34->sizePolicy().hasHeightForWidth());
-        label_34->setSizePolicy(sizePolicy4);
+        label_setval_1 = new QLabel(groupBox_4);
+        label_setval_1->setObjectName(QStringLiteral("label_setval_1"));
+        sizePolicy4.setHeightForWidth(label_setval_1->sizePolicy().hasHeightForWidth());
+        label_setval_1->setSizePolicy(sizePolicy4);
 
-        gridLayout_13->addWidget(label_34, 1, 0, 1, 1);
+        gridLayout_13->addWidget(label_setval_1, 1, 0, 1, 1);
 
         doubleSpinBox_motor_test_spd_1 = new QDoubleSpinBox(groupBox_4);
         doubleSpinBox_motor_test_spd_1->setObjectName(QStringLiteral("doubleSpinBox_motor_test_spd_1"));
@@ -1073,7 +1073,7 @@ public:
         label_37->setText(QApplication::translate("MainWindow", "\347\224\265\346\272\220\347\224\265\346\265\201", 0));
         label_38->setText(QApplication::translate("MainWindow", "\347\224\265\346\234\272\347\224\265\346\265\201", 0));
         label_51->setText(QApplication::translate("MainWindow", "A", 0));
-        label_39->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\200\237\345\272\246", 0));
+        label_setval_right_1->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\200\237\345\272\246", 0));
         label_50->setText(QApplication::translate("MainWindow", "A", 0));
         label_53->setText(QApplication::translate("MainWindow", "rpm", 0));
         label_54->setText(QApplication::translate("MainWindow", "Nm", 0));
@@ -1098,7 +1098,7 @@ public:
         pushButton_system_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\345\256\236\346\227\266\346\230\276\347\244\272", 0));
         groupBox_4->setTitle(QApplication::translate("MainWindow", "\345\215\225\346\234\272\346\265\213\350\257\225\346\216\247\345\210\266", 0));
-        label_34->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\200\237\345\272\246", 0));
+        label_setval_1->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\200\237\345\272\246", 0));
         label_33->setText(QApplication::translate("MainWindow", "\351\200\211\346\213\251\346\250\241\345\274\217", 0));
         pushButton_single_test_mode_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_6->setTitle(QApplication::translate("MainWindow", "\344\270\200\351\224\256\346\265\213\350\257\225", 0));

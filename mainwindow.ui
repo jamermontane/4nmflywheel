@@ -936,7 +936,7 @@
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QLabel" name="label_39">
+            <widget class="QLabel" name="label_setval_right_1">
              <property name="text">
               <string>设置速度</string>
              </property>
@@ -1428,7 +1428,7 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_34">
+            <widget class="QLabel" name="label_setval_1">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>

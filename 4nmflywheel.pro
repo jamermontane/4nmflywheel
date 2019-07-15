@@ -33,3 +33,4 @@ QT += sql
 #LIBS += -LC:/mycode/motionStudio -ltmlcomm
 
 QT += serialport
+RC_ICONS = favicon.ico

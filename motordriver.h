@@ -63,6 +63,8 @@ private:
     bool            isInit;
     QString         port_name;
     QString         baud_rate;
+    QByteArray      recv_data_buf;
+
     union spd_array{
         uchar   array[2];
         qint16  spd;
