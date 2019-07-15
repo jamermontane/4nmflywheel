@@ -17,7 +17,7 @@ public:
     explicit SqlDataBase(QObject *parent = 0);
     bool sqlInit();
     ~SqlDataBase(){
-        data_base_.close();
+        m_data_base_.close();
     }
 
 
@@ -32,7 +32,7 @@ public slots:
                                   const double spd);
     void queryFromDB(QString);
 private:
-    QSqlDatabase data_base_;
+    QSqlDatabase m_data_base_;
 };
 
 #endif // CSQLDATABASE_H

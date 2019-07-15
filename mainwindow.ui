@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>飞轮整机测试软件</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_10">
     <item row="0" column="0">
@@ -933,7 +936,7 @@
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QLabel" name="label_39">
+            <widget class="QLabel" name="label_setval_right_1">
              <property name="text">
               <string>设置速度</string>
              </property>
@@ -1414,19 +1417,6 @@
            <string>单机测试控制</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_13">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_33">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>选择模式</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="1">
             <widget class="QComboBox" name="comboBox_motor_test_mode_1">
              <property name="maximumSize">
@@ -1438,7 +1428,7 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_34">
+            <widget class="QLabel" name="label_setval_1">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -1458,10 +1448,19 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="minimum">
+              <double>-6000.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>6000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>10.000000000000000</double>
+             </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_35">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_33">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -1469,17 +1468,14 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>转速增量</string>
+              <string>选择模式</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_motor_test_acc_1">
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>16777215</height>
-              </size>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="pushButton_single_test_mode_1">
+             <property name="text">
+              <string>启动</string>
              </property>
             </widget>
            </item>

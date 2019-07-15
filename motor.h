@@ -3,27 +3,27 @@
 
 #include <QObject>
 
-class Motor : public QObject{
+class MotorBasic : public QObject{
 
     Q_OBJECT
 
 public:
-    Motor(): id_(0),vol_(0),cur_(0),spd_(0),acc_(0.1),setSpd_(0)
+    MotorBasic(): id_(0),vol_(0),cur_(0),spd_(0),acc_(0.1),setSpd_(0),torque_(0),setTorque_(0),isRunning_(false)
     {
 
     }
 
 
-    ~Motor(){
+    ~MotorBasic(){
 
     }
 signals:
-    void sendMoTorSpd(double spd,double acc);
-
+    void sendMoTorSpd(double);
+    void sendMoTorTor(double);
 public slots:
     void setSetSpeed(const double spd){
         this->setSpd_ = spd;
-        emit sendMoTorSpd(setSpd_,acc_);
+        emit sendMoTorSpd(setSpd_);
     }
     void setSpeed(const double spd){
         this->spd_ = spd;
@@ -36,13 +36,24 @@ public slots:
     }
     void setAccelerate(const double acc){
         this->acc_ = acc;
-        emit sendMoTorSpd(setSpd_,acc_);
+        emit sendMoTorSpd(setSpd_);
     }
     void setId(const uint id){
         this->id_ = id;
     }
-    void setIsRunning(bool isRunning){
+    void setIsRunning(const bool isRunning){
         this->isRunning_ = isRunning;
+    }
+    void setTemperature(const double tmp){
+        this->tempurature_ = tmp;
+    }
+    void setTorque(const double tor){
+        this->torque_ = tor;
+
+    }
+    void setSetTorque(const double setTor){
+        this->setTorque_ = setTor;
+        emit sendMoTorTor(setTor);
     }
 
 public:
@@ -81,6 +92,22 @@ public:
         return isRunning_;
     }
 
+    //tmp
+    double getTemperature() const{
+        return this->tempurature_;
+    }
+
+    //torque
+    double getSetTorque() const{
+        return this->setTorque_;
+    }
+
+    double getTorque() const{
+        return this->torque_;
+    }
+    double getWate() const{
+        return wate_;
+    }
 private:
     uint id_;
     double vol_;
@@ -88,11 +115,27 @@ private:
     double spd_;
     double acc_;
     double setSpd_;
+    double tempurature_;
+    double torque_;
+    double setTorque_;
+    double wate_;
     bool isRunning_;
 
 
 
 };
 
+class Motor : public MotorBasic{
+public:
+    Motor(){
+
+    }
+    ~Motor(){
+
+    }
+
+private:
+
+};
 
 #endif // MOTOR_H

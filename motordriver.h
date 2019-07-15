@@ -6,7 +6,7 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QByteArray>
-
+#include <QDebug>
 
 class MotorDriver : public QObject
 {
@@ -15,15 +15,32 @@ public:
     explicit MotorDriver(QObject *parent = 0);
 
     ~MotorDriver(){
-        if (serial_port_.isOpen())
-            serial_port_.close();
+        disconnect(this->serial_port_,SIGNAL(readyRead()),this,SLOT(resolveDataFromSerialport()));
+        if (serial_port_ != nullptr && serial_port_->isOpen()){
+            serial_port_->close();
+            delete serial_port_;
+            qDebug()<<port_name<<" has close";
+        }
+        else if(serial_port_ != nullptr && !serial_port_->isOpen()){
+            delete serial_port_;
+        }
+        else{
+            serial_port_ = nullptr;
+        }
 
     }
 
-    bool init(QString port_name,QString baud_rate);
+
     QByteArray calSpdData(QString spd);
     QByteArray calTorData(QString tor);
 
+    void setPortName(QString str){
+        port_name = str;
+    }
+
+    void setBaudRate(QString baud){
+        baud_rate = baud;
+    }
 
 signals:
     void sendErrText(QString);
@@ -38,11 +55,15 @@ public slots:
     void ctlMotorSpd(double spd = 0);
     void ctlMotorTor(double tor = 0);
     void getMotorData();
-    void getDataFromSerialport();
+    void resolveDataFromSerialport();
+    bool init();
 private:
 
-    QSerialPort     serial_port_;
+    QSerialPort*    serial_port_;
     bool            isInit;
+    QString         port_name;
+    QString         baud_rate;
+    QByteArray      recv_data_buf;
 
     union spd_array{
         uchar   array[2];
