@@ -2,7 +2,17 @@
 #define MOTOR_H
 
 #include <QObject>
+#include <qmath.h>
+#include <QQueue>
 
+
+/*
+ * 电机类
+ * 如果后期发现时间效率达不到要求，部分计算算法可以优化
+ *
+ * @author LYC
+ * @time 2019/07/15
+ */
 class MotorBasic : public QObject{
 
     Q_OBJECT
@@ -20,6 +30,7 @@ public:
 signals:
     void sendMoTorSpd(double);
     void sendMoTorTor(double);
+    void spdChanged(double);
 public slots:
     void setSetSpeed(const double spd){
         this->setSpd_ = spd;
@@ -27,6 +38,7 @@ public slots:
     }
     void setSpeed(const double spd){
         this->spd_ = spd;
+        emit spdChanged(spd);
     }
     void setCurrent(const double cur){
         this->cur_ = cur;
@@ -44,9 +56,7 @@ public slots:
     void setIsRunning(const bool isRunning){
         this->isRunning_ = isRunning;
     }
-    void setTemperature(const double tmp){
-        this->tempurature_ = tmp;
-    }
+
     void setTorque(const double tor){
         this->torque_ = tor;
 
@@ -92,10 +102,7 @@ public:
         return isRunning_;
     }
 
-    //tmp
-    double getTemperature() const{
-        return this->tempurature_;
-    }
+
 
     //torque
     double getSetTorque() const{
@@ -105,9 +112,7 @@ public:
     double getTorque() const{
         return this->torque_;
     }
-    double getWate() const{
-        return wate_;
-    }
+
 private:
     uint id_;
     double vol_;
@@ -115,10 +120,10 @@ private:
     double spd_;
     double acc_;
     double setSpd_;
-    double tempurature_;
+
     double torque_;
     double setTorque_;
-    double wate_;
+
     bool isRunning_;
 
 
@@ -126,15 +131,122 @@ private:
 };
 
 class Motor : public MotorBasic{
-public:
-    Motor(){
 
+    Q_OBJECT
+
+public:
+    Motor():last_ten_cur_(0),
+            last_ten_vol_(0),
+            last_ten_spd_(0)
+    {
+
+        connect(this,SIGNAL(spdChanged(double)),this,SLOT(setLastTen(double)));
     }
     ~Motor(){
 
     }
 
+
+    //得到温度
+    double getTemperature() const{
+        return this->temperature_;
+    }
+    //得到功率
+    double getWate() const{
+        return this->wate_;
+    }
+
+    //得到角动量
+
+    //得到角动量常值偏差
+
+    //得到角动量动态偏差
+
+    //得到反作用力矩
+public slots:
+    //get last ten
+    void setLastTen(double spd){
+        if (last_ten_vol_queue_.size() <=10){
+            last_ten_vol_queue_.push_back(this->getVoltage());
+        }
+        else{
+            last_ten_vol_queue_.pop_front();
+            last_ten_vol_queue_.push_back(this->getVoltage());
+        }
+
+        if (last_ten_cur_queue_.size() <=10){
+            last_ten_cur_queue_.push_back(this->getCurrent());
+        }
+        else{
+            last_ten_cur_queue_.pop_front();
+            last_ten_cur_queue_.push_back(this->getCurrent());
+        }
+
+        if (last_ten_spd_queue_.size() <=10){
+            last_ten_spd_queue_.push_back(spd);
+        }
+        else{
+            last_ten_spd_queue_.pop_front();
+            last_ten_spd_queue_.push_back(spd);
+        }
+        last_ten_cur_ = 0;
+        for(double t:last_ten_cur_queue_){
+            last_ten_cur_ += t;
+        }
+        last_ten_cur_ /= last_ten_cur_queue_.size();
+
+        last_ten_spd_ = 0;
+        for(double t:last_ten_spd_queue_){
+            last_ten_spd_ += t;
+        }
+        last_ten_spd_ /= last_ten_spd_queue_.size();
+
+        last_ten_vol_ = 0;
+        for(double t:last_ten_vol_queue_){
+            last_ten_vol_ += t;
+        }
+        last_ten_vol_ /= last_ten_vol_queue_.size();
+
+    }
+
+    //设置温度
+    void setTemperature(const double tmp){
+        temperature_ =  4050/(qLn(((7500*tmp)/(256-tmp))) + 4.98) - 273;
+    }
+    //设置功率
+    void setWate(){
+        wate_ = last_ten_cur_ * last_ten_vol_;
+    }
+
+    //设置角动量
+
+    //设置角动量常值偏差
+
+    //设置角动量动态偏差
+
+    //设置反作用力矩
 private:
+    double temperature_;
+    double wate_;
+
+    //存放最近10个电流
+    QQueue<double> last_ten_cur_queue_;
+    double last_ten_cur_;
+    //存放最近10个电压
+    QQueue<double> last_ten_vol_queue_;
+    double last_ten_vol_;
+    //存放最近10个转速
+    QQueue<double> last_ten_spd_queue_;
+    double last_ten_spd_;
+
+    //角动量
+    double angular_momentum_;
+    //角动量常值偏差
+    double angular_momentum_const_d;
+    //角动量动态偏差
+    double angular_momentum_dynamic_d;
+    //反作用力矩
+    double reaction_moment_;
 
 };
 

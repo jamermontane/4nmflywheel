@@ -76,9 +76,14 @@ private:
     }tor_array_;
 
     union recv_spd{
-        qint32  spd;
-        uchar   array[4];
+        qint16  spd;
+        uchar   array[2];
     }recv_spd_;
+
+    union recv_cur{
+        quint16  cur;
+        uchar   array[2];
+    }recv_cur_;
 };
 
 #endif // MOTORDRIVER_H

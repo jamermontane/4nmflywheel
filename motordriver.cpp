@@ -155,14 +155,15 @@ void MotorDriver::resolveDataFromSerialport()
             }
 
 
-            recv_spd_.array[0] = 0;
-            recv_spd_.array[3] = recv_data_buf[0];
-            recv_spd_.array[2] = recv_data_buf[1];
-            recv_spd_.array[1] = recv_data_buf[2];
-            emit sendMotorSpd(recv_spd_.spd/16 * 0.05);
 
-            quint8 cur = recv_data_buf[3];
-            emit sendMotorCur(cur * 0.024);
+            recv_spd_.array[1] = recv_data_buf[0];
+            recv_spd_.array[0] = recv_data_buf[1];
+
+            emit sendMotorSpd(recv_spd_.spd * 0.05);
+
+            recv_cur_.array[1] = recv_data_buf[2];
+            recv_cur_.array[0] = recv_data_buf[3];
+            emit sendMotorCur(recv_cur_.cur * 0.0017);
 
             uchar tmp = recv_data_buf[4];
             emit sendMotorTmp(tmp);
