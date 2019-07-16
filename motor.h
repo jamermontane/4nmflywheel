@@ -166,7 +166,7 @@ public:
 public slots:
     //get last ten
     void setLastTen(double spd){
-        if (last_ten_vol_queue_.size() <=10){
+        if (last_ten_vol_queue_.size() <10){
             last_ten_vol_queue_.push_back(this->getVoltage());
         }
         else{
@@ -174,7 +174,7 @@ public slots:
             last_ten_vol_queue_.push_back(this->getVoltage());
         }
 
-        if (last_ten_cur_queue_.size() <=10){
+        if (last_ten_cur_queue_.size() <10){
             last_ten_cur_queue_.push_back(this->getCurrent());
         }
         else{
@@ -182,7 +182,7 @@ public slots:
             last_ten_cur_queue_.push_back(this->getCurrent());
         }
 
-        if (last_ten_spd_queue_.size() <=10){
+        if (last_ten_spd_queue_.size() <10){
             last_ten_spd_queue_.push_back(spd);
         }
         else{
