@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initCombox();
     initDriver1();
-
+    initQCustomPlot1();
 
     m_timer_get_data_.setInterval(100); //get data timer 0.1s
 
@@ -133,6 +133,7 @@ void MainWindow::updateMotor()
     if (m_motor1_.getIsRunning()){
         //更新显示界面
         updateMotor1();
+        refreshCustomPlotData1();
         //更新数据库
     }
 
@@ -141,12 +142,61 @@ void MainWindow::updateMotor()
 
 void MainWindow::updateMotor1()
 {
+    //update lineedit
     ui->lineEdit_motor_set_spd_1->setText(QString::number(m_motor1_.getSetSpeed()));
     ui->lineEdit_motor_act_spd_1->setText(QString::number(m_motor1_.getSpeed()));
     ui->lineEdit_sys_cur_1->setText(QString::number(m_motor1_.getCurrent()));
+}
+
+void MainWindow::initQCustomPlot1()
+{
+
+        ui->qcp_motor_cur_1->addGraph();
+        ui->qcp_motor_cur_1->graph(0)->setPen(QPen(Qt::blue));
+        ui->qcp_motor_cur_1->graph(0)->setName("motorCurrent");
+
+        QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
+        timeTicker->setTimeFormat("%m:%s"); // %h代表小时
+        ui->qcp_motor_cur_1->xAxis->setTicker(timeTicker);
+        ui->qcp_motor_cur_1->axisRect()->setupFullAxesBox();
+        ui->qcp_motor_cur_1->yAxis->setLabel("电流(A)");
+
+        // make left and bottom axes transfer their ranges to right and top axes:
+        connect( ui->qcp_motor_cur_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_cur_1->xAxis2, SLOT(setRange(QCPRange)));
+        connect( ui->qcp_motor_cur_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_cur_1->yAxis2, SLOT(setRange(QCPRange)));
+
+        // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
+
+        //dataTimer.start(0); // Interval 0 means to refresh as fast as possibl
+
+        ui->qcp_motor_spd_1->addGraph();
+        ui->qcp_motor_spd_1->graph(0)->setPen(QPen(Qt::red));
+        ui->qcp_motor_spd_1->addGraph();
+        ui->qcp_motor_spd_1->graph(1)->setPen(QPen(Qt::green));
+
+        ui->qcp_motor_spd_1->yAxis->setLabel("转速(rpm)");
+
+        ui->qcp_motor_spd_1->xAxis->setTicker(timeTicker);
+        ui->qcp_motor_spd_1->axisRect()->setupFullAxesBox();
+        ui->qcp_motor_spd_1->yAxis->setRange(0,1);
+
+        connect( ui->qcp_motor_spd_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_spd_1->xAxis2, SLOT(setRange(QCPRange)));
+        connect( ui->qcp_motor_spd_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_spd_1->yAxis2, SLOT(setRange(QCPRange)));
+
+        ui->qcp_motor_tmp_1->addGraph();
+        ui->qcp_motor_tmp_1->graph(0)->setPen(QPen(Qt::red));
+
+        ui->qcp_motor_tmp_1->yAxis->setLabel("温度(℃)");
+
+        ui->qcp_motor_tmp_1->xAxis->setTicker(timeTicker);
+        ui->qcp_motor_tmp_1->axisRect()->setupFullAxesBox();
+        //ui->widget->yAxis->setRange(-30,30);
 
 
+        ui->qcp_motor_tmp_1->xAxis->setTicker(timeTicker);
 
+        connect( ui->qcp_motor_tmp_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->xAxis2, SLOT(setRange(QCPRange)));
+        connect( ui->qcp_motor_tmp_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->yAxis2, SLOT(setRange(QCPRange)));
 }
 
 void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
@@ -175,4 +225,58 @@ void MainWindow::on_comboBox_motor_test_mode_1_currentIndexChanged(int index)
     default:
         break;
     }
+}
+
+void MainWindow::refreshCustomPlotData1()
+{
+    static QTime time(QTime::currentTime());
+    // calculate two new data points:
+    double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds  elaspsed上次开始后得持续时间
+    static double lastPointKey = 0;
+    static QVector<double> keyContainer;
+    static QVector<double> tmpContainer;
+    static QVector<double> curContainer;
+    static QVector<double> spdContainer;
+    static QVector<double> setSpdContainer;
+    if (key-lastPointKey > 0.02) // at most add point every 0.5 s
+    {
+      // add data to lines:
+        keyContainer.push_back(key);
+        tmpContainer.push_back(m_motor1_.getTemperature());
+        curContainer.push_back(m_motor1_.getCurrent());
+        spdContainer.push_back(m_motor1_.getSpeed());
+        setSpdContainer.push_back(m_motor1_.getSetSpeed());
+
+      ui->qcp_motor_tmp_1->graph(0)->setData(keyContainer,tmpContainer,true);
+      ui->qcp_motor_cur_1->graph(0)->setData(keyContainer,curContainer,true);
+      ui->qcp_motor_spd_1->graph(0)->setData(keyContainer,spdContainer,true);
+      ui->qcp_motor_spd_1->graph(1)->setData(keyContainer,setSpdContainer,true);
+      lastPointKey = key;
+      if (keyContainer.size() > 100){
+          keyContainer.pop_front();
+          tmpContainer.pop_front();
+          curContainer.pop_front();
+          spdContainer.pop_front();
+          setSpdContainer.pop_front();
+      }
+      ui->qcp_motor_tmp_1->graph(0)->rescaleValueAxis(true);
+      ui->qcp_motor_cur_1->graph(0)->rescaleValueAxis(true);
+      ui->qcp_motor_spd_1->graph(0)->rescaleValueAxis(true);
+      ui->qcp_motor_spd_1->graph(1)->rescaleValueAxis(true);
+
+      ui->qcp_motor_cur_1->xAxis->setRange(key, 8, Qt::AlignRight);
+      ui->qcp_motor_spd_1->xAxis->setRange(key, 8, Qt::AlignRight);
+      ui->qcp_motor_tmp_1->xAxis->setRange(key, 8, Qt::AlignRight);
+
+      ui->qcp_motor_cur_1->replot();
+      ui->qcp_motor_tmp_1->replot();
+      ui->qcp_motor_spd_1->replot();
+
+
+    }
+    // make key axis range scroll with the data (at a constant range size of 8):
+
+
+
+
 }
