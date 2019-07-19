@@ -40,31 +40,19 @@ QByteArray MotorDriver::calSpdData(QString spd)
 {
     QByteArray spd_arr;
     spd_array_.spd = spd.toInt() * 2;
-    if (spd_arr.isEmpty()){
-        spd_arr.resize(7);
-        spd_arr[0] = 0xD3;
-        spd_arr[1] = 0x00;
-        spd_arr[2] = 0x00;
-        spd_arr[3] = spd_array_.array[1];
-        spd_arr[4] = spd_array_.array[0];
-        spd_arr[5] = 0x5B;
-        // cal total
-        uchar t = 0x00;
-        for (uint i = 0; i < 6;++i){
-            t += spd_arr[i];
-        }
-        spd_arr[6] = t;
-
+    spd_arr.resize(7);
+    spd_arr[0] = 0xD3;
+    spd_arr[1] = 0x00;
+    spd_arr[2] = 0x00;
+    spd_arr[3] = spd_array_.array[1];
+    spd_arr[4] = spd_array_.array[0];
+    spd_arr[5] = 0x5B;
+    // cal total
+    uchar t = 0x00;
+    for (uint i = 1; i < 6;++i){
+        t += spd_arr[i];
     }
-    else{
-        spd_arr[3] = spd_array_.array[1];
-        spd_arr[4] = spd_array_.array[0];
-        uchar t = 0x00;
-        for (uint i = 0; i < 6;++i){
-            t += spd_arr[i];
-        }
-        spd_arr[6] = t;
-    }
+    spd_arr[6] = t;
     return spd_arr;
 }
 
@@ -72,32 +60,20 @@ QByteArray MotorDriver::calTorData(QString tor)
 {
     QByteArray tor_arr;
     tor_array_.torque = tor.toInt() / 0.058;
-    if (tor_arr.isEmpty()){
-        tor_arr.resize(7);
-        tor_arr[0] = 0x1C;
-        tor_arr[1] = 0x00;
-        tor_arr[2] = 0x00;
-        tor_arr[3] = tor_array_.array[1];
-        tor_arr[4] = tor_array_.array[0];
-        tor_arr[5] = 0x5B;
-        // cal total
-        uchar t = 0x00;
-        for (uint i = 0; i < 6;++i){
-            t += tor_arr[i];
-        }
-        tor_arr[6] = t;
+    tor_arr.resize(7);
+    tor_arr[0] = 0x1C;
+    tor_arr[1] = 0x00;
+    tor_arr[2] = 0x00;
+    tor_arr[3] = tor_array_.array[1];
+    tor_arr[4] = tor_array_.array[0];
+    tor_arr[5] = 0x5B;
+    // cal total
+    uchar t = 0x00;
+    for (uint i = 1; i < 6;++i){
+        t += tor_arr[i];
+    }
+    tor_arr[6] = t;
 
-    }
-    else{
-        tor_arr[3] = tor_array_.array[1];
-        tor_arr[4] = tor_array_.array[0];
-        // cal total
-        uchar t = 0x00;
-        for (uint i = 0; i < 6;++i){
-            t += tor_arr[i];
-        }
-        tor_arr[6] = t;
-    }
     return tor_arr;
 }
 
