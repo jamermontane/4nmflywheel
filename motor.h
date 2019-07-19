@@ -18,7 +18,9 @@ class MotorBasic : public QObject{
     Q_OBJECT
 
 public:
-    MotorBasic(): id_(0),vol_(0),cur_(0),spd_(0),acc_(0.1),setSpd_(0),torque_(0),setTorque_(0),isRunning_(false)
+    MotorBasic(): id_(0),vol_(0),cur_(0),
+        spd_(0),acc_(0.1),setSpd_(0),torque_(0),
+        setTorque_(0),isRunning_(false),channel_("")
     {
 
     }
@@ -112,6 +114,14 @@ public:
     double getTorque() const{
         return this->torque_;
     }
+    //设置通道号,保存数据库时用
+    QString getChannel()const{
+        return this->channel_;
+    }
+
+    void setChannel(QString c){
+        this->channel_ = c;
+    }
 
 private:
     uint id_;
@@ -125,7 +135,7 @@ private:
     double setTorque_;
 
     bool isRunning_;
-
+    QString channel_;
 
 
 };
@@ -139,7 +149,7 @@ public:
             last_ten_vol_(0),
             last_ten_spd_(0)
     {
-
+        initXpMode(0,0);
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(setLastTen(double)));
     }
     ~Motor(){
@@ -163,6 +173,12 @@ public:
     //得到角动量动态偏差
 
     //得到反作用力矩
+
+    //斜坡模式
+    void initXpMode(double espd,double interval){
+        this->xp_end_spd_ = espd;
+        this->xp_spd_interval_ = interval;
+    }
 public slots:
     //get last ten
     void setLastTen(double spd){
@@ -225,6 +241,27 @@ public slots:
     //设置角动量动态偏差
 
     //设置反作用力矩
+
+    //斜坡模式
+    void calXpMode(){
+        if (getSpeed() < xp_end_spd_){
+            double ctl_spd = getSpeed()+xp_spd_interval_;
+            if (ctl_spd < -6050){
+                setSetSpeed(-6050);
+            }
+            else if (ctl_spd > 6050){
+                setSetSpeed(6050);
+            }
+            else
+                setSetSpeed(ctl_spd);
+        }
+        else{
+            setSetSpeed(xp_end_spd_);
+        }
+    }
+
+
+
 private:
     double temperature_;
     double wate_;
@@ -248,6 +285,9 @@ private:
     //反作用力矩
     double reaction_moment_;
 
+    //斜坡模式
+    double xp_end_spd_;
+    double xp_spd_interval_;
 };
 
 #endif // MOTOR_H

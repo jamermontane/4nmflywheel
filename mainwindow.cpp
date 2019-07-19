@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_timer_update_,SIGNAL(timeout()),this,SLOT(updateMotor()));
     m_timer_update_.start();
 
+    //斜坡模式输入diable
+    ui->doubleSpinBox_motor_test_acc->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -26,8 +28,6 @@ MainWindow::~MainWindow()
     delete ui;
     p_driver_thread1_->quit();
     p_driver_thread1_->wait();
-
-
 }
 
 bool MainWindow::initDriver1()
@@ -63,6 +63,7 @@ void MainWindow::initCombox()
 {
     ui->comboBox_motor_test_mode_1->addItem("速度模式");
     ui->comboBox_motor_test_mode_1->addItem("力矩模式");
+    ui->comboBox_motor_test_mode_1->addItem("斜坡模式");
 }
 
 
@@ -97,6 +98,7 @@ void MainWindow::on_pushButton_system_power_1_clicked()
 void MainWindow::on_pushButton_single_test_mode_1_clicked()
 {
     static bool this_mode_running = false;
+    static bool xp_mode_running = false;
     if (!m_sys_status_1_){
         QMessageBox::warning(this,"电源未打开","电源未打开,请开启总电源！");
     }
@@ -105,18 +107,31 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
             switch(ui->comboBox_motor_test_mode_1->currentIndex()){
             case 0: m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()); break;
             case 1: m_motor1_.setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
+            case 2:
+                m_motor1_.setSetSpeed(0);
+                m_motor1_.initXpMode(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()
+                                     ,ui->doubleSpinBox_motor_test_acc->text().toDouble());
+                connect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                xp_mode_running = true;
+                break;
             default:
                 break;
             }
+//            m_timer_get_data_.setInterval();
             m_motor1_.setIsRunning(true);
             m_timer_get_data_.start();
             this_mode_running = true;
             ui->pushButton_single_test_mode_1->setText("停止");
         }
         else{
-            if (this_mode_running){
-                m_motor1_.setIsRunning(false);
 
+            if (this_mode_running){
+                if (xp_mode_running){
+                    disconnect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                    xp_mode_running = false;
+                }
+                m_motor1_.setIsRunning(false);
+                m_motor1_.setSetSpeed(0);
                 m_timer_get_data_.stop();
                 this_mode_running = false;
                 ui->pushButton_single_test_mode_1->setText("启动");
@@ -217,16 +232,23 @@ void MainWindow::on_comboBox_motor_test_mode_1_currentIndexChanged(int index)
     case 0:
         ui->label_setval_1->setText("设置速度");
         ui->label_setval_right_1->setText("设置速度");
+        ui->doubleSpinBox_motor_test_acc->setEnabled(false);
         break;
     case 1:
         ui->label_setval_1->setText("设置力矩");
         ui->label_setval_right_1->setText("设置力矩");
+        ui->doubleSpinBox_motor_test_acc->setEnabled(false);
+        break;
+    case 2:
+        ui->label_setval_1->setText("设置速度");
+        ui->label_setval_right_1->setText("设置速度");
+        ui->doubleSpinBox_motor_test_acc->setEnabled(true);
         break;
     default:
         break;
     }
 }
-
+//刷新界面速度、电流等图部分
 void MainWindow::refreshCustomPlotData1()
 {
     static QTime time(QTime::currentTime());
@@ -247,30 +269,30 @@ void MainWindow::refreshCustomPlotData1()
         spdContainer.push_back(m_motor1_.getSpeed());
         setSpdContainer.push_back(m_motor1_.getSetSpeed());
 
-      ui->qcp_motor_tmp_1->graph(0)->setData(keyContainer,tmpContainer,true);
-      ui->qcp_motor_cur_1->graph(0)->setData(keyContainer,curContainer,true);
-      ui->qcp_motor_spd_1->graph(0)->setData(keyContainer,spdContainer,true);
-      ui->qcp_motor_spd_1->graph(1)->setData(keyContainer,setSpdContainer,true);
-      lastPointKey = key;
-      if (keyContainer.size() > 100){
-          keyContainer.pop_front();
-          tmpContainer.pop_front();
-          curContainer.pop_front();
-          spdContainer.pop_front();
-          setSpdContainer.pop_front();
-      }
-      ui->qcp_motor_tmp_1->graph(0)->rescaleValueAxis(true);
-      ui->qcp_motor_cur_1->graph(0)->rescaleValueAxis(true);
-      ui->qcp_motor_spd_1->graph(0)->rescaleValueAxis(true);
-      ui->qcp_motor_spd_1->graph(1)->rescaleValueAxis(true);
+        ui->qcp_motor_tmp_1->graph(0)->setData(keyContainer,tmpContainer,true);
+        ui->qcp_motor_cur_1->graph(0)->setData(keyContainer,curContainer,true);
+        ui->qcp_motor_spd_1->graph(0)->setData(keyContainer,spdContainer,true);
+        ui->qcp_motor_spd_1->graph(1)->setData(keyContainer,setSpdContainer,true);
+        lastPointKey = key;
+        if (keyContainer.size() > 100){
+            keyContainer.pop_front();
+            tmpContainer.pop_front();
+            curContainer.pop_front();
+            spdContainer.pop_front();
+            setSpdContainer.pop_front();
+        }
+        ui->qcp_motor_tmp_1->graph(0)->rescaleValueAxis(true);
+        ui->qcp_motor_cur_1->graph(0)->rescaleValueAxis(true);
+        ui->qcp_motor_spd_1->graph(0)->rescaleValueAxis(true);
+        ui->qcp_motor_spd_1->graph(1)->rescaleValueAxis(true);
 
-      ui->qcp_motor_cur_1->xAxis->setRange(key, 8, Qt::AlignRight);
-      ui->qcp_motor_spd_1->xAxis->setRange(key, 8, Qt::AlignRight);
-      ui->qcp_motor_tmp_1->xAxis->setRange(key, 8, Qt::AlignRight);
+        ui->qcp_motor_cur_1->xAxis->setRange(key, 8, Qt::AlignRight);
+        ui->qcp_motor_spd_1->xAxis->setRange(key, 8, Qt::AlignRight);
+        ui->qcp_motor_tmp_1->xAxis->setRange(key, 8, Qt::AlignRight);
 
-      ui->qcp_motor_cur_1->replot();
-      ui->qcp_motor_tmp_1->replot();
-      ui->qcp_motor_spd_1->replot();
+        ui->qcp_motor_cur_1->replot();
+        ui->qcp_motor_tmp_1->replot();
+        ui->qcp_motor_spd_1->replot();
 
 
     }

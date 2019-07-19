@@ -30,9 +30,7 @@ bool SqlDataBase::sqlInit()
     return true;
 }
 
-QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no,
-                                    QString motor_id, QString vol, QString cur,
-                                    QString set_spd, QString spd)
+QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no,Motor &motor)
 {
     QString query_string;
     if (exp_name.isEmpty()){
@@ -44,13 +42,14 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
     if (exp_no.isEmpty()){
         exp_name = "null";
     }
+
     if(!m_data_base_.tables().contains("MOTOR1"))
     {
         QString tempsql = "CREATE TABLE MOTOR1";
         tempsql.append("([EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
-                       "[ANGULARMOMENTUM1] DOUBLE,[ANGULARMOMENTUM2] DOUBLE,"
+                       "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
         QSqlQuery sql_query(m_data_base_);
         if (!sql_query.exec(tempsql))
@@ -61,16 +60,18 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
     else{
 
         query_string.append("INSERT INTO MOTOR1");
-        query_string.append("([EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]) VALUES(");
-        query_string.append("'"+exp_name+"',");
-        query_string.append("'"+usr_name+"',");
-        query_string.append("'"+exp_no+"',");
-        query_string.append("'"+motor_id+"',");
-        query_string.append(vol+",");
-        query_string.append(cur+",");
-        query_string.append(set_spd+",");
-        query_string.append(spd);
-        query_string.append(")");
+        query_string.append("([EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
+                            ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
+                            ") VALUES(");
+//        query_string.append("'"+exp_name+"',");
+//        query_string.append("'"+usr_name+"',");
+//        query_string.append("'"+exp_no+"',");
+//        query_string.append("'"+motor_id+"',");
+//        query_string.append(vol+",");
+//        query_string.append(cur+",");
+//        query_string.append(set_spd+",");
+//        query_string.append(spd);
+//        query_string.append(")");
     }
     return query_string;
 }
@@ -79,14 +80,14 @@ void SqlDataBase::insertIntoDB(const QString &exp_name,const QString &usr_name,c
                                const uint id,const double cur,const double vol,const double set_spd,
                                const double spd)
 {
-    QString query_str = makeSaveString(exp_name,usr_name,exp_no,QString::number(id),QString::number(cur),
-                                      QString::number(vol),QString::number(set_spd),
-                                      QString::number(spd));
-    static QSqlQuery sql_query(m_data_base_);
-    if(!sql_query.exec(query_str))
-    {
-        qDebug() << sql_query.lastError().text();
-    }
+//    QString query_str = makeSaveString(exp_name,usr_name,exp_no,QString::number(id),QString::number(cur),
+//                                      QString::number(vol),QString::number(set_spd),
+//                                      QString::number(spd));
+//    static QSqlQuery sql_query(m_data_base_);
+//    if(!sql_query.exec(query_str))
+//    {
+//        qDebug() << sql_query.lastError().text();
+//    }
 }
 
 void SqlDataBase::queryFromDB(QString query_string)

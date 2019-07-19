@@ -88,7 +88,6 @@ void MotorDriver::ctlMotorSpd(double spd)
             emit sendErrText(QString("driver control error"));
         }
     }
-
 }
 
 void MotorDriver::ctlMotorTor(double tor)

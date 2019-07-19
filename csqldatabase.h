@@ -10,6 +10,8 @@
 #include <QMetaType>
 #include <QSharedPointer>
 
+#include "motor.h"
+
 class SqlDataBase : public QObject
 {
     Q_OBJECT
@@ -21,9 +23,7 @@ public:
     }
 
 
-    QString makeSaveString(QString exp_name, QString usr_name, QString exp_no,
-                           QString motor_id, QString vol, QString cur,
-                           QString set_spd, QString spd);
+    QString makeSaveString(QString exp_name, QString usr_name, QString exp_no,Motor &);
 signals:
     void sendQueryRes(QSharedPointer<QSqlQuery>);
 public slots:
