@@ -1592,12 +1592,27 @@
     </property>
     <addaction name="actionSetting"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>关于</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSetting">
    <property name="text">
-    <string>setting</string>
+    <string>通讯接口设置</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>关于 飞轮整机测试软件</string>
+   </property>
+   <property name="toolTip">
+    <string>关于作者</string>
    </property>
   </action>
  </widget>

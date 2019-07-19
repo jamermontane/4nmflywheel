@@ -49,6 +49,8 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         QString tempsql = "CREATE TABLE MOTOR1";
         tempsql.append("([EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
+                       "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
+                       "[ANGULARMOMENTUM1] DOUBLE,[ANGULARMOMENTUM2] DOUBLE,"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
         QSqlQuery sql_query(m_data_base_);
         if (!sql_query.exec(tempsql))
