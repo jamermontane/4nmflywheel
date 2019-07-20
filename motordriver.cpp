@@ -1,17 +1,16 @@
 #include "motordriver.h"
 
-MotorDriver::MotorDriver(QObject *parent) : QObject(parent)
-  ,isInit(false)
+Flywheel4NMDriver::Flywheel4NMDriver(QObject *parent) : MotorDriver(parent)
 {
     spd_array_.spd = 0;
     tor_array_.torque = 0;
     recv_spd_.spd = 0;
-    serial_port_ = nullptr;
+
 
 
 }
 
-bool MotorDriver::init()
+bool SerialDriver::SerialDriver::init()
 {
     serial_port_ = new QSerialPort;
     connect(this->serial_port_,SIGNAL(readyRead()),this,SLOT(resolveDataFromSerialport()));
@@ -32,11 +31,11 @@ bool MotorDriver::init()
 
     }
     qDebug()<<port_name<<" has init";
-    isInit = true;
+    setInit(true);
     return true;
 }
 
-QByteArray MotorDriver::calSpdData(QString spd)
+QByteArray Flywheel4NMDriver::calSpdData(QString spd)
 {
     QByteArray spd_arr;
     spd_array_.spd = spd.toInt() * 2;
@@ -56,7 +55,7 @@ QByteArray MotorDriver::calSpdData(QString spd)
     return spd_arr;
 }
 
-QByteArray MotorDriver::calTorData(QString tor)
+QByteArray Flywheel4NMDriver::calTorData(QString tor)
 {
     QByteArray tor_arr;
     tor_array_.torque = tor.toInt() / 0.058;
@@ -77,9 +76,9 @@ QByteArray MotorDriver::calTorData(QString tor)
     return tor_arr;
 }
 
-void MotorDriver::ctlMotorSpd(double spd)
+void Flywheel4NMDriver::ctlMotorSpd(double spd)
 {
-    if (!isInit){
+    if (!getInit()){
         emit sendErrText(QString("driver not init"));
     }
     else{
@@ -90,9 +89,9 @@ void MotorDriver::ctlMotorSpd(double spd)
     }
 }
 
-void MotorDriver::ctlMotorTor(double tor)
+void Flywheel4NMDriver::ctlMotorTor(double tor)
 {
-    if (!isInit){
+    if (!getInit()){
         emit sendErrText(QString("driver not init"));
     }
     else{
@@ -103,7 +102,7 @@ void MotorDriver::ctlMotorTor(double tor)
     }
 }
 
-void MotorDriver::getMotorData()
+void Flywheel4NMDriver::getMotorData()
 {
     QByteArray get_str;
     get_str.resize(1);
@@ -111,7 +110,7 @@ void MotorDriver::getMotorData()
     serial_port_->write(get_str);
 }
 
-void MotorDriver::resolveDataFromSerialport()
+void Flywheel4NMDriver::resolveDataFromSerialport()
 {
     QByteArray tmp_data = serial_port_->readAll();
     for (int i = 0;i < tmp_data.size();++i){

@@ -47,14 +47,14 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    Motor m_motor1_;
-    Motor m_motor2_;
-    Motor m_motor3_;
-    Motor m_motor4_;
-    Motor m_motor5_;
-    Motor m_motor6_;
+    Motor4NM m_motor1_;
+    Motor4NM m_motor2_;
+    Motor4NM m_motor3_;
+    Motor4NM m_motor4_;
+    Motor4NM m_motor5_;
+    Motor4NM m_motor6_;
 
-    MotorDriver* p_driver1_;
+    Flywheel50Driver* p_driver1_;
     MotorDriver* p_driver2_;
     MotorDriver* p_driver3_;
     MotorDriver* p_driver4_;

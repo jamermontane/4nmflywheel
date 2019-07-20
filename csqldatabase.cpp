@@ -30,7 +30,7 @@ bool SqlDataBase::sqlInit()
     return true;
 }
 
-QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no,Motor &motor)
+QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no, Motor4NM *motor)
 {
     QString query_string;
     if (exp_name.isEmpty()){

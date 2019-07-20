@@ -33,7 +33,8 @@ MainWindow::~MainWindow()
 bool MainWindow::initDriver1()
 {
     //driver thread 1
-    p_driver1_ = new MotorDriver;
+    //采用多态来实现复用
+    p_driver1_ = new Flywheel50Driver;
     p_driver_thread1_ = new QThread;
     p_driver1_->moveToThread(p_driver_thread1_);
 
@@ -49,11 +50,12 @@ bool MainWindow::initDriver1()
     //get data timer init
     connect(&m_timer_get_data_,&QTimer::timeout,p_driver1_,&MotorDriver::getMotorData);
     //control init
-    connect(&m_motor1_,&Motor::sendMoTorSpd,p_driver1_,&MotorDriver::ctlMotorSpd);
-    connect(&m_motor1_,&Motor::sendMoTorTor,p_driver1_,&MotorDriver::ctlMotorTor);
-    connect(p_driver1_,&MotorDriver::sendMotorSpd,&m_motor1_,&Motor::setSpeed);
-    connect(p_driver1_,&MotorDriver::sendMotorCur,&m_motor1_,&Motor::setCurrent);
-    connect(p_driver1_,&MotorDriver::sendMotorTmp,&m_motor1_,&Motor::setTemperature);
+    connect(&m_motor1_,&MotorBasic::sendMoTorSpd,p_driver1_,&MotorDriver::ctlMotorSpd);
+    connect(&m_motor1_,&MotorBasic::sendMoTorTor,p_driver1_,&MotorDriver::ctlMotorTor);
+    connect(p_driver1_,&MotorDriver::sendMotorSpd,&m_motor1_,&MotorBasic::setSpeed);
+    connect(p_driver1_,&MotorDriver::sendMotorCur,&m_motor1_,&MotorBasic::setCurrent);
+
+    connect(p_driver1_,&MotorDriver::sendMotorTmp,&m_motor1_,&Motor4NM::setTemperature);
 
 
     return true;

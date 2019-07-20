@@ -23,7 +23,7 @@ public:
     }
 
 
-    QString makeSaveString(QString exp_name, QString usr_name, QString exp_no,Motor &);
+    QString makeSaveString(QString exp_name, QString usr_name, QString exp_no,Motor4NM*);
 signals:
     void sendQueryRes(QSharedPointer<QSqlQuery>);
 public slots:

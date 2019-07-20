@@ -18,7 +18,7 @@ class MotorBasic : public QObject{
     Q_OBJECT
 
 public:
-    MotorBasic(): id_(0),vol_(0),cur_(0),
+    MotorBasic(QObject *parent = 0):QObject(parent), id_(0),vol_(0),cur_(0),
         spd_(0),acc_(0.1),setSpd_(0),torque_(0),
         setTorque_(0),isRunning_(false),channel_("")
     {
@@ -26,7 +26,7 @@ public:
     }
 
 
-    ~MotorBasic(){
+    virtual ~MotorBasic(){
 
     }
 signals:
@@ -140,19 +140,20 @@ private:
 
 };
 
-class Motor : public MotorBasic{
+class Motor4NM : public MotorBasic{
 
     Q_OBJECT
 
 public:
-    Motor():last_ten_cur_(0),
+    Motor4NM(QObject * parent = 0):MotorBasic(parent),
+        last_ten_cur_(0),
             last_ten_vol_(0),
             last_ten_spd_(0)
     {
         initXpMode(0,0);
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(setLastTen(double)));
     }
-    ~Motor(){
+    ~Motor4NM(){
 
     }
 
