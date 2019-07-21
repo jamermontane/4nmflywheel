@@ -31,12 +31,13 @@ public:
     }
 signals:
     void sendMoTorSpd(double);
+    void sendMoTorSpd(double,double);
     void sendMoTorTor(double);
     void spdChanged(double);
 public slots:
     void setSetSpeed(const double spd){
         this->setSpd_ = spd;
-        emit sendMoTorSpd(setSpd_);
+        emit sendMoTorSpd(setSpd_,acc_);
     }
     void setSpeed(const double spd){
         this->spd_ = spd;
@@ -50,7 +51,7 @@ public slots:
     }
     void setAccelerate(const double acc){
         this->acc_ = acc;
-        emit sendMoTorSpd(setSpd_);
+        emit sendMoTorSpd(setSpd_,acc_);
     }
     void setId(const uint id){
         this->id_ = id;
@@ -151,6 +152,7 @@ public:
     {
         initXpMode(0,0);
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(setLastTen(double)));
+
     }
     ~Motor(){
 
@@ -178,7 +180,15 @@ public:
     void initXpMode(double espd,double interval){
         this->xp_end_spd_ = espd;
         this->xp_spd_interval_ = interval;
+        this->xp_status_ = false;
     }
+    void setXpStatus(bool b){
+        this->xp_status_ = b;
+    }
+    bool getXpStatus() const{
+        return this->xp_status_;
+    }
+
 public slots:
     //get last ten
     void setLastTen(double spd){
@@ -286,6 +296,7 @@ private:
     double reaction_moment_;
 
     //斜坡模式
+    bool xp_status_;
     double xp_end_spd_;
     double xp_spd_interval_;
 };

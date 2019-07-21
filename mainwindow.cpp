@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_timer_update_.start();
 
     //斜坡模式输入diable
-    ui->doubleSpinBox_motor_test_acc->setEnabled(false);
+//    ui->doubleSpinBox_motor_test_acc->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -47,9 +47,12 @@ bool MainWindow::initDriver1()
     p_driver_thread1_->start();
 
     //get data timer init
+
     connect(&m_timer_get_data_,&QTimer::timeout,p_driver1_,&MotorDriver::getMotorData);
+
     //control init
-    connect(&m_motor1_,&Motor::sendMoTorSpd,p_driver1_,&MotorDriver::ctlMotorSpd);
+//    connect(&m_motor1_,&Motor::sendMoTorSpd,p_driver1_,&MotorDriver::ctlMotorSpd());
+    connect(&m_motor1_,SIGNAL(sendMoTorSpd(double,double)),p_driver1_,SLOT(ctlMotorSpd2(double,double)));
     connect(&m_motor1_,&Motor::sendMoTorTor,p_driver1_,&MotorDriver::ctlMotorTor);
     connect(p_driver1_,&MotorDriver::sendMotorSpd,&m_motor1_,&Motor::setSpeed);
     connect(p_driver1_,&MotorDriver::sendMotorCur,&m_motor1_,&Motor::setCurrent);
@@ -105,7 +108,10 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
     else{
         if(!m_motor1_.getIsRunning() && !this_mode_running){
             switch(ui->comboBox_motor_test_mode_1->currentIndex()){
-            case 0: m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()); break;
+            case 0:
+                m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
+                m_motor1_.setAccelerate(ui->doubleSpinBox_motor_test_acc->text().toDouble());
+                break;
             case 1: m_motor1_.setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
             case 2:
                 m_motor1_.setSetSpeed(0);
@@ -113,22 +119,30 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
                                      ,ui->doubleSpinBox_motor_test_acc->text().toDouble());
                 connect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
                 xp_mode_running = true;
+                m_motor1_.setXpStatus(true);
                 break;
             default:
                 break;
             }
 //            m_timer_get_data_.setInterval();
+
+            keyContainer.resize(0);
+            tmpContainer.resize(0);
+            curContainer.resize(0);
+            spdContainer.resize(0);
+            setSpdContainer.resize(0);
+
             m_motor1_.setIsRunning(true);
             m_timer_get_data_.start();
             this_mode_running = true;
             ui->pushButton_single_test_mode_1->setText("停止");
         }
         else{
-
             if (this_mode_running){
                 if (xp_mode_running){
                     disconnect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
                     xp_mode_running = false;
+                    m_motor1_.setXpStatus(false);
                 }
                 m_motor1_.setIsRunning(false);
                 m_motor1_.setSetSpeed(0);
@@ -145,7 +159,12 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
 
 void MainWindow::updateMotor()
 {
+
     if (m_motor1_.getIsRunning()){
+        //
+        if (!m_motor1_.getXpStatus()){
+            m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
+        }
         //更新显示界面
         updateMotor1();
         refreshCustomPlotData1();
@@ -232,17 +251,17 @@ void MainWindow::on_comboBox_motor_test_mode_1_currentIndexChanged(int index)
     case 0:
         ui->label_setval_1->setText("设置速度");
         ui->label_setval_right_1->setText("设置速度");
-        ui->doubleSpinBox_motor_test_acc->setEnabled(false);
+//        ui->doubleSpinBox_motor_test_acc->setEnabled(false);
         break;
     case 1:
         ui->label_setval_1->setText("设置力矩");
         ui->label_setval_right_1->setText("设置力矩");
-        ui->doubleSpinBox_motor_test_acc->setEnabled(false);
+//        ui->doubleSpinBox_motor_test_acc->setEnabled(false);
         break;
     case 2:
         ui->label_setval_1->setText("设置速度");
         ui->label_setval_right_1->setText("设置速度");
-        ui->doubleSpinBox_motor_test_acc->setEnabled(true);
+//        ui->doubleSpinBox_motor_test_acc->setEnabled(true);
         break;
     default:
         break;
@@ -255,11 +274,11 @@ void MainWindow::refreshCustomPlotData1()
     // calculate two new data points:
     double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds  elaspsed上次开始后得持续时间
     static double lastPointKey = 0;
-    static QVector<double> keyContainer;
-    static QVector<double> tmpContainer;
-    static QVector<double> curContainer;
-    static QVector<double> spdContainer;
-    static QVector<double> setSpdContainer;
+//    static QVector<double> keyContainer;
+//    static QVector<double> tmpContainer;
+//    static QVector<double> curContainer;
+//    static QVector<double> spdContainer;
+//    static QVector<double> setSpdContainer;
     if (key-lastPointKey > 0.02) // at most add point every 0.5 s
     {
       // add data to lines:
@@ -301,4 +320,9 @@ void MainWindow::refreshCustomPlotData1()
 
 
 
+}
+
+void MainWindow::on_doubleSpinBox_moto_test_time_valueChanged(double arg1)
+{
+    m_timer_update_.setInterval(arg1*1000);
 }

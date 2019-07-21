@@ -32,6 +32,7 @@ public:
 
 
     QByteArray calSpdData(QString spd);
+    QByteArray calSpdData2(QString spd,QString acc);
     QByteArray calTorData(QString tor);
 
     void setPortName(QString str){
@@ -52,6 +53,7 @@ signals:
 
 
 public slots:
+    void ctlMotorSpd2(double spd = 0,double acc = 0);
     void ctlMotorSpd(double spd = 0);
     void ctlMotorTor(double tor = 0);
     void getMotorData();
@@ -64,7 +66,8 @@ private:
     QString         port_name;
     QString         baud_rate;
     QByteArray      recv_data_buf;
-
+    /*
+     * //----------flywheel 4Nm-----------
     union spd_array{
         uchar   array[2];
         qint16  spd;
@@ -84,6 +87,28 @@ private:
         quint16  cur;
         uchar   array[2];
     }recv_cur_;
+    //----------flywheel 4Nm end-----------
+    */
+    //----------flywheel 50Nm start--------
+    union{
+        uchar   array[4];
+        qint32  spd;
+    }spd_array_;
+    union{
+        uchar   array[4];
+        qint32  acc;
+    }acc_array_;
+
+    union recv_spd{
+        qint32 spd;
+        uchar   array[4];
+    }recv_spd_;
+
+    union recv_cur{
+        quint32  cur;
+        uchar   array[4];
+    }recv_cur_;
+    //----------flywheel 50Nm end----------
 };
 
 #endif // MOTORDRIVER_H

@@ -44,6 +44,8 @@ private slots:
 
     void refreshCustomPlotData1();
 
+    void on_doubleSpinBox_moto_test_time_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
 
@@ -70,6 +72,12 @@ private:
     QTimer m_timer_get_data_;
     //发送控制指令定时器
     QTimer m_timer_update_;
+
+    QVector<double> keyContainer;
+    QVector<double> tmpContainer;
+    QVector<double> curContainer;
+    QVector<double> spdContainer;
+    QVector<double> setSpdContainer;
 
 };
 

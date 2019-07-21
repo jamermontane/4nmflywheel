@@ -950,8 +950,10 @@ public:
 
         doubleSpinBox_motor_test_acc = new QDoubleSpinBox(groupBox_4);
         doubleSpinBox_motor_test_acc->setObjectName(QStringLiteral("doubleSpinBox_motor_test_acc"));
-        doubleSpinBox_motor_test_acc->setMinimum(1);
-        doubleSpinBox_motor_test_acc->setMaximum(50);
+        doubleSpinBox_motor_test_acc->setMinimum(-500);
+        doubleSpinBox_motor_test_acc->setMaximum(500);
+        doubleSpinBox_motor_test_acc->setSingleStep(10);
+        doubleSpinBox_motor_test_acc->setValue(10);
 
         gridLayout_13->addWidget(doubleSpinBox_motor_test_acc, 2, 1, 1, 1);
 
@@ -963,8 +965,9 @@ public:
         doubleSpinBox_moto_test_time = new QDoubleSpinBox(groupBox_4);
         doubleSpinBox_moto_test_time->setObjectName(QStringLiteral("doubleSpinBox_moto_test_time"));
         doubleSpinBox_moto_test_time->setMinimum(0.1);
-        doubleSpinBox_moto_test_time->setMaximum(0.5);
+        doubleSpinBox_moto_test_time->setMaximum(1);
         doubleSpinBox_moto_test_time->setSingleStep(0.05);
+        doubleSpinBox_moto_test_time->setValue(0.5);
 
         gridLayout_13->addWidget(doubleSpinBox_moto_test_time, 3, 1, 1, 1);
 
