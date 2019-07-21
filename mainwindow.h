@@ -46,6 +46,8 @@ private slots:
 
     void on_doubleSpinBox_moto_test_time_valueChanged(double arg1);
 
+
+
 private:
     Ui::MainWindow *ui;
 

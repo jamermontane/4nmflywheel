@@ -37,15 +37,16 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         exp_name = "null";
     }
     if (usr_name.isEmpty()){
-        exp_name = "null";
+        usr_name = "null";
     }
     if (exp_no.isEmpty()){
-        exp_name = "null";
+        exp_no = QDateTime::currentDateTime().toString("YYMMDDHHMMSS");
     }
 
-    if(!m_data_base_.tables().contains("MOTOR1"))
+    if(!m_data_base_.tables().contains(motor.getChannel()))
     {
-        QString tempsql = "CREATE TABLE MOTOR1";
+        QString tempsql = "CREATE TABLE ";
+        tempsql.append(motor.getChannel());
         tempsql.append("([EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
@@ -58,20 +59,22 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         }
     }
     else{
-
         query_string.append("INSERT INTO MOTOR1");
         query_string.append("([EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
                             ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
                             ") VALUES(");
-//        query_string.append("'"+exp_name+"',");
-//        query_string.append("'"+usr_name+"',");
-//        query_string.append("'"+exp_no+"',");
-//        query_string.append("'"+motor_id+"',");
-//        query_string.append(vol+",");
-//        query_string.append(cur+",");
-//        query_string.append(set_spd+",");
-//        query_string.append(spd);
-//        query_string.append(")");
+        query_string.append("'"+exp_name+"',");
+        query_string.append("'"+usr_name+"',");
+        query_string.append("'"+exp_no+"',");
+        query_string.append("'"+motor.getID()+"',");
+        query_string.append("'"+motor.getVoltage()+"',");
+        query_string.append("'"+motor.getCurrent()+"',");
+        query_string.append("'"+motor.getSetSpeed()+"',");
+        query_string.append("'"+motor.getSpeed()+"',");
+        query_string.append("'"+motor.getSetTorque()+"',");
+        query_string.append("'"+motor.getTorque()+"',");
+        //...
+        query_string.append(")");
     }
     return query_string;
 }

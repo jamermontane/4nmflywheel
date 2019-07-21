@@ -32,6 +32,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::initDriver1()
 {
+    m_motor1_.setChannel("MOTOR1");
     //driver thread 1
     p_driver1_ = new MotorDriver;
     p_driver_thread1_ = new QThread;
@@ -89,6 +90,13 @@ void MainWindow::on_pushButton_system_power_1_clicked()
     }
     else{
         //power had open
+        //检查各个飞轮的状态
+        if (m_motor1_.getIsRunning()){
+            on_pushButton_single_test_mode_1_clicked();
+        }
+        //检查飞轮二。。。
+
+
         m_sys_status_1_ = false;
         ui->pushButton_system_power_1->setText("启动");
 
@@ -136,6 +144,7 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
             m_timer_get_data_.start();
             this_mode_running = true;
             ui->pushButton_single_test_mode_1->setText("停止");
+            ui->comboBox_motor_test_mode_1->setEnabled(false);
         }
         else{
             if (this_mode_running){
@@ -149,6 +158,7 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
                 m_timer_get_data_.stop();
                 this_mode_running = false;
                 ui->pushButton_single_test_mode_1->setText("启动");
+                ui->comboBox_motor_test_mode_1->setEnabled(true);
             }
             else{
                 QMessageBox::warning(this,"警告","其它模式运行中。");
@@ -300,6 +310,13 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_spd_1->graph(0)->rescaleValueAxis(true);
         ui->qcp_motor_spd_1->graph(1)->rescaleValueAxis(true);
 
+        ui->qcp_motor_cur_1->yAxis->setRange(*std::min_element(curContainer.begin(),curContainer.end()),
+                                             *std::max_element(curContainer.begin(),curContainer.end())+0.5);
+        ui->qcp_motor_spd_1->yAxis->setRange(*std::min_element(spdContainer.begin(),spdContainer.end()),
+                                             *std::max_element(spdContainer.begin(),spdContainer.end())+10);
+        ui->qcp_motor_tmp_1->yAxis->setRange(*std::min_element(tmpContainer.begin(),tmpContainer.end()),
+                                             *std::max_element(tmpContainer.begin(),tmpContainer.end())+0.5);
+
         ui->qcp_motor_cur_1->xAxis->setRange(key, 8, Qt::AlignRight);
         ui->qcp_motor_spd_1->xAxis->setRange(key, 8, Qt::AlignRight);
         ui->qcp_motor_tmp_1->xAxis->setRange(key, 8, Qt::AlignRight);
@@ -321,3 +338,4 @@ void MainWindow::on_doubleSpinBox_moto_test_time_valueChanged(double arg1)
 {
     m_timer_update_.setInterval(arg1*1000);
 }
+

@@ -964,7 +964,7 @@ public:
 
         doubleSpinBox_moto_test_time = new QDoubleSpinBox(groupBox_4);
         doubleSpinBox_moto_test_time->setObjectName(QStringLiteral("doubleSpinBox_moto_test_time"));
-        doubleSpinBox_moto_test_time->setMinimum(0.1);
+        doubleSpinBox_moto_test_time->setMinimum(0.05);
         doubleSpinBox_moto_test_time->setMaximum(1);
         doubleSpinBox_moto_test_time->setSingleStep(0.05);
         doubleSpinBox_moto_test_time->setValue(0.5);

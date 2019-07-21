@@ -9,6 +9,7 @@
 #include <motor.h>
 #include <QMetaType>
 #include <QSharedPointer>
+#include <QDateTime>
 
 #include "motor.h"
 
