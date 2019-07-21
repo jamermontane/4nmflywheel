@@ -66,8 +66,8 @@ QByteArray MotorDriver::calSpdData2(QString spd, QString acc)
     QByteArray spd_arr;
 
     //flywheel 50nm
-    spd_array_.spd = spd.toInt() * 1000;
-    acc_array_.acc = acc.toInt() * 1000;
+    spd_array_.spd = int(spd.toFloat()*1000);
+    acc_array_.acc = int(acc.toFloat()*1000);
     spd_arr.resize(11);
     spd_arr[0] = 0x58;
 

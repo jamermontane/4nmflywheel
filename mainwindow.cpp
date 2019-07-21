@@ -117,7 +117,7 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
                 m_motor1_.setSetSpeed(0);
                 m_motor1_.initXpMode(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()
                                      ,ui->doubleSpinBox_motor_test_acc->text().toDouble());
-                connect(&m_timer_update_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                connect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
                 xp_mode_running = true;
                 m_motor1_.setXpStatus(true);
                 break;
@@ -140,7 +140,7 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
         else{
             if (this_mode_running){
                 if (xp_mode_running){
-                    disconnect(&m_timer_update_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                    disconnect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
                     xp_mode_running = false;
                     m_motor1_.setXpStatus(false);
                 }
@@ -274,11 +274,6 @@ void MainWindow::refreshCustomPlotData1()
     // calculate two new data points:
     double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds  elaspsed上次开始后得持续时间
     static double lastPointKey = 0;
-//    static QVector<double> keyContainer;
-//    static QVector<double> tmpContainer;
-//    static QVector<double> curContainer;
-//    static QVector<double> spdContainer;
-//    static QVector<double> setSpdContainer;
     if (key-lastPointKey > 0.02) // at most add point every 0.5 s
     {
       // add data to lines:

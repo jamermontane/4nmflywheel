@@ -180,6 +180,7 @@ public:
     void initXpMode(double espd,double interval){
         this->xp_end_spd_ = espd;
         this->xp_spd_interval_ = interval;
+        this->setAccelerate(interval);
         this->xp_status_ = false;
     }
     void setXpStatus(bool b){
@@ -254,7 +255,7 @@ public slots:
 
     //斜坡模式
     void calXpMode(){
-        if (abs(abs(getSpeed()) - abs(xp_end_spd_)) > abs(xp_spd_interval_)){
+        if (abs(abs(getSpeed()) - abs(xp_end_spd_)) > abs(10)){
             double ctl_spd = getSpeed()+xp_spd_interval_;
             if (ctl_spd < -6050){
                 setSetSpeed(-6050);

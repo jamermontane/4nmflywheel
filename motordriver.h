@@ -92,11 +92,11 @@ private:
     //----------flywheel 50Nm start--------
     union{
         uchar   array[4];
-        qint32  spd;
+        int32_t  spd;
     }spd_array_;
     union{
         uchar   array[4];
-        qint32  acc;
+        int32_t  acc;
     }acc_array_;
 
     union recv_spd{
