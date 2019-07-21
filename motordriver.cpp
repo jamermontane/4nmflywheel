@@ -210,11 +210,12 @@ void MotorDriver::resolveDataFromSerialport()
         */
         if (recv_data_buf.size() >= 11){
             //check frame
-            uchar t = 0x00;
+            uint8_t t = 0x00;
             for (uint i = 0; i < 10;++i){
                 t += recv_data_buf[i];
             }
-            if (t != recv_data_buf[10]){
+
+            if (t != uint8_t(recv_data_buf[10])){
                 recv_data_buf = recv_data_buf.mid(1);
                 emit sendErrText("recv message error! chack communication!");
                 return;

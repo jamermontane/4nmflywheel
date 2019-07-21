@@ -254,7 +254,7 @@ public slots:
 
     //斜坡模式
     void calXpMode(){
-        if (getSpeed() < xp_end_spd_){
+        if (abs(getSpeed()) < abs(xp_end_spd_)){
             double ctl_spd = getSpeed()+xp_spd_interval_;
             if (ctl_spd < -6050){
                 setSetSpeed(-6050);

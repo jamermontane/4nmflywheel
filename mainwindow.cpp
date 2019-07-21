@@ -117,7 +117,7 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
                 m_motor1_.setSetSpeed(0);
                 m_motor1_.initXpMode(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()
                                      ,ui->doubleSpinBox_motor_test_acc->text().toDouble());
-                connect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                connect(&m_timer_update_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
                 xp_mode_running = true;
                 m_motor1_.setXpStatus(true);
                 break;
@@ -140,7 +140,7 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
         else{
             if (this_mode_running){
                 if (xp_mode_running){
-                    disconnect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                    disconnect(&m_timer_update_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
                     xp_mode_running = false;
                     m_motor1_.setXpStatus(false);
                 }
