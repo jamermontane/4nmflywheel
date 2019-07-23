@@ -2,9 +2,17 @@
 #define MOTOR_H
 
 #include <QObject>
-#include <qmath.h>
 #include <QQueue>
+#include <qmath.h>
+#include <algorithm>
 
+//计算常数定义
+static const double J_ = 0.0064;
+static const double PI_ = 3.1415926;
+
+//模式编号定义
+#define FLYWHEEL_MODE_STOP  0
+#define FLYWHEEL_MODE_XP    1
 
 /*
  * 电机类
@@ -34,6 +42,7 @@ signals:
     void sendMoTorSpd(double,double);
     void sendMoTorTor(double);
     void spdChanged(double);
+    void sendErrorText(QString);
 public slots:
     void setSetSpeed(const double spd){
         this->setSpd_ = spd;
@@ -120,8 +129,8 @@ public:
         return this->channel_;
     }
 
-    void setChannel(QString c){
-        this->channel_ = c;
+    void setChannel(QString str){
+        this->channel_ = str;
     }
 
 private:
@@ -169,13 +178,21 @@ public:
     }
 
     //得到角动量
-
+    double getAngularMomentum() const{
+        return this->angular_momentum_;
+    }
     //得到角动量常值偏差
-
+    double getAngularMomentumConst() const{
+        return this->angular_momentum_const_d;
+    }
     //得到角动量动态偏差
-
+    double getAngularMomentumDynamic() const{
+        return this->angular_momentum_dynamic_d;
+    }
     //得到反作用力矩
-
+    double getReactionMoment_() const{
+        return this->reaction_moment_;
+    }
     //斜坡模式
     void initXpMode(double espd,double interval){
         this->xp_end_spd_ = espd;
@@ -183,8 +200,8 @@ public:
         this->setAccelerate(interval);
         this->xp_status_ = false;
     }
-    void setXpStatus(bool b){
-        this->xp_status_ = b;
+    void setXpStatus(bool status){
+        this->xp_status_ = status;
     }
     bool getXpStatus() const{
         return this->xp_status_;
@@ -246,18 +263,30 @@ public slots:
     }
 
     //设置角动量
-
+    void setAngularMomentum(){
+        this->angular_momentum_ = 9.55*J_*this->last_ten_spd_;
+    }
     //设置角动量常值偏差
-
+    void setAngularMomentumConst(){
+        this->angular_momentum_const_d = 0.00428 * abs(this->getSpeed() - this->last_ten_spd_);
+    }
     //设置角动量动态偏差
+    void setAngularMomentumDynamic(){
+        double tmp_max = *(std::max_element(last_ten_spd_queue_.begin(),last_ten_spd_queue_.end()));
 
+        this->angular_momentum_dynamic_d = 0.00428 * abs(tmp_max - last_ten_spd_);
+    }
     //设置反作用力矩
-
+    //未完成
+    void setReactionMoment(){
+        this->reaction_moment_ = J_ * 2 * PI_ / 60 ;
+    }
     //斜坡模式
     void calXpMode(){
         if (abs(abs(getSpeed()) - abs(xp_end_spd_)) > abs(10)){
             double ctl_spd = getSpeed()+xp_spd_interval_;
             if (ctl_spd < -6050){
+
                 setSetSpeed(-6050);
             }
             else if (ctl_spd > 6050){
@@ -300,6 +329,8 @@ private:
     bool xp_status_;
     double xp_end_spd_;
     double xp_spd_interval_;
+
+    //模式代码
 };
 
 #endif // MOTOR_H

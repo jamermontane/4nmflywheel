@@ -171,7 +171,7 @@ void MainWindow::updateMotor()
 {
 
     if (m_motor1_.getIsRunning()){
-        //
+        //斜坡模式不用发
         if (!m_motor1_.getXpStatus()){
             m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }

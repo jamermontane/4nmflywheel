@@ -66,13 +66,15 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append("'"+exp_name+"',");
         query_string.append("'"+usr_name+"',");
         query_string.append("'"+exp_no+"',");
-        query_string.append("'"+motor.getID()+"',");
+        query_string.append("'"+QString::number(motor.getID())+"',");
         query_string.append("'"+motor.getVoltage()+"',");
         query_string.append("'"+motor.getCurrent()+"',");
         query_string.append("'"+motor.getSetSpeed()+"',");
         query_string.append("'"+motor.getSpeed()+"',");
         query_string.append("'"+motor.getSetTorque()+"',");
         query_string.append("'"+motor.getTorque()+"',");
+        query_string.append("'"+motor.getWate()+"',");
+//        query_string.append("'"++"',");
         //...
         query_string.append(")");
     }
