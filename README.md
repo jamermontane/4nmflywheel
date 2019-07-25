@@ -3,3 +3,5 @@ this is a flywheel control software.
 特点：
 1. 基于qt的多线程的串口通讯&数据库操作
 2. 使用多态以实现复用（开发中）
+
+![Image text](https://github.com/softrobotYCLi/4nmflywheel/raw/20190725230700.jpg)
