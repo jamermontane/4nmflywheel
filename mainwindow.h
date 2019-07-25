@@ -11,6 +11,7 @@
 
 #include "motor.h"
 #include "motordriver.h"
+#include "csqldatabase.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,8 +26,12 @@ public:
     ~MainWindow();
     bool initDriver1();
     void initCombox();
-    void updateMotor1();
+    void updateMotor1Display();
     void initQCustomPlot1();
+    void initSql();
+    QVector<QString> makeSqlVector(Motor &);
+signals:
+    void sendToSqlDB(QString,QString,QString,QVector<QString>);
 public slots:
     void logMsg(QString);
 
@@ -74,12 +79,16 @@ private:
     QTimer m_timer_get_data_;
     //发送控制指令定时器
     QTimer m_timer_update_;
-
+    //界面刷新buffer
     QVector<double> keyContainer;
     QVector<double> tmpContainer;
     QVector<double> curContainer;
     QVector<double> spdContainer;
     QVector<double> setSpdContainer;
+
+    //数据库部分
+    SqlDataBase* p_sql_;
+    QThread* p_sql_thread_;
 
 };
 

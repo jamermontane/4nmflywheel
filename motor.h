@@ -234,19 +234,19 @@ public slots:
             last_ten_spd_queue_.push_back(spd);
         }
         last_ten_cur_ = 0;
-        for(double t:last_ten_cur_queue_){
+        for(double &t:last_ten_cur_queue_){
             last_ten_cur_ += t;
         }
         last_ten_cur_ /= last_ten_cur_queue_.size();
 
         last_ten_spd_ = 0;
-        for(double t:last_ten_spd_queue_){
+        for(double &t:last_ten_spd_queue_){
             last_ten_spd_ += t;
         }
         last_ten_spd_ /= last_ten_spd_queue_.size();
 
         last_ten_vol_ = 0;
-        for(double t:last_ten_vol_queue_){
+        for(double &t:last_ten_vol_queue_){
             last_ten_vol_ += t;
         }
         last_ten_vol_ /= last_ten_vol_queue_.size();
@@ -279,8 +279,28 @@ public slots:
     //设置反作用力矩
     //未完成
     void setReactionMoment(){
-        this->reaction_moment_ = J_ * 2 * PI_ / 60 ;
+        double last_spd = *last_ten_spd_queue_.rbegin();
+        double last_last__spd = *(++last_ten_spd_queue_.rbegin());
+        double current_reaction = (last_spd - last_last__spd)* J_ * 2 * PI_ / (60 * current_interval) ;
+        //求平均10个
+        if (last_ten_reaction_queue_.size() <10){
+            last_ten_reaction_queue_.push_back(current_reaction);
+        }
+        else{
+            last_ten_reaction_queue_.pop_front();
+            last_ten_reaction_queue_.push_back(current_reaction);
+        }
+
+        for(double &t:last_ten_reaction_queue_){
+            last_ten_reaction_ += t;
+        }
+        this->reaction_moment_ = last_ten_reaction_ / last_ten_reaction_queue_.size();
     }
+    //设置当前间隔
+    void setCurrentInterval(const double interval){
+        this->current_interval = interval;
+    }
+
     //斜坡模式
     void calXpMode(){
         if (abs(abs(getSpeed()) - abs(xp_end_spd_)) > abs(10)){
@@ -315,6 +335,9 @@ private:
     //存放最近10个转速
     QQueue<double> last_ten_spd_queue_;
     double last_ten_spd_;
+    //反作用力矩
+    QQueue<double> last_ten_reaction_queue_;
+    double last_ten_reaction_;
 
     //角动量
     double angular_momentum_;
@@ -324,6 +347,8 @@ private:
     double angular_momentum_dynamic_d;
     //反作用力矩
     double reaction_moment_;
+    //当前运行间隔
+    double current_interval = 0;
 
     //斜坡模式
     bool xp_status_;

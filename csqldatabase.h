@@ -24,13 +24,11 @@ public:
     }
 
 
-    QString makeSaveString(QString exp_name, QString usr_name, QString exp_no,Motor &);
+    QString makeSaveString(QString exp_name, QString usr_name, QString exp_no, QVector<QString>);
 signals:
     void sendQueryRes(QSharedPointer<QSqlQuery>);
 public slots:
-    void insertIntoDB(const QString &exp_name,const QString &usr_name,const QString &exp_no,
-                                  const uint id,const double cur,const double vol,const double set_spd,
-                                  const double spd);
+    void insertIntoDB(QString exp_name, QString usr_name, QString exp_no, QVector<QString> motor);
     void queryFromDB(QString);
 private:
     QSqlDatabase m_data_base_;

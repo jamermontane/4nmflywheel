@@ -7,13 +7,14 @@ MainWindow::MainWindow(QWidget *parent) :
     m_sys_status_1_(false)
 {
     ui->setupUi(this);
+    qRegisterMetaType<QVector<QString>>("QVector<QString>");
 
     initCombox();
     initDriver1();
     initQCustomPlot1();
+    initSql();
 
     m_timer_get_data_.setInterval(100); //get data timer 0.1s
-
 
     m_timer_update_.setInterval(500);   //update view every 0.5s
     connect(&m_timer_update_,SIGNAL(timeout()),this,SLOT(updateMotor()));
@@ -58,10 +59,26 @@ bool MainWindow::initDriver1()
     connect(p_driver1_,&MotorDriver::sendMotorSpd,&m_motor1_,&Motor::setSpeed);
     connect(p_driver1_,&MotorDriver::sendMotorCur,&m_motor1_,&Motor::setCurrent);
     connect(p_driver1_,&MotorDriver::sendMotorTmp,&m_motor1_,&Motor::setTemperature);
-
-
+    //采样间隔改了的话，记得改这个
+    m_motor1_.setCurrentInterval(m_timer_get_data_.interval() * 1000);
     return true;
 }
+
+//初始化数据库
+void MainWindow::initSql()
+{
+    p_sql_ = new SqlDataBase;
+    p_sql_thread_ = new QThread;
+    p_sql_->moveToThread(p_sql_thread_);
+    p_sql_->sqlInit();
+    connect(this,&MainWindow::sendToSqlDB,p_sql_,&SqlDataBase::insertIntoDB);
+
+    p_sql_thread_->start();
+}
+
+
+
+
 
 void MainWindow::initCombox()
 {
@@ -167,29 +184,55 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
     }
 }
 
+//为sql查询生成一个vector，为了方便信号槽数据的传递。
+QVector<QString> MainWindow::makeSqlVector(Motor &motor)
+{
+    QVector<QString> res;
+    res.append(motor.getChannel());
+    res.append(QString::number(motor.getID()));
+    res.append(QString::number(motor.getVoltage()));
+    res.append(QString::number(motor.getCurrent()));
+    res.append(QString::number(motor.getSetSpeed()));
+    res.append(QString::number(motor.getSpeed()));
+    res.append(QString::number(motor.getSetTorque()));
+    res.append(QString::number(motor.getTorque()));
+    res.append(QString::number(motor.getWate()));
+    res.append(QString::number(motor.getAngularMomentum()));
+    res.append(QString::number(motor.getAngularMomentumConst()));
+    res.append(QString::number(motor.getAngularMomentumDynamic()));
+    return res;
+}
+
 void MainWindow::updateMotor()
 {
-
     if (m_motor1_.getIsRunning()){
         //斜坡模式不用发
         if (!m_motor1_.getXpStatus()){
             m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
         //更新显示界面
-        updateMotor1();
+        updateMotor1Display();
         refreshCustomPlotData1();
         //更新数据库
+
+        emit sendToSqlDB(ui->lineEdit_exp_name_1->text(),ui->lineEdit_exp_usr_name_1->text(),
+                         ui->lineEdit_exp_fw_id_1->text(),makeSqlVector(m_motor1_));
+
     }
 
     //...etc motor
 }
 
-void MainWindow::updateMotor1()
+void MainWindow::updateMotor1Display()
 {
     //update lineedit
     ui->lineEdit_motor_set_spd_1->setText(QString::number(m_motor1_.getSetSpeed()));
     ui->lineEdit_motor_act_spd_1->setText(QString::number(m_motor1_.getSpeed()));
-    ui->lineEdit_sys_cur_1->setText(QString::number(m_motor1_.getCurrent()));
+    ui->lineEdit_motor_cur_1->setText(QString::number(m_motor1_.getCurrent()));
+    ui->lineEdit_motor_act_tor_1->setText(QString::number(m_motor1_.getTorque()));
+    ui->lineEdit_motor_jdl_1->setText(QString::number(m_motor1_.getAngularMomentum()));
+    ui->lineEdit_motor_jdl_czpc_1->setText(QString::number(m_motor1_.getAngularMomentumConst()));
+    ui->lineEdit_motor_jdl_dtpc_1->setText(QString::number(m_motor1_.getAngularMomentumDynamic()));
 }
 
 void MainWindow::initQCustomPlot1()
@@ -242,6 +285,8 @@ void MainWindow::initQCustomPlot1()
         connect( ui->qcp_motor_tmp_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->xAxis2, SLOT(setRange(QCPRange)));
         connect( ui->qcp_motor_tmp_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->yAxis2, SLOT(setRange(QCPRange)));
 }
+
+
 
 void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
 {
@@ -310,11 +355,11 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_spd_1->graph(0)->rescaleValueAxis(true);
         ui->qcp_motor_spd_1->graph(1)->rescaleValueAxis(true);
 
-        ui->qcp_motor_cur_1->yAxis->setRange(*std::min_element(curContainer.begin(),curContainer.end()),
+        ui->qcp_motor_cur_1->yAxis->setRange(*std::min_element(curContainer.begin(),curContainer.end())-0.5,
                                              *std::max_element(curContainer.begin(),curContainer.end())+0.5);
-        ui->qcp_motor_spd_1->yAxis->setRange(*std::min_element(spdContainer.begin(),spdContainer.end()),
+        ui->qcp_motor_spd_1->yAxis->setRange(*std::min_element(spdContainer.begin(),spdContainer.end())-10,
                                              *std::max_element(spdContainer.begin(),spdContainer.end())+10);
-        ui->qcp_motor_tmp_1->yAxis->setRange(*std::min_element(tmpContainer.begin(),tmpContainer.end()),
+        ui->qcp_motor_tmp_1->yAxis->setRange(*std::min_element(tmpContainer.begin(),tmpContainer.end())-0.5,
                                              *std::max_element(tmpContainer.begin(),tmpContainer.end())+0.5);
 
         ui->qcp_motor_cur_1->xAxis->setRange(key, 8, Qt::AlignRight);

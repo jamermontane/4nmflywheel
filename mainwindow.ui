@@ -1028,7 +1028,7 @@
             </widget>
            </item>
            <item row="2" column="3">
-            <widget class="QLineEdit" name="lineEdit_motor_vol_1">
+            <widget class="QLineEdit" name="lineEdit_motor_cur_1">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1263,6 +1263,9 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="text">
+              <string>lyc</string>
+             </property>
             </widget>
            </item>
            <item row="1" column="0">
@@ -1291,6 +1294,9 @@
                <width>130</width>
                <height>16777215</height>
               </size>
+             </property>
+             <property name="text">
+              <string>交付前测试</string>
              </property>
             </widget>
            </item>
@@ -1321,6 +1327,9 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="text">
+              <string>测试样品1</string>
+             </property>
             </widget>
            </item>
            <item row="3" column="0">
@@ -1349,6 +1358,9 @@
                <width>130</width>
                <height>16777215</height>
               </size>
+             </property>
+             <property name="text">
+              <string>2</string>
              </property>
             </widget>
            </item>
@@ -1637,7 +1649,32 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>飞轮2</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>飞轮3</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>飞轮4</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>飞轮5</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>飞轮6</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>查询历史数据</string>
        </attribute>
       </widget>
      </widget>

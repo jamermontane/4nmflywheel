@@ -126,7 +126,7 @@ public:
     QLabel *label_41;
     QLineEdit *lineEdit_sys_vol_1;
     QLineEdit *lineEdit_sys_cur_1;
-    QLineEdit *lineEdit_motor_vol_1;
+    QLineEdit *lineEdit_motor_cur_1;
     QLineEdit *lineEdit_motor_set_spd_1;
     QLineEdit *lineEdit_motor_act_spd_1;
     QLineEdit *lineEdit_motor_act_tor_1;
@@ -177,6 +177,11 @@ public:
     QCheckBox *checkBox_ly_mode_1;
     QPushButton *pushButton_auto_test_noair_power_1;
     QWidget *tab_2;
+    QWidget *tab_4;
+    QWidget *tab_5;
+    QWidget *tab_6;
+    QWidget *tab_7;
+    QWidget *tab_3;
     QMenuBar *menuBar;
     QMenu *menu;
     QMenu *menu_2;
@@ -705,15 +710,15 @@ public:
 
         gridLayout_16->addWidget(lineEdit_sys_cur_1, 1, 3, 1, 1);
 
-        lineEdit_motor_vol_1 = new QLineEdit(groupBox_5);
-        lineEdit_motor_vol_1->setObjectName(QStringLiteral("lineEdit_motor_vol_1"));
-        sizePolicy1.setHeightForWidth(lineEdit_motor_vol_1->sizePolicy().hasHeightForWidth());
-        lineEdit_motor_vol_1->setSizePolicy(sizePolicy1);
-        lineEdit_motor_vol_1->setMaximumSize(QSize(80, 16777215));
-        lineEdit_motor_vol_1->setAlignment(Qt::AlignCenter);
-        lineEdit_motor_vol_1->setReadOnly(true);
+        lineEdit_motor_cur_1 = new QLineEdit(groupBox_5);
+        lineEdit_motor_cur_1->setObjectName(QStringLiteral("lineEdit_motor_cur_1"));
+        sizePolicy1.setHeightForWidth(lineEdit_motor_cur_1->sizePolicy().hasHeightForWidth());
+        lineEdit_motor_cur_1->setSizePolicy(sizePolicy1);
+        lineEdit_motor_cur_1->setMaximumSize(QSize(80, 16777215));
+        lineEdit_motor_cur_1->setAlignment(Qt::AlignCenter);
+        lineEdit_motor_cur_1->setReadOnly(true);
 
-        gridLayout_16->addWidget(lineEdit_motor_vol_1, 2, 3, 1, 1);
+        gridLayout_16->addWidget(lineEdit_motor_cur_1, 2, 3, 1, 1);
 
         lineEdit_motor_set_spd_1 = new QLineEdit(groupBox_5);
         lineEdit_motor_set_spd_1->setObjectName(QStringLiteral("lineEdit_motor_set_spd_1"));
@@ -1051,6 +1056,21 @@ public:
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
         tabWidget->addTab(tab_2, QString());
+        tab_4 = new QWidget();
+        tab_4->setObjectName(QStringLiteral("tab_4"));
+        tabWidget->addTab(tab_4, QString());
+        tab_5 = new QWidget();
+        tab_5->setObjectName(QStringLiteral("tab_5"));
+        tabWidget->addTab(tab_5, QString());
+        tab_6 = new QWidget();
+        tab_6->setObjectName(QStringLiteral("tab_6"));
+        tabWidget->addTab(tab_6, QString());
+        tab_7 = new QWidget();
+        tab_7->setObjectName(QStringLiteral("tab_7"));
+        tabWidget->addTab(tab_7, QString());
+        tab_3 = new QWidget();
+        tab_3->setObjectName(QStringLiteral("tab_3"));
+        tabWidget->addTab(tab_3, QString());
 
         gridLayout_10->addWidget(tabWidget, 1, 0, 1, 1);
 
@@ -1143,7 +1163,7 @@ public:
         label_41->setText(QApplication::translate("MainWindow", "\345\256\236\346\227\266\345\212\233\347\237\251", 0));
         lineEdit_sys_vol_1->setText(QApplication::translate("MainWindow", "0", 0));
         lineEdit_sys_cur_1->setText(QApplication::translate("MainWindow", "0", 0));
-        lineEdit_motor_vol_1->setText(QApplication::translate("MainWindow", "0", 0));
+        lineEdit_motor_cur_1->setText(QApplication::translate("MainWindow", "0", 0));
         lineEdit_motor_set_spd_1->setText(QApplication::translate("MainWindow", "0", 0));
         lineEdit_motor_act_spd_1->setText(QApplication::translate("MainWindow", "0", 0));
         lineEdit_motor_act_tor_1->setText(QApplication::translate("MainWindow", "0", 0));
@@ -1153,9 +1173,13 @@ public:
         lineEdit_motor_jdl_dtpc_1->setText(QApplication::translate("MainWindow", "0", 0));
         groupBox_2->setTitle(QApplication::translate("MainWindow", "\345\256\236\351\252\214\344\277\241\346\201\257", 0));
         label_28->setText(QApplication::translate("MainWindow", "\345\256\236\351\252\214\344\272\272\345\221\230", 0));
+        lineEdit_exp_usr_name_1->setText(QApplication::translate("MainWindow", "lyc", 0));
         label_29->setText(QApplication::translate("MainWindow", "\345\256\236\351\252\214\345\220\215\347\247\260", 0));
+        lineEdit_exp_name_1->setText(QApplication::translate("MainWindow", "\344\272\244\344\273\230\345\211\215\346\265\213\350\257\225", 0));
         label_30->setText(QApplication::translate("MainWindow", "\344\272\247\345\223\201\347\274\226\345\217\267", 0));
+        lineEdit_exp_fw_id_1->setText(QApplication::translate("MainWindow", "\346\265\213\350\257\225\346\240\267\345\223\2011", 0));
         label_31->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\231\220\346\265\201", 0));
+        lineEdit_exp_cur_lim_1->setText(QApplication::translate("MainWindow", "2", 0));
         label_32->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256\347\224\265\346\272\220", 0));
         pushButton_system_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\345\256\236\346\227\266\346\230\276\347\244\272", 0));
@@ -1178,7 +1202,12 @@ public:
         checkBox_ly_mode_1->setText(QApplication::translate("MainWindow", "\346\265\252\346\266\214\346\265\213\350\257\225", 0));
         pushButton_auto_test_noair_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "\351\243\236\350\275\2561", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "\351\243\236\350\275\2562", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "\351\243\236\350\275\2563", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_5), QApplication::translate("MainWindow", "\351\243\236\350\275\2564", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_6), QApplication::translate("MainWindow", "\351\243\236\350\275\2565", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_7), QApplication::translate("MainWindow", "\351\243\236\350\275\2566", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\237\245\350\257\242\345\216\206\345\217\262\346\225\260\346\215\256", 0));
         menu->setTitle(QApplication::translate("MainWindow", "\347\263\273\347\273\237\350\256\276\347\275\256", 0));
         menu_2->setTitle(QApplication::translate("MainWindow", "\345\205\263\344\272\216", 0));
     } // retranslateUi

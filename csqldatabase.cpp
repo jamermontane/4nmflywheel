@@ -4,6 +4,7 @@ SqlDataBase::SqlDataBase(QObject *parent) : QObject(parent)
 {
     sqlInit();
     qRegisterMetaType<QSharedPointer<QSqlQuery>>("QSharedPointer<QSqlQuery>");
+    qRegisterMetaType<QVector<QString>>("QVector<QString>");
 }
 
 bool SqlDataBase::sqlInit()
@@ -30,7 +31,8 @@ bool SqlDataBase::sqlInit()
     return true;
 }
 
-QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no,Motor &motor)
+QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no,
+                                    QVector<QString> motor)
 {
     QString query_string;
     if (exp_name.isEmpty()){
@@ -43,10 +45,10 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         exp_no = QDateTime::currentDateTime().toString("YYMMDDHHMMSS");
     }
 
-    if(!m_data_base_.tables().contains(motor.getChannel()))
+    if(!m_data_base_.tables().contains(motor.at(0)))
     {
         QString tempsql = "CREATE TABLE ";
-        tempsql.append(motor.getChannel());
+        tempsql.append(motor.at(0));
         tempsql.append("([EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
@@ -59,40 +61,38 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         }
     }
     else{
-        query_string.append("INSERT INTO MOTOR1");
+        query_string.append("INSERT INTO ");
+        query_string.append(motor.at(0));
         query_string.append("([EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
                             ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
                             ") VALUES(");
         query_string.append("'"+exp_name+"',");
         query_string.append("'"+usr_name+"',");
         query_string.append("'"+exp_no+"',");
-        query_string.append("'"+QString::number(motor.getID())+"',");
-        query_string.append("'"+motor.getVoltage()+"',");
-        query_string.append("'"+motor.getCurrent()+"',");
-        query_string.append("'"+motor.getSetSpeed()+"',");
-        query_string.append("'"+motor.getSpeed()+"',");
-        query_string.append("'"+motor.getSetTorque()+"',");
-        query_string.append("'"+motor.getTorque()+"',");
-        query_string.append("'"+motor.getWate()+"',");
-//        query_string.append("'"++"',");
-        //...
+        query_string.append("'"+motor.at(1)+"',");
+        query_string.append("'"+motor.at(2)+"',");
+        query_string.append("'"+motor.at(3)+"',");
+        query_string.append("'"+motor.at(4)+"',");
+        query_string.append("'"+motor.at(5)+"',");
+        query_string.append("'"+motor.at(6)+"',");
+        query_string.append("'"+motor.at(7)+"',");
+        query_string.append("'"+motor.at(8)+"',");
+        query_string.append("'"+motor.at(9)+"',");
+        query_string.append("'"+motor.at(10)+"',");
+        query_string.append("'"+motor.at(11)+"'");
         query_string.append(")");
     }
     return query_string;
 }
 
-void SqlDataBase::insertIntoDB(const QString &exp_name,const QString &usr_name,const QString &exp_no,
-                               const uint id,const double cur,const double vol,const double set_spd,
-                               const double spd)
+void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,QVector<QString> motor)
 {
-//    QString query_str = makeSaveString(exp_name,usr_name,exp_no,QString::number(id),QString::number(cur),
-//                                      QString::number(vol),QString::number(set_spd),
-//                                      QString::number(spd));
-//    static QSqlQuery sql_query(m_data_base_);
-//    if(!sql_query.exec(query_str))
-//    {
-//        qDebug() << sql_query.lastError().text();
-//    }
+    QString query_str = makeSaveString(exp_name, usr_name, exp_no,motor);
+    static QSqlQuery sql_query(m_data_base_);
+    if(!sql_query.exec(query_str))
+    {
+        qDebug() << sql_query.lastError().text();
+    }
 }
 
 void SqlDataBase::queryFromDB(QString query_string)
