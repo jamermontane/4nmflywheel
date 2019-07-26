@@ -250,7 +250,11 @@ public slots:
             last_ten_vol_ += t;
         }
         last_ten_vol_ /= last_ten_vol_queue_.size();
-
+        //cal
+        setAngularMomentum();
+        setAngularMomentumConst();
+        setAngularMomentumDynamic();
+        setReactionMoment();
     }
 
     //设置温度
@@ -277,8 +281,8 @@ public slots:
         this->angular_momentum_dynamic_d = 0.00428 * abs(tmp_max - last_ten_spd_);
     }
     //设置反作用力矩
-    //未完成
     void setReactionMoment(){
+        if (last_ten_spd_queue_.size() <= 2) return;
         double last_spd = *last_ten_spd_queue_.rbegin();
         double last_last__spd = *(++last_ten_spd_queue_.rbegin());
         double current_reaction = (last_spd - last_last__spd)* J_ * 2 * PI_ / (60 * current_interval) ;
@@ -303,7 +307,7 @@ public slots:
 
     //斜坡模式
     void calXpMode(){
-        if (abs(abs(getSpeed()) - abs(xp_end_spd_)) > abs(10)){
+        if (abs(abs(getSpeed()) - abs(xp_end_spd_)) > abs(xp_spd_interval_)){
             double ctl_spd = getSpeed()+xp_spd_interval_;
             if (ctl_spd < -6050){
 
@@ -348,7 +352,7 @@ private:
     //反作用力矩
     double reaction_moment_;
     //当前运行间隔
-    double current_interval = 0;
+    double current_interval = 0.5;
 
     //斜坡模式
     bool xp_status_;
