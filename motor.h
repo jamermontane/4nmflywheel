@@ -5,6 +5,7 @@
 #include <QQueue>
 #include <qmath.h>
 #include <algorithm>
+#include <QTimer>
 
 //计算常数定义
 static const double J_ = 0.0064;
@@ -132,6 +133,8 @@ public:
     void setChannel(QString str){
         this->channel_ = str;
     }
+
+
 
 private:
     uint id_;
@@ -324,8 +327,59 @@ public slots:
         }
     }
 
+    void initTestModeWithAir(){
+        noair_test_containor_.clear();
+        noair_test_containor_.append(0);
+        noair_test_containor_.append(100);
+        noair_test_containor_.append(500);
+        noair_test_containor_.append(1000);
+        noair_test_containor_.append(1500);
+        noair_test_containor_.append(2000);
+        noair_test_containor_.append(2500);
+        noair_test_containor_.append(3000);
+        noair_test_containor_.append(-3000);
+        noair_test_containor_.append(-2500);
+        noair_test_containor_.append(-2000);
+        noair_test_containor_.append(-1500);
+        noair_test_containor_.append(-1000);
+        noair_test_containor_.append(-500);
+        noair_test_containor_.append(0);
+        is_noair_init_ = true;
+        connect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
+        connect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+        m_timer_auto_test_.setInterval(20000);
+        is_timer_started = false;
+    }
 
+    void runWithAirMode(double spd){
+        if (!is_noair_init_ && !getIsRunning()) return;
+        if (!noair_test_containor_.empty()){
+            this->setSetSpeed(noair_test_containor_.front());
+            if (abs(abs(spd) - abs(noair_test_containor_.front())) < abs(noair_test_containor_.front())*0.2){
+                if (!is_timer_started)
+                    m_timer_auto_test_.start();
+            }
+        }
 
+    }
+
+    void nxtWithAirModeTestSpd(){
+        if(!getIsRunning()){
+            m_timer_auto_test_.stop();
+            return;
+        }
+        is_timer_started = false;
+        m_timer_auto_test_.stop();
+        noair_test_containor_.pop_front();
+        if (noair_test_containor_.empty()){
+            is_noair_init_ = false;
+            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
+            disconnect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+            emit airTestEnd();
+        }
+    }
+signals:
+    void airTestEnd();
 private:
     double temperature_;
     double wate_;
@@ -360,6 +414,13 @@ private:
     double xp_spd_interval_;
 
     //模式代码
+
+    //非真空测试
+    QList<double> noair_test_containor_;
+    bool is_noair_init_ = false;
+    bool is_timer_started = false;
+    QTimer m_timer_auto_test_;
+
 };
 
 #endif // MOTOR_H

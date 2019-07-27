@@ -342,7 +342,7 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_spd_1->graph(0)->setData(keyContainer,spdContainer,true);
         ui->qcp_motor_spd_1->graph(1)->setData(keyContainer,setSpdContainer,true);
         lastPointKey = key;
-        if (keyContainer.size() > 100){
+        if (keyContainer.size() > 200){
             keyContainer.pop_front();
             tmpContainer.pop_front();
             curContainer.pop_front();
@@ -391,18 +391,24 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
         QMessageBox::warning(this,"电源未打开","电源未打开,请开启总电源！");
     }
     else{
-        if(!m_motor1_.getIsRunning() && this_mode_running){
+        if(!m_motor1_.getIsRunning() && !this_mode_running && ui->checkBox_noair_1->isChecked()){
+            //如果选择了该模式，启动测试流程
             m_motor1_.setIsRunning(true);
             this_mode_running = true;
-
-
+            m_timer_get_data_.start();
+            m_motor1_.initTestModeWithAir();
+            ui->pushButton_auto_test_with_air_power_1->setText("停止");
+            m_motor1_.initTestModeWithAir();
         }
         else if (this_mode_running){
-
+            m_motor1_.setSetSpeed(0);
             m_motor1_.setIsRunning(false);
             this_mode_running = false;
+            m_timer_get_data_.stop();
+            ui->pushButton_auto_test_with_air_power_1->setText("启动");
         }
         else{
-            QMessageBox::warning(this,"警告","其它模式运行中。");
+            QMessageBox::warning(this,"警告","运行失败，请检查当前状态。");
         }
     }
+}

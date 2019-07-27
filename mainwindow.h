@@ -53,7 +53,6 @@ private slots:
 
 	void on_pushButton_auto_test_with_air_power_1_clicked();
 
-    void on_pushButton_auto_test_with_air_power_1_clicked();
 
 private:
     Ui::MainWindow *ui;
