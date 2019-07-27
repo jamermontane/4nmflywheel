@@ -202,7 +202,7 @@ QVector<QString> MainWindow::makeSqlVector(Motor &motor)
     res.append(QString::number(motor.getAngularMomentumDynamic()));
     return res;
 }
-
+//更新电机1 总控制函数
 void MainWindow::updateMotor()
 {
     if (m_motor1_.getIsRunning()){
@@ -222,7 +222,7 @@ void MainWindow::updateMotor()
 
     //...etc motor
 }
-
+//更新电机1---数据显示
 void MainWindow::updateMotor1Display()
 {
     //update lineedit
@@ -234,7 +234,7 @@ void MainWindow::updateMotor1Display()
     ui->lineEdit_motor_jdl_czpc_1->setText(QString::number(m_motor1_.getAngularMomentumConst()));
     ui->lineEdit_motor_jdl_dtpc_1->setText(QString::number(m_motor1_.getAngularMomentumDynamic()));
 }
-
+//更新电机1---波形显示
 void MainWindow::initQCustomPlot1()
 {
 
@@ -286,8 +286,7 @@ void MainWindow::initQCustomPlot1()
         connect( ui->qcp_motor_tmp_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->yAxis2, SLOT(setRange(QCPRange)));
 }
 
-
-
+//转速改变响应函数
 void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
 {
     if(m_motor1_.getIsRunning()){
@@ -299,7 +298,7 @@ void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
         }
     }
 }
-
+//测试模式下拉框改变响应函数
 void MainWindow::on_comboBox_motor_test_mode_1_currentIndexChanged(int index)
 {
     switch (index) {
@@ -378,9 +377,33 @@ void MainWindow::refreshCustomPlotData1()
 
 
 }
-
+//设置界面数据更新间隔
 void MainWindow::on_doubleSpinBox_moto_test_time_valueChanged(double arg1)
 {
     m_timer_update_.setInterval(arg1*1000);
 }
 
+//非真空性能测试响应函数
+void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
+{
+    static bool this_mode_running = false;
+    if (!m_sys_status_1_){
+        QMessageBox::warning(this,"电源未打开","电源未打开,请开启总电源！");
+    }
+    else{
+        if(!m_motor1_.getIsRunning() && this_mode_running){
+            m_motor1_.setIsRunning(true);
+            this_mode_running = true;
+
+
+        }
+        else if (this_mode_running){
+
+            m_motor1_.setIsRunning(false);
+            this_mode_running = false;
+        }
+        else{
+            QMessageBox::warning(this,"警告","其它模式运行中。");
+        }
+    }
+}
