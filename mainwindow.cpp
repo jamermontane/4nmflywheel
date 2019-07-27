@@ -406,4 +406,3 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
             QMessageBox::warning(this,"警告","其它模式运行中。");
         }
     }
-}
