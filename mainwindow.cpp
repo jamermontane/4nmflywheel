@@ -384,3 +384,27 @@ void MainWindow::on_doubleSpinBox_moto_test_time_valueChanged(double arg1)
     m_timer_update_.setInterval(arg1*1000);
 }
 
+//非真空性能测试响应函数
+void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
+{
+    static bool this_mode_running = false;
+    if (!m_sys_status_1_){
+        QMessageBox::warning(this,"电源未打开","电源未打开,请开启总电源！");
+    }
+    else{
+        if(!m_motor1_.getIsRunning() && this_mode_running){
+            m_motor1_.setIsRunning(true);
+            this_mode_running = true;
+
+
+        }
+        else if (this_mode_running){
+
+            m_motor1_.setIsRunning(false);
+            this_mode_running = false;
+        }
+        else{
+            QMessageBox::warning(this,"警告","其它模式运行中。");
+        }
+    }
+}
