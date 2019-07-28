@@ -27,7 +27,7 @@ class MotorBasic : public QObject{
     Q_OBJECT
 
 public:
-    MotorBasic(): id_(0),vol_(0),cur_(0),
+    MotorBasic(): id_(0),vol_(12),cur_(0),
         spd_(0),acc_(0.1),setSpd_(0),torque_(0),
         setTorque_(0),isRunning_(false),channel_("")
     {
@@ -159,7 +159,7 @@ class Motor : public MotorBasic{
 
 public:
     Motor():last_ten_cur_(0),
-            last_ten_vol_(0),
+            last_ten_vol_(12),
             last_ten_spd_(0)
     {
         initXpMode(0,0);
@@ -208,6 +208,9 @@ public:
     }
     bool getXpStatus() const{
         return this->xp_status_;
+    }
+    bool getNoAirMode() const{
+        return this->is_noair_init_;
     }
 
 public slots:
@@ -275,13 +278,14 @@ public slots:
     }
     //设置角动量常值偏差
     void setAngularMomentumConst(){
-        this->angular_momentum_const_d = 0.00428 * abs(this->getSpeed() - this->last_ten_spd_);
+
+        this->angular_momentum_const_d = 0.00428 * qAbs(this->getSpeed() - this->last_ten_spd_);
     }
     //设置角动量动态偏差
     void setAngularMomentumDynamic(){
         double tmp_max = *(std::max_element(last_ten_spd_queue_.begin(),last_ten_spd_queue_.end()));
 
-        this->angular_momentum_dynamic_d = 0.00428 * abs(tmp_max - last_ten_spd_);
+        this->angular_momentum_dynamic_d = 0.00428 * qAbs(tmp_max - last_ten_spd_);
     }
     //设置反作用力矩
     void setReactionMoment(){
@@ -310,7 +314,7 @@ public slots:
 
     //斜坡模式
     void calXpMode(){
-        if (abs(abs(getSpeed()) - abs(xp_end_spd_)) > abs(xp_spd_interval_)){
+        if (qAbs(qAbs(getSpeed()) - qAbs(xp_end_spd_)) > qAbs(xp_spd_interval_)){
             double ctl_spd = getSpeed()+xp_spd_interval_;
             if (ctl_spd < -6050){
 
@@ -347,25 +351,36 @@ public slots:
         is_noair_init_ = true;
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
         connect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
-        m_timer_auto_test_.setInterval(20000);
+        m_timer_auto_test_.setInterval(5000);
         is_timer_started = false;
+        this->setSetSpeed(0);
     }
 
     void runWithAirMode(double spd){
-        if (!is_noair_init_ && !getIsRunning()) return;
+        if(!getIsRunning()){
+            is_noair_init_ = false;
+            m_timer_auto_test_.stop();
+            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
+            disconnect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+            return;
+        }
         if (!noair_test_containor_.empty()){
             this->setSetSpeed(noair_test_containor_.front());
-            if (abs(abs(spd) - abs(noair_test_containor_.front())) < abs(noair_test_containor_.front())*0.2){
-                if (!is_timer_started)
+            if (abs(spd - noair_test_containor_.front()) < 10){
+                if (!is_timer_started){
                     m_timer_auto_test_.start();
+                    is_timer_started = true;
+                }
             }
         }
-
     }
 
     void nxtWithAirModeTestSpd(){
         if(!getIsRunning()){
+            is_noair_init_ = false;
             m_timer_auto_test_.stop();
+            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
+            disconnect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             return;
         }
         is_timer_started = false;
@@ -378,6 +393,8 @@ public slots:
             emit airTestEnd();
         }
     }
+
+
 signals:
     void airTestEnd();
 private:

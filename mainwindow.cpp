@@ -61,6 +61,7 @@ bool MainWindow::initDriver1()
     connect(p_driver1_,&MotorDriver::sendMotorTmp,&m_motor1_,&Motor::setTemperature);
     //采样间隔改了的话，记得改这个
     m_motor1_.setCurrentInterval(m_timer_get_data_.interval() * 1000);
+    m_motor1_.setAccelerate(50);
     return true;
 }
 
@@ -187,7 +188,8 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
 //为sql查询生成一个vector，为了方便信号槽数据的传递。
 QVector<QString> MainWindow::makeSqlVector(Motor &motor)
 {
-    QVector<QString> res;
+    static QVector<QString> res;
+    res.clear();
     res.append(motor.getChannel());
     res.append(QString::number(motor.getID()));
     res.append(QString::number(motor.getVoltage()));
@@ -207,7 +209,7 @@ void MainWindow::updateMotor()
 {
     if (m_motor1_.getIsRunning()){
         //斜坡模式不用发
-        if (!m_motor1_.getXpStatus()){
+        if (!m_motor1_.getXpStatus() && !m_motor1_.getNoAirMode()){
             m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
         //更新显示界面
@@ -354,16 +356,16 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_spd_1->graph(0)->rescaleValueAxis(true);
         ui->qcp_motor_spd_1->graph(1)->rescaleValueAxis(true);
 
-        ui->qcp_motor_cur_1->yAxis->setRange(*std::min_element(curContainer.begin(),curContainer.end())-0.5,
-                                             *std::max_element(curContainer.begin(),curContainer.end())+0.5);
-        ui->qcp_motor_spd_1->yAxis->setRange(*std::min_element(spdContainer.begin(),spdContainer.end())-10,
-                                             *std::max_element(spdContainer.begin(),spdContainer.end())+10);
-        ui->qcp_motor_tmp_1->yAxis->setRange(*std::min_element(tmpContainer.begin(),tmpContainer.end())-0.5,
-                                             *std::max_element(tmpContainer.begin(),tmpContainer.end())+0.5);
+        ui->qcp_motor_cur_1->yAxis->setRange(*std::min_element(curContainer.begin(),curContainer.end()),
+                                             *std::max_element(curContainer.begin(),curContainer.end()));
+        ui->qcp_motor_spd_1->yAxis->setRange(*std::min_element(spdContainer.begin(),spdContainer.end()),
+                                             *std::max_element(spdContainer.begin(),spdContainer.end()));
+        ui->qcp_motor_tmp_1->yAxis->setRange(*std::min_element(tmpContainer.begin(),tmpContainer.end()),
+                                             *std::max_element(tmpContainer.begin(),tmpContainer.end()));
 
-        ui->qcp_motor_cur_1->xAxis->setRange(key, 8, Qt::AlignRight);
-        ui->qcp_motor_spd_1->xAxis->setRange(key, 8, Qt::AlignRight);
-        ui->qcp_motor_tmp_1->xAxis->setRange(key, 8, Qt::AlignRight);
+        ui->qcp_motor_cur_1->xAxis->setRange(key, 20, Qt::AlignRight);
+        ui->qcp_motor_spd_1->xAxis->setRange(key, 20, Qt::AlignRight);
+        ui->qcp_motor_tmp_1->xAxis->setRange(key, 20, Qt::AlignRight);
 
         ui->qcp_motor_cur_1->replot();
         ui->qcp_motor_tmp_1->replot();
@@ -398,7 +400,8 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
             m_timer_get_data_.start();
             m_motor1_.initTestModeWithAir();
             ui->pushButton_auto_test_with_air_power_1->setText("停止");
-            m_motor1_.initTestModeWithAir();
+            ui->statusBar->showMessage("非真空性能测试运行中！");
+            connect(&m_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
         }
         else if (this_mode_running){
             m_motor1_.setSetSpeed(0);
@@ -406,6 +409,10 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
             this_mode_running = false;
             m_timer_get_data_.stop();
             ui->pushButton_auto_test_with_air_power_1->setText("启动");
+            ui->statusBar->showMessage("非真空性能测试结束！",5000);
+            QMessageBox::warning(this,"完成","非真空性能测试完成！");
+            disconnect(&m_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
+
         }
         else{
             QMessageBox::warning(this,"警告","运行失败，请检查当前状态。");
