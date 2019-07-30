@@ -34,6 +34,7 @@ bool SqlDataBase::sqlInit()
 QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no,
                                     QVector<QString> motor)
 {
+//    qDebug()<<"SQL:"<<QThread::currentThreadId();
     QString query_string;
     if (exp_name.isEmpty()){
         exp_name = "null";
@@ -87,6 +88,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
 
 void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,QVector<QString> motor)
 {
+//    qDebug()<<"SQL:"<<QThread::currentThreadId();
     QString query_str = makeSaveString(exp_name, usr_name, exp_no,motor);
     static QSqlQuery sql_query(m_data_base_);
     if(!sql_query.exec(query_str))

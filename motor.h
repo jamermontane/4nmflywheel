@@ -6,6 +6,8 @@
 #include <qmath.h>
 #include <algorithm>
 #include <QTimer>
+#include <QDebug>
+#include <QThread>
 
 //计算常数定义
 static const double J_ = 0.0064;
@@ -216,6 +218,7 @@ public:
 public slots:
     //get last ten
     void setLastTen(double spd){
+        qDebug()<<"motor thread:"<<QThread::currentThreadId();
         if (last_ten_vol_queue_.size() <10){
             last_ten_vol_queue_.push_back(this->getVoltage());
         }
