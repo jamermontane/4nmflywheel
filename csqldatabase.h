@@ -26,6 +26,7 @@ public:
 
 
     QString makeSaveString(QString exp_name, QString usr_name, QString exp_no, QVector<QString>);
+    QString getLastExpId(QString motor_id);
 signals:
     void sendQueryRes(QSharedPointer<QSqlQuery>);
 public slots:

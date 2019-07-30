@@ -50,11 +50,12 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
     {
         QString tempsql = "CREATE TABLE ";
         tempsql.append(motor.at(0));
-        tempsql.append("([EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
+        tempsql.append("([EXPID] VARCHAR (50),[EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
                        "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
+        qDebug() << tempsql;
         QSqlQuery sql_query(m_data_base_);
         if (!sql_query.exec(tempsql))
         {
@@ -64,13 +65,13 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
     else{
         query_string.append("INSERT INTO ");
         query_string.append(motor.at(0));
-        query_string.append("([EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
+        query_string.append("([EXPID],[EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
                             ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
                             ") VALUES(");
+        query_string.append("'"+motor.at(1)+"',");
         query_string.append("'"+exp_name+"',");
         query_string.append("'"+usr_name+"',");
         query_string.append("'"+exp_no+"',");
-        query_string.append("'"+motor.at(1)+"',");
         query_string.append("'"+motor.at(2)+"',");
         query_string.append("'"+motor.at(3)+"',");
         query_string.append("'"+motor.at(4)+"',");
@@ -80,10 +81,23 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append("'"+motor.at(8)+"',");
         query_string.append("'"+motor.at(9)+"',");
         query_string.append("'"+motor.at(10)+"',");
-        query_string.append("'"+motor.at(11)+"'");
+        query_string.append("'"+motor.at(11)+"',");
+        query_string.append("'"+motor.at(12)+"'");
         query_string.append(")");
     }
     return query_string;
+}
+
+//查询最后一次实验的实验ID
+//为了测试完成后自动生成报表
+QString SqlDataBase::getLastExpId(QString motor_id)
+{
+    QString tempsql = QString("select * from %1 where EXPID is not "" ORDER BY EXPID ASC LIMIT 1 ").arg(motor_id);
+    QSqlQuery sql_query(m_data_base_);
+    if (!sql_query.exec(tempsql))
+    {
+        qDebug() << sql_query.lastError().text();
+    }
 }
 
 void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,QVector<QString> motor)

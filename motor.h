@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QThread>
+#include <QDateTime>
 
 //计算常数定义
 static const double J_ = 0.0064;
@@ -214,6 +215,9 @@ public:
     bool getNoAirMode() const{
         return this->is_noair_init_;
     }
+    QString getExpId() const{
+        return this->exp_id_;
+    }
 
 public slots:
     //get last ten
@@ -335,6 +339,7 @@ public slots:
     }
 
     void initTestModeWithAir(){
+        exp_id_ = QDateTime::currentDateTime().toString("yyMMddhhmmss");
         if (is_noair_init_){
             return;
         }
@@ -367,6 +372,7 @@ public slots:
 
     void runWithAirMode(double spd){
         if(!getIsRunning()){
+            exp_id_.clear();
             is_noair_init_ = false;
             p_timer_auto_test_->stop();
             disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
@@ -386,6 +392,7 @@ public slots:
 
     void nxtWithAirModeTestSpd(){
         if(!getIsRunning()){
+            exp_id_.clear();
             is_noair_init_ = false;
             p_timer_auto_test_->stop();
             disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
@@ -446,6 +453,9 @@ private:
     bool is_noair_init_ = false;
     bool is_timer_started = false;
     QTimer* p_timer_auto_test_ = nullptr;
+
+
+    QString exp_id_; //用来记录一键测试的编号（用以区分不同实验）
 
 };
 

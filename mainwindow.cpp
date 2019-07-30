@@ -83,10 +83,6 @@ void MainWindow::initSql()
     p_sql_thread_->start();
 }
 
-
-
-
-
 void MainWindow::initCombox()
 {
     ui->comboBox_motor_test_mode_1->addItem("速度模式");
@@ -94,7 +90,57 @@ void MainWindow::initCombox()
     ui->comboBox_motor_test_mode_1->addItem("斜坡模式");
 }
 
+//更新电机1---波形显示
+void MainWindow::initQCustomPlot1()
+{
 
+        ui->qcp_motor_cur_1->addGraph();
+        ui->qcp_motor_cur_1->graph(0)->setPen(QPen(Qt::blue));
+        ui->qcp_motor_cur_1->graph(0)->setName("motorCurrent");
+
+        QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
+        timeTicker->setTimeFormat("%m:%s"); // %h代表小时
+        ui->qcp_motor_cur_1->xAxis->setTicker(timeTicker);
+        ui->qcp_motor_cur_1->axisRect()->setupFullAxesBox();
+        ui->qcp_motor_cur_1->yAxis->setLabel("电流(A)");
+
+        // make left and bottom axes transfer their ranges to right and top axes:
+        connect( ui->qcp_motor_cur_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_cur_1->xAxis2, SLOT(setRange(QCPRange)));
+        connect( ui->qcp_motor_cur_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_cur_1->yAxis2, SLOT(setRange(QCPRange)));
+
+        // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
+
+        //dataTimer.start(0); // Interval 0 means to refresh as fast as possibl
+
+        ui->qcp_motor_spd_1->addGraph();
+        ui->qcp_motor_spd_1->graph(0)->setPen(QPen(Qt::red));
+        ui->qcp_motor_spd_1->addGraph();
+        ui->qcp_motor_spd_1->graph(1)->setPen(QPen(Qt::green));
+
+        ui->qcp_motor_spd_1->yAxis->setLabel("转速(rpm)");
+
+        ui->qcp_motor_spd_1->xAxis->setTicker(timeTicker);
+        ui->qcp_motor_spd_1->axisRect()->setupFullAxesBox();
+        ui->qcp_motor_spd_1->yAxis->setRange(0,1);
+
+        connect( ui->qcp_motor_spd_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_spd_1->xAxis2, SLOT(setRange(QCPRange)));
+        connect( ui->qcp_motor_spd_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_spd_1->yAxis2, SLOT(setRange(QCPRange)));
+
+        ui->qcp_motor_tmp_1->addGraph();
+        ui->qcp_motor_tmp_1->graph(0)->setPen(QPen(Qt::red));
+
+        ui->qcp_motor_tmp_1->yAxis->setLabel("温度(℃)");
+
+        ui->qcp_motor_tmp_1->xAxis->setTicker(timeTicker);
+        ui->qcp_motor_tmp_1->axisRect()->setupFullAxesBox();
+        //ui->widget->yAxis->setRange(-30,30);
+
+
+        ui->qcp_motor_tmp_1->xAxis->setTicker(timeTicker);
+
+        connect( ui->qcp_motor_tmp_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->xAxis2, SLOT(setRange(QCPRange)));
+        connect( ui->qcp_motor_tmp_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->yAxis2, SLOT(setRange(QCPRange)));
+}
 
 void MainWindow::logMsg(QString text)
 {
@@ -197,6 +243,7 @@ QVector<QString> MainWindow::makeSqlVector(Motor &motor)
     static QVector<QString> res;
     res.clear();
     res.append(motor.getChannel());
+    res.append(motor.getExpId());
     res.append(QString::number(motor.getID()));
     res.append(QString::number(motor.getVoltage()));
     res.append(QString::number(motor.getCurrent()));
@@ -245,58 +292,6 @@ void MainWindow::updateMotor1Display()
     ui->lineEdit_motor_jdl_czpc_1->setText(QString::number(p_motor1_->getAngularMomentumConst()));
     ui->lineEdit_motor_jdl_dtpc_1->setText(QString::number(p_motor1_->getAngularMomentumDynamic()));
 }
-//更新电机1---波形显示
-void MainWindow::initQCustomPlot1()
-{
-
-        ui->qcp_motor_cur_1->addGraph();
-        ui->qcp_motor_cur_1->graph(0)->setPen(QPen(Qt::blue));
-        ui->qcp_motor_cur_1->graph(0)->setName("motorCurrent");
-
-        QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
-        timeTicker->setTimeFormat("%m:%s"); // %h代表小时
-        ui->qcp_motor_cur_1->xAxis->setTicker(timeTicker);
-        ui->qcp_motor_cur_1->axisRect()->setupFullAxesBox();
-        ui->qcp_motor_cur_1->yAxis->setLabel("电流(A)");
-
-        // make left and bottom axes transfer their ranges to right and top axes:
-        connect( ui->qcp_motor_cur_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_cur_1->xAxis2, SLOT(setRange(QCPRange)));
-        connect( ui->qcp_motor_cur_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_cur_1->yAxis2, SLOT(setRange(QCPRange)));
-
-        // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
-
-        //dataTimer.start(0); // Interval 0 means to refresh as fast as possibl
-
-        ui->qcp_motor_spd_1->addGraph();
-        ui->qcp_motor_spd_1->graph(0)->setPen(QPen(Qt::red));
-        ui->qcp_motor_spd_1->addGraph();
-        ui->qcp_motor_spd_1->graph(1)->setPen(QPen(Qt::green));
-
-        ui->qcp_motor_spd_1->yAxis->setLabel("转速(rpm)");
-
-        ui->qcp_motor_spd_1->xAxis->setTicker(timeTicker);
-        ui->qcp_motor_spd_1->axisRect()->setupFullAxesBox();
-        ui->qcp_motor_spd_1->yAxis->setRange(0,1);
-
-        connect( ui->qcp_motor_spd_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_spd_1->xAxis2, SLOT(setRange(QCPRange)));
-        connect( ui->qcp_motor_spd_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_spd_1->yAxis2, SLOT(setRange(QCPRange)));
-
-        ui->qcp_motor_tmp_1->addGraph();
-        ui->qcp_motor_tmp_1->graph(0)->setPen(QPen(Qt::red));
-
-        ui->qcp_motor_tmp_1->yAxis->setLabel("温度(℃)");
-
-        ui->qcp_motor_tmp_1->xAxis->setTicker(timeTicker);
-        ui->qcp_motor_tmp_1->axisRect()->setupFullAxesBox();
-        //ui->widget->yAxis->setRange(-30,30);
-
-
-        ui->qcp_motor_tmp_1->xAxis->setTicker(timeTicker);
-
-        connect( ui->qcp_motor_tmp_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->xAxis2, SLOT(setRange(QCPRange)));
-        connect( ui->qcp_motor_tmp_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->yAxis2, SLOT(setRange(QCPRange)));
-}
-
 //转速改变响应函数
 void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
 {
@@ -353,7 +348,7 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_spd_1->graph(0)->setData(keyContainer,spdContainer,true);
         ui->qcp_motor_spd_1->graph(1)->setData(keyContainer,setSpdContainer,true);
         lastPointKey = key;
-        if (keyContainer.size() > 200){
+        if (keyContainer.size() >= 300){
             keyContainer.pop_front();
             tmpContainer.pop_front();
             curContainer.pop_front();
