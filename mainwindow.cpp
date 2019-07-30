@@ -36,7 +36,9 @@ bool MainWindow::initDriver1()
     p_motor_thread1_ = new QThread;
     p_motor1_ = new Motor;
     p_motor1_->setChannel("MOTOR1");
+    p_motor1_->setAccelerate(50);
     p_motor1_->moveToThread(p_motor_thread1_);
+    connect(ui->pushButton_auto_test_with_air_power_1,SIGNAL(clicked(bool)),p_motor1_,SLOT(initTestModeWithAir()));
     p_motor_thread1_->start();
 
     //driver thread 1
@@ -214,9 +216,11 @@ void MainWindow::updateMotor()
     if (p_motor1_->getIsRunning()){
         //斜坡模式不用发
 
-        if (!p_motor1_->getXpStatus()){
+        if (!p_motor1_->getXpStatus() && !p_motor1_->getNoAirMode()){
             p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
+
+
         //更新显示界面
         updateMotor1Display();
         refreshCustomPlotData1();
@@ -403,10 +407,11 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
             p_motor1_->setIsRunning(true);
             this_mode_running = true;
             m_timer_get_data_.start();
-            p_motor1_->initTestModeWithAir();
+//            p_motor1_->initTestModeWithAir();
             ui->pushButton_auto_test_with_air_power_1->setText("停止");
             ui->statusBar->showMessage("非真空性能测试运行中！");
-            connect(&m_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
+            //disconnect(ui->pushButton_auto_test_with_air_power_1,SIGNAL(clicked(bool)),p_motor1_,SLOT(initTestModeWithAir()));
+            connect(p_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
         }
         else if (this_mode_running){
             p_motor1_->setSetSpeed(0);
@@ -416,7 +421,8 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
             ui->pushButton_auto_test_with_air_power_1->setText("启动");
             ui->statusBar->showMessage("非真空性能测试结束！",5000);
             QMessageBox::warning(this,"完成","非真空性能测试完成！");
-            disconnect(&m_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
+            //connect(ui->pushButton_auto_test_with_air_power_1,SIGNAL(clicked(bool)),p_motor1_,SLOT(initTestModeWithAir()));
+            disconnect(p_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
 
         }
         else{

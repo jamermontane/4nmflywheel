@@ -218,7 +218,7 @@ public:
 public slots:
     //get last ten
     void setLastTen(double spd){
-        qDebug()<<"motor thread:"<<QThread::currentThreadId();
+//        qDebug()<<"motor thread:"<<QThread::currentThreadId();
         if (last_ten_vol_queue_.size() <10){
             last_ten_vol_queue_.push_back(this->getVoltage());
         }
@@ -335,6 +335,9 @@ public slots:
     }
 
     void initTestModeWithAir(){
+        if (is_noair_init_){
+            return;
+        }
         noair_test_containor_.clear();
         noair_test_containor_.append(0);
         noair_test_containor_.append(100);
@@ -352,9 +355,12 @@ public slots:
         noair_test_containor_.append(-500);
         noair_test_containor_.append(0);
         is_noair_init_ = true;
+        if(p_timer_auto_test_ == nullptr){
+            p_timer_auto_test_ = new QTimer;
+        }
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
-        connect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
-        m_timer_auto_test_.setInterval(5000);
+        connect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+        p_timer_auto_test_->setInterval(5000);
         is_timer_started = false;
         this->setSetSpeed(0);
     }
@@ -362,16 +368,16 @@ public slots:
     void runWithAirMode(double spd){
         if(!getIsRunning()){
             is_noair_init_ = false;
-            m_timer_auto_test_.stop();
+            p_timer_auto_test_->stop();
             disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
-            disconnect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+            disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             return;
         }
         if (!noair_test_containor_.empty()){
             this->setSetSpeed(noair_test_containor_.front());
             if (abs(spd - noair_test_containor_.front()) < 10){
                 if (!is_timer_started){
-                    m_timer_auto_test_.start();
+                    p_timer_auto_test_->start();
                     is_timer_started = true;
                 }
             }
@@ -381,18 +387,18 @@ public slots:
     void nxtWithAirModeTestSpd(){
         if(!getIsRunning()){
             is_noair_init_ = false;
-            m_timer_auto_test_.stop();
+            p_timer_auto_test_->stop();
             disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
-            disconnect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+            disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             return;
         }
         is_timer_started = false;
-        m_timer_auto_test_.stop();
+        p_timer_auto_test_->stop();
         noair_test_containor_.pop_front();
         if (noair_test_containor_.empty()){
             is_noair_init_ = false;
             disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
-            disconnect(&m_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+            disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             emit airTestEnd();
         }
     }
@@ -439,7 +445,7 @@ private:
     QList<double> noair_test_containor_;
     bool is_noair_init_ = false;
     bool is_timer_started = false;
-    QTimer m_timer_auto_test_;
+    QTimer* p_timer_auto_test_ = nullptr;
 
 };
 
