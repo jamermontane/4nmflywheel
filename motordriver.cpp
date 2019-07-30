@@ -116,6 +116,7 @@ QByteArray MotorDriver::calTorData(QString tor)
 
 void MotorDriver::ctlMotorSpd2(double spd, double acc)
 {
+//    qDebug()<<"COM1:"<<QThread::currentThreadId();
     if (!isInit){
         emit sendErrText(QString("driver not init"));
     }

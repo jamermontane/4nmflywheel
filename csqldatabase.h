@@ -10,6 +10,7 @@
 #include <QMetaType>
 #include <QSharedPointer>
 #include <QDateTime>
+#include <QThread>
 
 #include "motor.h"
 

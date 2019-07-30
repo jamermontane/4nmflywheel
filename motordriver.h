@@ -7,6 +7,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QByteArray>
 #include <QDebug>
+#include <QThread>
 
 class MotorDriver : public QObject
 {

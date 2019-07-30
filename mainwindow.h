@@ -57,21 +57,22 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    Motor m_motor1_;
-    Motor m_motor2_;
-    Motor m_motor3_;
-    Motor m_motor4_;
-    Motor m_motor5_;
-    Motor m_motor6_;
+    Motor* p_motor1_;
+//    Motor m_motor2_;
+//    Motor m_motor3_;
+//    Motor m_motor4_;
+//    Motor m_motor5_;
+//    Motor m_motor6_;
 
     MotorDriver* p_driver1_;
-    MotorDriver* p_driver2_;
-    MotorDriver* p_driver3_;
-    MotorDriver* p_driver4_;
-    MotorDriver* p_driver5_;
-    MotorDriver* p_driver6_;
+//    MotorDriver* p_driver2_;
+//    MotorDriver* p_driver3_;
+//    MotorDriver* p_driver4_;
+//    MotorDriver* p_driver5_;
+//    MotorDriver* p_driver6_;
 
     QThread* p_driver_thread1_;
+    QThread* p_motor_thread1_;
     //...etc
 
 

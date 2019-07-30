@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     qRegisterMetaType<QVector<QString>>("QVector<QString>");
-
+    qDebug()<<"MAIN THREAD:"<<QThread::currentThreadId();
     initCombox();
     initDriver1();
     initQCustomPlot1();
@@ -33,7 +33,12 @@ MainWindow::~MainWindow()
 
 bool MainWindow::initDriver1()
 {
-    m_motor1_.setChannel("MOTOR1");
+    p_motor_thread1_ = new QThread;
+    p_motor1_ = new Motor;
+    p_motor1_->setChannel("MOTOR1");
+    p_motor1_->moveToThread(p_motor_thread1_);
+    p_motor_thread1_->start();
+
     //driver thread 1
     p_driver1_ = new MotorDriver;
     p_driver_thread1_ = new QThread;
@@ -53,14 +58,14 @@ bool MainWindow::initDriver1()
     connect(&m_timer_get_data_,&QTimer::timeout,p_driver1_,&MotorDriver::getMotorData);
 
     //control init
-//    connect(&m_motor1_,&Motor::sendMoTorSpd,p_driver1_,&MotorDriver::ctlMotorSpd());
-    connect(&m_motor1_,SIGNAL(sendMoTorSpd(double,double)),p_driver1_,SLOT(ctlMotorSpd2(double,double)));
-    connect(&m_motor1_,&Motor::sendMoTorTor,p_driver1_,&MotorDriver::ctlMotorTor);
-    connect(p_driver1_,&MotorDriver::sendMotorSpd,&m_motor1_,&Motor::setSpeed);
-    connect(p_driver1_,&MotorDriver::sendMotorCur,&m_motor1_,&Motor::setCurrent);
-    connect(p_driver1_,&MotorDriver::sendMotorTmp,&m_motor1_,&Motor::setTemperature);
+//    connect(&p_motor1_,&Motor::sendMoTorSpd,p_driver1_,&MotorDriver::ctlMotorSpd());
+    connect(p_motor1_,SIGNAL(sendMoTorSpd(double,double)),p_driver1_,SLOT(ctlMotorSpd2(double,double)));
+    connect(p_motor1_,&Motor::sendMoTorTor,p_driver1_,&MotorDriver::ctlMotorTor);
+    connect(p_driver1_,&MotorDriver::sendMotorSpd,p_motor1_,&Motor::setSpeed);
+    connect(p_driver1_,&MotorDriver::sendMotorCur,p_motor1_,&Motor::setCurrent);
+    connect(p_driver1_,&MotorDriver::sendMotorTmp,p_motor1_,&Motor::setTemperature);
     //采样间隔改了的话，记得改这个
-    m_motor1_.setCurrentInterval(m_timer_get_data_.interval() * 1000);
+    p_motor1_->setCurrentInterval(m_timer_get_data_.interval() * 1000);
     return true;
 }
 
@@ -108,7 +113,7 @@ void MainWindow::on_pushButton_system_power_1_clicked()
     else{
         //power had open
         //检查各个飞轮的状态
-        if (m_motor1_.getIsRunning()){
+        if (p_motor1_->getIsRunning()){
             on_pushButton_single_test_mode_1_clicked();
         }
         //检查飞轮二。。。
@@ -117,7 +122,7 @@ void MainWindow::on_pushButton_system_power_1_clicked()
         m_sys_status_1_ = false;
         ui->pushButton_system_power_1->setText("启动");
 
-        if (m_motor1_.getIsRunning()){
+        if (p_motor1_->getIsRunning()){
             QMessageBox::warning(this,"警告","依然有任务运行中，但电源已关闭。");
         }
     }
@@ -131,20 +136,20 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
         QMessageBox::warning(this,"电源未打开","电源未打开,请开启总电源！");
     }
     else{
-        if(!m_motor1_.getIsRunning() && !this_mode_running){
+        if(!p_motor1_->getIsRunning() && !this_mode_running){
             switch(ui->comboBox_motor_test_mode_1->currentIndex()){
             case 0:
-                m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
-                m_motor1_.setAccelerate(ui->doubleSpinBox_motor_test_acc->text().toDouble());
+                p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
+                p_motor1_->setAccelerate(ui->doubleSpinBox_motor_test_acc->text().toDouble());
                 break;
-            case 1: m_motor1_.setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
+            case 1: p_motor1_->setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
             case 2:
-                m_motor1_.setSetSpeed(0);
-                m_motor1_.initXpMode(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()
+                p_motor1_->setSetSpeed(0);
+                p_motor1_->initXpMode(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()
                                      ,ui->doubleSpinBox_motor_test_acc->text().toDouble());
-                connect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                connect(&m_timer_get_data_,SIGNAL(timeout()),p_motor1_,SLOT(calXpMode()));
                 xp_mode_running = true;
-                m_motor1_.setXpStatus(true);
+                p_motor1_->setXpStatus(true);
                 break;
             default:
                 break;
@@ -157,7 +162,7 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
             spdContainer.resize(0);
             setSpdContainer.resize(0);
 
-            m_motor1_.setIsRunning(true);
+            p_motor1_->setIsRunning(true);
             m_timer_get_data_.start();
             this_mode_running = true;
             ui->pushButton_single_test_mode_1->setText("停止");
@@ -166,12 +171,12 @@ void MainWindow::on_pushButton_single_test_mode_1_clicked()
         else{
             if (this_mode_running){
                 if (xp_mode_running){
-                    disconnect(&m_timer_get_data_,SIGNAL(timeout()),&m_motor1_,SLOT(calXpMode()));
+                    disconnect(&m_timer_get_data_,SIGNAL(timeout()),p_motor1_,SLOT(calXpMode()));
                     xp_mode_running = false;
-                    m_motor1_.setXpStatus(false);
+                    p_motor1_->setXpStatus(false);
                 }
-                m_motor1_.setIsRunning(false);
-                m_motor1_.setSetSpeed(0);
+                p_motor1_->setIsRunning(false);
+                p_motor1_->setSetSpeed(0);
                 m_timer_get_data_.stop();
                 this_mode_running = false;
                 ui->pushButton_single_test_mode_1->setText("启动");
@@ -205,10 +210,10 @@ QVector<QString> MainWindow::makeSqlVector(Motor &motor)
 //更新电机1 总控制函数
 void MainWindow::updateMotor()
 {
-    if (m_motor1_.getIsRunning()){
+    if (p_motor1_->getIsRunning()){
         //斜坡模式不用发
-        if (!m_motor1_.getXpStatus()){
-            m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
+        if (!p_motor1_->getXpStatus()){
+            p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
         //更新显示界面
         updateMotor1Display();
@@ -216,7 +221,7 @@ void MainWindow::updateMotor()
         //更新数据库
 
         emit sendToSqlDB(ui->lineEdit_exp_name_1->text(),ui->lineEdit_exp_usr_name_1->text(),
-                         ui->lineEdit_exp_fw_id_1->text(),makeSqlVector(m_motor1_));
+                         ui->lineEdit_exp_fw_id_1->text(),makeSqlVector(*p_motor1_));
 
     }
 
@@ -226,13 +231,13 @@ void MainWindow::updateMotor()
 void MainWindow::updateMotor1Display()
 {
     //update lineedit
-    ui->lineEdit_motor_set_spd_1->setText(QString::number(m_motor1_.getSetSpeed()));
-    ui->lineEdit_motor_act_spd_1->setText(QString::number(m_motor1_.getSpeed()));
-    ui->lineEdit_motor_cur_1->setText(QString::number(m_motor1_.getCurrent()));
-    ui->lineEdit_motor_act_tor_1->setText(QString::number(m_motor1_.getTorque()));
-    ui->lineEdit_motor_jdl_1->setText(QString::number(m_motor1_.getAngularMomentum()));
-    ui->lineEdit_motor_jdl_czpc_1->setText(QString::number(m_motor1_.getAngularMomentumConst()));
-    ui->lineEdit_motor_jdl_dtpc_1->setText(QString::number(m_motor1_.getAngularMomentumDynamic()));
+    ui->lineEdit_motor_set_spd_1->setText(QString::number(p_motor1_->getSetSpeed()));
+    ui->lineEdit_motor_act_spd_1->setText(QString::number(p_motor1_->getSpeed()));
+    ui->lineEdit_motor_cur_1->setText(QString::number(p_motor1_->getCurrent()));
+    ui->lineEdit_motor_act_tor_1->setText(QString::number(p_motor1_->getTorque()));
+    ui->lineEdit_motor_jdl_1->setText(QString::number(p_motor1_->getAngularMomentum()));
+    ui->lineEdit_motor_jdl_czpc_1->setText(QString::number(p_motor1_->getAngularMomentumConst()));
+    ui->lineEdit_motor_jdl_dtpc_1->setText(QString::number(p_motor1_->getAngularMomentumDynamic()));
 }
 //更新电机1---波形显示
 void MainWindow::initQCustomPlot1()
@@ -289,10 +294,10 @@ void MainWindow::initQCustomPlot1()
 //转速改变响应函数
 void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
 {
-    if(m_motor1_.getIsRunning()){
+    if(p_motor1_->getIsRunning()){
         switch(ui->comboBox_motor_test_mode_1->currentIndex()){
-        case 0: m_motor1_.setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()); break;
-        case 1: m_motor1_.setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
+        case 0: p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble()); break;
+        case 1: p_motor1_->setSetTorque(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());break;
         default:
             break;
         }
@@ -332,10 +337,10 @@ void MainWindow::refreshCustomPlotData1()
     {
       // add data to lines:
         keyContainer.push_back(key);
-        tmpContainer.push_back(m_motor1_.getTemperature());
-        curContainer.push_back(m_motor1_.getCurrent());
-        spdContainer.push_back(m_motor1_.getSpeed());
-        setSpdContainer.push_back(m_motor1_.getSetSpeed());
+        tmpContainer.push_back(p_motor1_->getTemperature());
+        curContainer.push_back(p_motor1_->getCurrent());
+        spdContainer.push_back(p_motor1_->getSpeed());
+        setSpdContainer.push_back(p_motor1_->getSetSpeed());
 
         ui->qcp_motor_tmp_1->graph(0)->setData(keyContainer,tmpContainer,true);
         ui->qcp_motor_cur_1->graph(0)->setData(keyContainer,curContainer,true);
@@ -391,18 +396,18 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
         QMessageBox::warning(this,"电源未打开","电源未打开,请开启总电源！");
     }
     else{
-        if(!m_motor1_.getIsRunning() && !this_mode_running && ui->checkBox_noair_1->isChecked()){
+        if(!p_motor1_->getIsRunning() && !this_mode_running && ui->checkBox_noair_1->isChecked()){
             //如果选择了该模式，启动测试流程
-            m_motor1_.setIsRunning(true);
+            p_motor1_->setIsRunning(true);
             this_mode_running = true;
             m_timer_get_data_.start();
-            m_motor1_.initTestModeWithAir();
+            p_motor1_->initTestModeWithAir();
             ui->pushButton_auto_test_with_air_power_1->setText("停止");
-            m_motor1_.initTestModeWithAir();
+            p_motor1_->initTestModeWithAir();
         }
         else if (this_mode_running){
-            m_motor1_.setSetSpeed(0);
-            m_motor1_.setIsRunning(false);
+            p_motor1_->setSetSpeed(0);
+            p_motor1_->setIsRunning(false);
             this_mode_running = false;
             m_timer_get_data_.stop();
             ui->pushButton_auto_test_with_air_power_1->setText("启动");
