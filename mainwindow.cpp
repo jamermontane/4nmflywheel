@@ -79,6 +79,7 @@ void MainWindow::initSql()
     p_sql_->moveToThread(p_sql_thread_);
     p_sql_->sqlInit();
     connect(this,&MainWindow::sendToSqlDB,p_sql_,&SqlDataBase::insertIntoDB);
+    connect(p_sql_,&SqlDataBase::sendErrorText,this,&MainWindow::logMsg);
 
     p_sql_thread_->start();
 }

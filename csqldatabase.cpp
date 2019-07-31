@@ -26,6 +26,7 @@ bool SqlDataBase::sqlInit()
     }
     if (!m_data_base_.open()){
         qDebug()<<" sql init error!";
+        emit sendErrorText(" sql init error!");
         return false;
     }
     return true;
@@ -55,11 +56,12 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
                        "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
-        qDebug() << tempsql;
+
         QSqlQuery sql_query(m_data_base_);
         if (!sql_query.exec(tempsql))
         {
             qDebug() << sql_query.lastError().text();
+            emit sendErrorText(sql_query.lastError().text());
         }
     }
     else{
@@ -97,7 +99,20 @@ QString SqlDataBase::getLastExpId(QString motor_id)
     if (!sql_query.exec(tempsql))
     {
         qDebug() << sql_query.lastError().text();
+        emit sendErrorText(sql_query.lastError().text());
     }
+    else{
+        if (sql_query.next()){
+            return sql_query.value("EXPID").toString();
+        }
+    }
+    return QString("null");
+}
+
+//调用该接口，从数据库中查询数据并返回查询结果
+QVector<QVector<QString> > SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString motor_mode)
+{
+
 }
 
 void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,QVector<QString> motor)
@@ -108,6 +123,7 @@ void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_n
     if(!sql_query.exec(query_str))
     {
         qDebug() << sql_query.lastError().text();
+        emit sendErrorText(sql_query.lastError().text());
     }
 }
 
@@ -120,6 +136,7 @@ void SqlDataBase::queryFromDB(QString query_string)
     if (!pspl_query->exec(query_string))
     {
         qDebug() << pspl_query->lastError().text();
+        emit sendErrorText(pspl_query->lastError().text());
     }
     else{
         emit sendQueryRes(pspl_query);

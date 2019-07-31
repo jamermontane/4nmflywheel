@@ -27,8 +27,10 @@ public:
 
     QString makeSaveString(QString exp_name, QString usr_name, QString exp_no, QVector<QString>);
     QString getLastExpId(QString motor_id);
+    QVector<QVector<QString> > getExpDataFromSqlDB(QString motor_id,QString exp_id,QString motor_mode);
 signals:
     void sendQueryRes(QSharedPointer<QSqlQuery>);
+    void sendErrorText(QString);
 public slots:
     void insertIntoDB(QString exp_name, QString usr_name, QString exp_no, QVector<QString> motor);
     void queryFromDB(QString);

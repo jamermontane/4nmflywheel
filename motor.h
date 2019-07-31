@@ -15,9 +15,14 @@ static const double J_ = 0.0064;
 static const double PI_ = 3.1415926;
 
 //模式编号定义
-#define FLYWHEEL_MODE_STOP  0
-#define FLYWHEEL_MODE_XP    1
-
+enum FLYWHEEL_MODE{
+    FLYWHEEL_MODE_SPD,          //速度
+    FLYWHEEL_MODE_XP,           //斜坡
+    FLYWHEEL_MODE_TOR,          //力矩
+    FLYWHEEL_MODE_AUTOTESTNOAIR,    //自动测试1
+    FLYWHEEL_MODE_AUTOTEST2,    //自动测试2
+    FLYWHEEL_MODE_AUTOTEST3,    //自动测试3
+};
 /*
  * 电机类
  * 如果后期发现时间效率达不到要求，部分计算算法可以优化
@@ -49,6 +54,7 @@ signals:
     void sendErrorText(QString);
 public slots:
     void setSetSpeed(const double spd){
+        mode_ = FLYWHEEL_MODE_SPD;
         this->setSpd_ = spd;
         emit sendMoTorSpd(setSpd_,acc_);
     }
@@ -74,10 +80,12 @@ public slots:
     }
 
     void setTorque(const double tor){
+
         this->torque_ = tor;
 
     }
     void setSetTorque(const double setTor){
+        mode_ = FLYWHEEL_MODE_TOR;
         this->setTorque_ = setTor;
         emit sendMoTorTor(setTor);
     }
@@ -137,7 +145,13 @@ public:
         this->channel_ = str;
     }
 
+    FLYWHEEL_MODE getFlywheelMode() const{
+        return mode_;
+    }
 
+    void setFlywheelMode(FLYWHEEL_MODE mode){
+        mode_ = mode;
+    }
 
 private:
     uint id_;
@@ -153,7 +167,8 @@ private:
     bool isRunning_;
     QString channel_;
 
-
+    //模式代码
+    FLYWHEEL_MODE mode_;
 };
 
 class Motor : public MotorBasic{
@@ -167,6 +182,23 @@ public:
     {
         initXpMode(0,0);
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(setLastTen(double)));
+
+        //非真空测试数据初始化
+        noair_test_containor_raw_data_.append(0);
+        noair_test_containor_raw_data_.append(100);
+        noair_test_containor_raw_data_.append(500);
+        noair_test_containor_raw_data_.append(1000);
+        noair_test_containor_raw_data_.append(1500);
+        noair_test_containor_raw_data_.append(2000);
+        noair_test_containor_raw_data_.append(2500);
+        noair_test_containor_raw_data_.append(3000);
+        noair_test_containor_raw_data_.append(-3000);
+        noair_test_containor_raw_data_.append(-2500);
+        noair_test_containor_raw_data_.append(-2000);
+        noair_test_containor_raw_data_.append(-1500);
+        noair_test_containor_raw_data_.append(-1000);
+        noair_test_containor_raw_data_.append(-500);
+        noair_test_containor_raw_data_.append(0);
 
     }
     ~Motor(){
@@ -218,6 +250,8 @@ public:
     QString getExpId() const{
         return this->exp_id_;
     }
+    //从外部得到当前非真空测试项目
+    QList<double> getNoAirTestUnit() const;
 
 public slots:
     //get last ten
@@ -281,7 +315,7 @@ public slots:
 
     //设置角动量
     void setAngularMomentum(){
-        this->angular_momentum_ = 9.55*J_*this->last_ten_spd_;
+        this->angular_momentum_ = 9.55*J_ * this->last_ten_spd_;
     }
     //设置角动量常值偏差
     void setAngularMomentumConst(){
@@ -321,6 +355,9 @@ public slots:
 
     //斜坡模式
     void calXpMode(){
+
+        setFlywheelMode(FLYWHEEL_MODE_XP);
+
         if (qAbs(qAbs(getSpeed()) - qAbs(xp_end_spd_)) > qAbs(xp_spd_interval_)){
             double ctl_spd = getSpeed()+xp_spd_interval_;
             if (ctl_spd < -6050){
@@ -339,26 +376,16 @@ public slots:
     }
 
     void initTestModeWithAir(){
+
+        setFlywheelMode(FLYWHEEL_MODE_AUTOTESTNOAIR);
+
         exp_id_ = QDateTime::currentDateTime().toString("yyMMddhhmmss");
         if (is_noair_init_){
             return;
         }
         noair_test_containor_.clear();
-        noair_test_containor_.append(0);
-        noair_test_containor_.append(100);
-        noair_test_containor_.append(500);
-        noair_test_containor_.append(1000);
-        noair_test_containor_.append(1500);
-        noair_test_containor_.append(2000);
-        noair_test_containor_.append(2500);
-        noair_test_containor_.append(3000);
-        noair_test_containor_.append(-3000);
-        noair_test_containor_.append(-2500);
-        noair_test_containor_.append(-2000);
-        noair_test_containor_.append(-1500);
-        noair_test_containor_.append(-1000);
-        noair_test_containor_.append(-500);
-        noair_test_containor_.append(0);
+        noair_test_containor_ = noair_test_containor_raw_data_;
+
         is_noair_init_ = true;
         if(p_timer_auto_test_ == nullptr){
             p_timer_auto_test_ = new QTimer;
@@ -446,10 +473,9 @@ private:
     double xp_end_spd_;
     double xp_spd_interval_;
 
-    //模式代码
-
     //非真空测试
     QList<double> noair_test_containor_;
+    QList<double> noair_test_containor_raw_data_;
     bool is_noair_init_ = false;
     bool is_timer_started = false;
     QTimer* p_timer_auto_test_ = nullptr;
