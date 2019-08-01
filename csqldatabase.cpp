@@ -170,8 +170,12 @@ void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res)
             t.append(query_res.value(i).toString());
         }
         res.push_back(std::move(t));
+        if (res.size() >50){
+            emit emitExpData(res);
+            res.clear();
+        }
     }
-    emit emitExpData(res);
+
 }
 
 

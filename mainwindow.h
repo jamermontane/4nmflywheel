@@ -94,6 +94,7 @@ private:
     //数据库部分
     SqlDataBase* p_sql_;
     QThread* p_sql_thread_;
+    uint tab_num_ = 0;
 
 };
 

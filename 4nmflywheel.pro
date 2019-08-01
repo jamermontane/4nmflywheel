@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     csqldatabase.cpp \
     motor.cpp \
     qcustomplot.cpp \
-    motordriver.cpp
+    motordriver.cpp \
+    qmotorreport.cpp
 
 HEADERS  += mainwindow.h \
     csqldatabase.h \
     motor.h \
     qcustomplot.h \
-    motordriver.h
+    motordriver.h \
+    qmotorreport.h
 
 FORMS    += mainwindow.ui
 

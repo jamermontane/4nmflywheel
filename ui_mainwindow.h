@@ -1306,7 +1306,9 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tab_7), QApplication::translate("MainWindow", "\351\243\236\350\275\2566", 0));
         groupBox_8->setTitle(QApplication::translate("MainWindow", "\345\256\236\351\252\214\344\277\241\346\201\257", 0));
         label_12->setText(QApplication::translate("MainWindow", "\345\256\236\351\252\214ID", 0));
+        lineEdit_sql_motor_id->setText(QApplication::translate("MainWindow", "MOTOR1", 0));
         label_14->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256\346\250\241\345\274\217", 0));
+        lineEdit_sql_exp_id->setText(QString());
         label_13->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256ID", 0));
         pushButton_sql_query->setText(QApplication::translate("MainWindow", "\346\237\245\350\257\242", 0));
         pushButton_make_report->setText(QApplication::translate("MainWindow", "\347\224\237\346\210\220\346\212\245\345\221\212", 0));
