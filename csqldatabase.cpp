@@ -3,8 +3,12 @@
 SqlDataBase::SqlDataBase(QObject *parent) : QObject(parent)
 {
     sqlInit();
-    qRegisterMetaType<QSharedPointer<QSqlQuery>>("QSharedPointer<QSqlQuery>");
+    qRegisterMetaType<QSqlQuery>("QSqlQuery");
     qRegisterMetaType<QVector<QString>>("QVector<QString>");
+    qRegisterMetaType<QVector<QVector<QString> >>("QVector<QVector<QString> >");
+
+
+    connect(this,&SqlDataBase::sendQueryRes,this,&SqlDataBase::analysisSqlForDocRes);
 }
 
 bool SqlDataBase::sqlInit()
@@ -29,7 +33,25 @@ bool SqlDataBase::sqlInit()
         emit sendErrorText(" sql init error!");
         return false;
     }
+    p_sql_query_ = new QSqlQuery(m_data_base_);
     return true;
+}
+
+void SqlDataBase::doSqlQuery(QString query_str, bool need_return)
+{
+    if (!p_sql_query_->exec(query_str))
+    {
+        qDebug() << p_sql_query_->lastError().text();
+        emit sendErrorText(p_sql_query_->lastError().text());
+    }
+    else{
+        if (need_return){
+            emit sendQueryRes(*p_sql_query_);
+        }
+        else{
+            return;
+        }
+    }
 }
 
 QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString exp_no,
@@ -54,7 +76,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         tempsql.append("([EXPID] VARCHAR (50),[EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
-                       "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,"
+                       "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,[FLYWHEELMODE] VARCHAR (50),"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
 
         QSqlQuery sql_query(m_data_base_);
@@ -69,7 +91,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append(motor.at(0));
         query_string.append("([EXPID],[EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
                             ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
-                            ") VALUES(");
+                            ",[FLYWHEELMODE]) VALUES(");
         query_string.append("'"+motor.at(1)+"',");
         query_string.append("'"+exp_name+"',");
         query_string.append("'"+usr_name+"',");
@@ -84,7 +106,8 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append("'"+motor.at(9)+"',");
         query_string.append("'"+motor.at(10)+"',");
         query_string.append("'"+motor.at(11)+"',");
-        query_string.append("'"+motor.at(12)+"'");
+        query_string.append("'"+motor.at(12)+"',");
+        query_string.append("'"+motor.at(13)+"'");
         query_string.append(")");
     }
     return query_string;
@@ -110,37 +133,45 @@ QString SqlDataBase::getLastExpId(QString motor_id)
 }
 
 //调用该接口，从数据库中查询数据并返回查询结果
-QVector<QVector<QString> > SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString motor_mode)
+void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString motor_mode)
 {
+    QString query_str = "SELECT * FROM ";
+    query_str.append(motor_id);
+    if (exp_id.size() != 0){
+        query_str.append(" WHERE EXPID = ");
+        query_str.append(exp_id);
+    }
+    if (motor_mode.size() != 0){
+        if (exp_id.size() != 0) query_str.append(" AND ");
+        else query_str.append(" WHERE ");
+        query_str.append(" FLYWHEELMODE = ");
+        query_str.append(motor_mode);
+    }
 
+
+
+    doSqlQuery(query_str,true);
 }
 
 void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,QVector<QString> motor)
 {
 //    qDebug()<<"SQL:"<<QThread::currentThreadId();
     QString query_str = makeSaveString(exp_name, usr_name, exp_no,motor);
-    static QSqlQuery sql_query(m_data_base_);
-    if(!sql_query.exec(query_str))
-    {
-        qDebug() << sql_query.lastError().text();
-        emit sendErrorText(sql_query.lastError().text());
-    }
+    doSqlQuery(query_str,false);
+
 }
 
-void SqlDataBase::queryFromDB(QString query_string)
+void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res)
 {
-
-    QSharedPointer<QSqlQuery> pspl_query = QSharedPointer<QSqlQuery>(new QSqlQuery(m_data_base_));
-
-
-    if (!pspl_query->exec(query_string))
-    {
-        qDebug() << pspl_query->lastError().text();
-        emit sendErrorText(pspl_query->lastError().text());
+    QVector<QVector<QString> > res;
+    while(query_res.next()){
+        QVector<QString> t;
+        for (int i =0;i<17;++i){
+            t.append(query_res.value(i).toString());
+        }
+        res.push_back(std::move(t));
     }
-    else{
-        emit sendQueryRes(pspl_query);
-    }
+    emit emitExpData(res);
 }
 
 

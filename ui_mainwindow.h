@@ -30,6 +30,7 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTableView>
 #include <QtWidgets/QWidget>
 #include <qcustomplot.h>
 
@@ -182,6 +183,23 @@ public:
     QWidget *tab_6;
     QWidget *tab_7;
     QWidget *tab_3;
+    QGridLayout *gridLayout_15;
+    QGroupBox *groupBox_8;
+    QGridLayout *gridLayout_5;
+    QLabel *label_12;
+    QLineEdit *lineEdit_sql_motor_mode;
+    QLineEdit *lineEdit_sql_motor_id;
+    QLabel *label_14;
+    QLineEdit *lineEdit_sql_exp_id;
+    QLabel *label_13;
+    QPushButton *pushButton_sql_query;
+    QPushButton *pushButton_make_report;
+    QSpacerItem *horizontalSpacer_2;
+    QSpacerItem *horizontalSpacer_8;
+    QSpacerItem *horizontalSpacer_9;
+    QGroupBox *groupBox_9;
+    QGridLayout *gridLayout_6;
+    QTableView *tableView_sql;
     QMenuBar *menuBar;
     QMenu *menu;
     QMenu *menu_2;
@@ -1070,6 +1088,85 @@ public:
         tabWidget->addTab(tab_7, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QStringLiteral("tab_3"));
+        gridLayout_15 = new QGridLayout(tab_3);
+        gridLayout_15->setSpacing(6);
+        gridLayout_15->setContentsMargins(11, 11, 11, 11);
+        gridLayout_15->setObjectName(QStringLiteral("gridLayout_15"));
+        groupBox_8 = new QGroupBox(tab_3);
+        groupBox_8->setObjectName(QStringLiteral("groupBox_8"));
+        gridLayout_5 = new QGridLayout(groupBox_8);
+        gridLayout_5->setSpacing(6);
+        gridLayout_5->setContentsMargins(11, 11, 11, 11);
+        gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
+        label_12 = new QLabel(groupBox_8);
+        label_12->setObjectName(QStringLiteral("label_12"));
+
+        gridLayout_5->addWidget(label_12, 0, 0, 1, 1);
+
+        lineEdit_sql_motor_mode = new QLineEdit(groupBox_8);
+        lineEdit_sql_motor_mode->setObjectName(QStringLiteral("lineEdit_sql_motor_mode"));
+
+        gridLayout_5->addWidget(lineEdit_sql_motor_mode, 0, 7, 1, 1);
+
+        lineEdit_sql_motor_id = new QLineEdit(groupBox_8);
+        lineEdit_sql_motor_id->setObjectName(QStringLiteral("lineEdit_sql_motor_id"));
+
+        gridLayout_5->addWidget(lineEdit_sql_motor_id, 0, 4, 1, 1);
+
+        label_14 = new QLabel(groupBox_8);
+        label_14->setObjectName(QStringLiteral("label_14"));
+
+        gridLayout_5->addWidget(label_14, 0, 6, 1, 1);
+
+        lineEdit_sql_exp_id = new QLineEdit(groupBox_8);
+        lineEdit_sql_exp_id->setObjectName(QStringLiteral("lineEdit_sql_exp_id"));
+
+        gridLayout_5->addWidget(lineEdit_sql_exp_id, 0, 1, 1, 1);
+
+        label_13 = new QLabel(groupBox_8);
+        label_13->setObjectName(QStringLiteral("label_13"));
+
+        gridLayout_5->addWidget(label_13, 0, 3, 1, 1);
+
+        pushButton_sql_query = new QPushButton(groupBox_8);
+        pushButton_sql_query->setObjectName(QStringLiteral("pushButton_sql_query"));
+
+        gridLayout_5->addWidget(pushButton_sql_query, 0, 9, 1, 1);
+
+        pushButton_make_report = new QPushButton(groupBox_8);
+        pushButton_make_report->setObjectName(QStringLiteral("pushButton_make_report"));
+
+        gridLayout_5->addWidget(pushButton_make_report, 1, 9, 1, 1);
+
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout_5->addItem(horizontalSpacer_2, 0, 2, 1, 1);
+
+        horizontalSpacer_8 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout_5->addItem(horizontalSpacer_8, 0, 5, 1, 1);
+
+        horizontalSpacer_9 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout_5->addItem(horizontalSpacer_9, 0, 8, 1, 1);
+
+
+        gridLayout_15->addWidget(groupBox_8, 0, 0, 1, 1);
+
+        groupBox_9 = new QGroupBox(tab_3);
+        groupBox_9->setObjectName(QStringLiteral("groupBox_9"));
+        gridLayout_6 = new QGridLayout(groupBox_9);
+        gridLayout_6->setSpacing(6);
+        gridLayout_6->setContentsMargins(11, 11, 11, 11);
+        gridLayout_6->setObjectName(QStringLiteral("gridLayout_6"));
+        tableView_sql = new QTableView(groupBox_9);
+        tableView_sql->setObjectName(QStringLiteral("tableView_sql"));
+
+        gridLayout_6->addWidget(tableView_sql, 0, 0, 1, 1);
+
+
+        gridLayout_15->addWidget(groupBox_9, 1, 0, 1, 1);
+
         tabWidget->addTab(tab_3, QString());
 
         gridLayout_10->addWidget(tabWidget, 1, 0, 1, 1);
@@ -1094,7 +1191,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(6);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -1207,6 +1304,13 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tab_5), QApplication::translate("MainWindow", "\351\243\236\350\275\2564", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_6), QApplication::translate("MainWindow", "\351\243\236\350\275\2565", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_7), QApplication::translate("MainWindow", "\351\243\236\350\275\2566", 0));
+        groupBox_8->setTitle(QApplication::translate("MainWindow", "\345\256\236\351\252\214\344\277\241\346\201\257", 0));
+        label_12->setText(QApplication::translate("MainWindow", "\345\256\236\351\252\214ID", 0));
+        label_14->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256\346\250\241\345\274\217", 0));
+        label_13->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256ID", 0));
+        pushButton_sql_query->setText(QApplication::translate("MainWindow", "\346\237\245\350\257\242", 0));
+        pushButton_make_report->setText(QApplication::translate("MainWindow", "\347\224\237\346\210\220\346\212\245\345\221\212", 0));
+        groupBox_9->setTitle(QApplication::translate("MainWindow", "\346\237\245\350\257\242\347\273\223\346\236\234", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\237\245\350\257\242\345\216\206\345\217\262\346\225\260\346\215\256", 0));
         menu->setTitle(QApplication::translate("MainWindow", "\347\263\273\347\273\237\350\256\276\347\275\256", 0));
         menu_2->setTitle(QApplication::translate("MainWindow", "\345\205\263\344\272\216", 0));

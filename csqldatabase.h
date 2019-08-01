@@ -21,21 +21,24 @@ public:
     explicit SqlDataBase(QObject *parent = 0);
     bool sqlInit();
     ~SqlDataBase(){
+        delete p_sql_query_;
         m_data_base_.close();
     }
 
-
+    void doSqlQuery(QString query_str,bool need_return);
     QString makeSaveString(QString exp_name, QString usr_name, QString exp_no, QVector<QString>);
     QString getLastExpId(QString motor_id);
-    QVector<QVector<QString> > getExpDataFromSqlDB(QString motor_id,QString exp_id,QString motor_mode);
+    void getExpDataFromSqlDB(QString motor_id,QString exp_id,QString motor_mode);
 signals:
-    void sendQueryRes(QSharedPointer<QSqlQuery>);
+    void emitExpData(QVector<QVector<QString> >);
+    void sendQueryRes(QSqlQuery);
     void sendErrorText(QString);
 public slots:
     void insertIntoDB(QString exp_name, QString usr_name, QString exp_no, QVector<QString> motor);
-    void queryFromDB(QString);
+    void analysisSqlForDocRes(QSqlQuery);
 private:
     QSqlDatabase m_data_base_;
+    QSqlQuery* p_sql_query_;
 };
 
 #endif // CSQLDATABASE_H

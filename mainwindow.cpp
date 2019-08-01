@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_sys_status_1_(false)
 {
     ui->setupUi(this);
+    qRegisterMetaType<QVector<QVector<QString> >>("QVector<QVector<QString> >");
     qRegisterMetaType<QVector<QString>>("QVector<QString>");
     qDebug()<<"MAIN THREAD:"<<QThread::currentThreadId();
     initCombox();
@@ -80,7 +81,7 @@ void MainWindow::initSql()
     p_sql_->sqlInit();
     connect(this,&MainWindow::sendToSqlDB,p_sql_,&SqlDataBase::insertIntoDB);
     connect(p_sql_,&SqlDataBase::sendErrorText,this,&MainWindow::logMsg);
-
+    connect(p_sql_,&SqlDataBase::emitExpData,this,&MainWindow::updataSqlTableView);
     p_sql_thread_->start();
 }
 
@@ -256,6 +257,7 @@ QVector<QString> MainWindow::makeSqlVector(Motor &motor)
     res.append(QString::number(motor.getAngularMomentum()));
     res.append(QString::number(motor.getAngularMomentumConst()));
     res.append(QString::number(motor.getAngularMomentumDynamic()));
+    res.append(QString::number(motor.getFlywheelMode()));
     return res;
 }
 //更新电机1 总控制函数
@@ -424,5 +426,49 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
         else{
             QMessageBox::warning(this,"警告","运行失败，请检查当前状态。");
         }
+    }
+}
+
+void MainWindow::on_pushButton_sql_query_clicked()
+{
+
+    p_sql_->getExpDataFromSqlDB(ui->lineEdit_sql_motor_id->text(),ui->lineEdit_sql_exp_id->text()
+                                ,ui->lineEdit_sql_motor_mode->text());
+}
+
+void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
+{
+    static QStandardItemModel  *model = nullptr;
+    if (model == nullptr)
+        model = new QStandardItemModel();
+    else
+        model->clear();
+    model->setColumnCount(17);
+    model->setHeaderData(0,Qt::Horizontal,"实验ID");
+    model->setHeaderData(1,Qt::Horizontal,"实验名称");
+    model->setHeaderData(2,Qt::Horizontal,"人员名称");
+    model->setHeaderData(3,Qt::Horizontal,"实验编号");
+    model->setHeaderData(4,Qt::Horizontal,"飞轮编号");
+    model->setHeaderData(5,Qt::Horizontal,"飞轮电压");
+    model->setHeaderData(6,Qt::Horizontal,"飞轮电流");
+    model->setHeaderData(7,Qt::Horizontal,"飞轮设置速度");
+    model->setHeaderData(8,Qt::Horizontal,"飞轮实际速度");
+    model->setHeaderData(9,Qt::Horizontal,"飞轮设置力矩");
+    model->setHeaderData(10,Qt::Horizontal,"飞轮实际力矩");
+    model->setHeaderData(11,Qt::Horizontal,"飞轮功率");
+    model->setHeaderData(12,Qt::Horizontal,"飞轮角动量");
+    model->setHeaderData(13,Qt::Horizontal,"飞轮角动量常值偏差");
+    model->setHeaderData(14,Qt::Horizontal,"飞轮角动量动态偏差");
+    model->setHeaderData(15,Qt::Horizontal,"飞轮运行模式");
+    model->setHeaderData(16,Qt::Horizontal,"运行时间");
+    ui->tableView_sql->setModel(model);
+    int i = 0;
+    for (QVector<QString> &query_dispResult_:res){
+        for (int j=0;j<17;++j){
+        model->setItem(i,j,new QStandardItem(query_dispResult_.at(j)));
+        //设置字符位置
+        model->item(i,j)->setTextAlignment(Qt::AlignCenter);
+        }
+        i++;
     }
 }

@@ -54,7 +54,6 @@ signals:
     void sendErrorText(QString);
 public slots:
     void setSetSpeed(const double spd){
-        mode_ = FLYWHEEL_MODE_SPD;
         this->setSpd_ = spd;
         emit sendMoTorSpd(setSpd_,acc_);
     }
@@ -168,7 +167,7 @@ private:
     QString channel_;
 
     //模式代码
-    FLYWHEEL_MODE mode_;
+    FLYWHEEL_MODE mode_ = FLYWHEEL_MODE_SPD;
 };
 
 class Motor : public MotorBasic{
