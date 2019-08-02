@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
-
+QT       += core gui printsupport axcontainer
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 4nmflywheel

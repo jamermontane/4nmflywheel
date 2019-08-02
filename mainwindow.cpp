@@ -258,6 +258,9 @@ QVector<QString> MainWindow::makeSqlVector(Motor &motor)
     res.append(QString::number(motor.getAngularMomentumConst()));
     res.append(QString::number(motor.getAngularMomentumDynamic()));
     res.append(QString::number(motor.getFlywheelMode()));
+//    res.append();
+    res.append(QString::number(motor.getFlywheelMode()));
+    res.append(QString::number(motor.getFlywheelMode()));
     return res;
 }
 //更新电机1 总控制函数
@@ -472,5 +475,9 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
         model->item(tab_num_,j)->setTextAlignment(Qt::AlignCenter);
         }
         tab_num_++;
+        //只显示前1000条，防止太多卡死
+        if (tab_num_ >1000){
+            return;
+        }
     }
 }

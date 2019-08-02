@@ -77,6 +77,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
                        "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,[FLYWHEELMODE] VARCHAR (50),"
+                       "[VACUUM] VARCHAR (50),[EXPADDRESS] VARCHAR (50),[ACTCUR] DOUBLE ,"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
 
         QSqlQuery sql_query(m_data_base_);
@@ -91,7 +92,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append(motor.at(0));
         query_string.append("([EXPID],[EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
                             ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
-                            ",[FLYWHEELMODE]) VALUES(");
+                            ",[FLYWHEELMODE],[VACUUM],[EXPADDRESS],[ACTCUR]) VALUES(");
         query_string.append("'"+motor.at(1)+"',");
         query_string.append("'"+exp_name+"',");
         query_string.append("'"+usr_name+"',");
@@ -107,7 +108,10 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append("'"+motor.at(10)+"',");
         query_string.append("'"+motor.at(11)+"',");
         query_string.append("'"+motor.at(12)+"',");
-        query_string.append("'"+motor.at(13)+"'");
+        query_string.append("'"+motor.at(13)+"',");
+        query_string.append("'"+motor.at(14)+"',");
+        query_string.append("'"+motor.at(15)+"',");
+        query_string.append("'"+motor.at(16)+"'");
         query_string.append(")");
     }
     return query_string;

@@ -145,6 +145,10 @@ public:
     QLineEdit *lineEdit_exp_fw_id_1;
     QLabel *label_31;
     QLineEdit *lineEdit_exp_cur_lim_1;
+    QLabel *label_15;
+    QLineEdit *lineEdit;
+    QLabel *label_16;
+    QLineEdit *lineEdit_2;
     QLabel *label_32;
     QPushButton *pushButton_system_power_1;
     QGroupBox *groupBox_3;
@@ -209,7 +213,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(1410, 755);
+        MainWindow->resize(1401, 820);
         MainWindow->setAutoFillBackground(false);
         actionSetting = new QAction(MainWindow);
         actionSetting->setObjectName(QStringLiteral("actionSetting"));
@@ -880,18 +884,44 @@ public:
 
         gridLayout_12->addWidget(lineEdit_exp_cur_lim_1, 3, 1, 1, 1);
 
+        label_15 = new QLabel(groupBox_2);
+        label_15->setObjectName(QStringLiteral("label_15"));
+
+        gridLayout_12->addWidget(label_15, 4, 0, 1, 1);
+
+        lineEdit = new QLineEdit(groupBox_2);
+        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        sizePolicy1.setHeightForWidth(lineEdit->sizePolicy().hasHeightForWidth());
+        lineEdit->setSizePolicy(sizePolicy1);
+        lineEdit->setMaximumSize(QSize(130, 16777215));
+
+        gridLayout_12->addWidget(lineEdit, 4, 1, 1, 1);
+
+        label_16 = new QLabel(groupBox_2);
+        label_16->setObjectName(QStringLiteral("label_16"));
+
+        gridLayout_12->addWidget(label_16, 5, 0, 1, 1);
+
+        lineEdit_2 = new QLineEdit(groupBox_2);
+        lineEdit_2->setObjectName(QStringLiteral("lineEdit_2"));
+        sizePolicy1.setHeightForWidth(lineEdit_2->sizePolicy().hasHeightForWidth());
+        lineEdit_2->setSizePolicy(sizePolicy1);
+        lineEdit_2->setMaximumSize(QSize(130, 16777215));
+
+        gridLayout_12->addWidget(lineEdit_2, 5, 1, 1, 1);
+
         label_32 = new QLabel(groupBox_2);
         label_32->setObjectName(QStringLiteral("label_32"));
         sizePolicy4.setHeightForWidth(label_32->sizePolicy().hasHeightForWidth());
         label_32->setSizePolicy(sizePolicy4);
 
-        gridLayout_12->addWidget(label_32, 4, 0, 1, 1);
+        gridLayout_12->addWidget(label_32, 6, 0, 1, 1);
 
         pushButton_system_power_1 = new QPushButton(groupBox_2);
         pushButton_system_power_1->setObjectName(QStringLiteral("pushButton_system_power_1"));
         pushButton_system_power_1->setMaximumSize(QSize(100, 16777215));
 
-        gridLayout_12->addWidget(pushButton_system_power_1, 4, 1, 1, 1);
+        gridLayout_12->addWidget(pushButton_system_power_1, 6, 1, 1, 1);
 
 
         gridLayout_17->addWidget(groupBox_2, 0, 0, 1, 1);
@@ -1174,7 +1204,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1410, 26));
+        menuBar->setGeometry(QRect(0, 0, 1401, 26));
         menu = new QMenu(menuBar);
         menu->setObjectName(QStringLiteral("menu"));
         menu_2 = new QMenu(menuBar);
@@ -1191,7 +1221,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(6);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -1277,6 +1307,8 @@ public:
         lineEdit_exp_fw_id_1->setText(QApplication::translate("MainWindow", "\346\265\213\350\257\225\346\240\267\345\223\2011", 0));
         label_31->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\231\220\346\265\201", 0));
         lineEdit_exp_cur_lim_1->setText(QApplication::translate("MainWindow", "2", 0));
+        label_15->setText(QApplication::translate("MainWindow", "\345\256\236\351\252\214\345\234\260\347\202\271", 0));
+        label_16->setText(QApplication::translate("MainWindow", "\347\234\237\347\251\272\345\272\246", 0));
         label_32->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256\347\224\265\346\272\220", 0));
         pushButton_system_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\345\256\236\346\227\266\346\230\276\347\244\272", 0));
