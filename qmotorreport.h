@@ -10,7 +10,7 @@ class QMotorReport : public QObject
     Q_OBJECT
 public:
     explicit QMotorReport(QObject *parent = 0);
-
+    void setExpInfomation(QVector<QString>&);
 signals:
 
 public slots:
@@ -23,7 +23,11 @@ private:
     QString             usr_name_;
     QString             exp_no_;
     QString             exp_time_;
+    QString             exp_address_;
+    QString             exp_vacuum_;
     QString             flywheel_no_;
+    QString             flywheel_mode_;
+    QString             flywheel_act_cur_;
     QVector<double>     flywheel_vol_;
     QVector<double>     flywheel_cur_;
     QVector<double>     flywheel_setSpd_;

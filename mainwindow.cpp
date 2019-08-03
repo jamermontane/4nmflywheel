@@ -258,9 +258,9 @@ QVector<QString> MainWindow::makeSqlVector(Motor &motor)
     res.append(QString::number(motor.getAngularMomentumConst()));
     res.append(QString::number(motor.getAngularMomentumDynamic()));
     res.append(QString::number(motor.getFlywheelMode()));
-//    res.append();
-    res.append(QString::number(motor.getFlywheelMode()));
-    res.append(QString::number(motor.getFlywheelMode()));
+    res.append(ui->lineEdit_vacuum->text());
+    res.append(ui->lineEdit_exp_address->text());
+    res.append(QString::number(motor.getActCur()));
     return res;
 }
 //更新电机1 总控制函数
@@ -447,7 +447,7 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
     }
     if (tab_num_ == 0){
         model->clear();
-        model->setColumnCount(17);
+        model->setColumnCount(20);
         model->setHeaderData(0,Qt::Horizontal,"实验ID");
         model->setHeaderData(1,Qt::Horizontal,"实验名称");
         model->setHeaderData(2,Qt::Horizontal,"人员名称");
@@ -464,20 +464,20 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
         model->setHeaderData(13,Qt::Horizontal,"飞轮角动量常值偏差");
         model->setHeaderData(14,Qt::Horizontal,"飞轮角动量动态偏差");
         model->setHeaderData(15,Qt::Horizontal,"飞轮运行模式");
-        model->setHeaderData(16,Qt::Horizontal,"运行时间");
+        model->setHeaderData(16,Qt::Horizontal,"真空度");
+        model->setHeaderData(17,Qt::Horizontal,"实验地点");
+        model->setHeaderData(18,Qt::Horizontal,"采集电流");
+        model->setHeaderData(19,Qt::Horizontal,"运行时间");
         ui->tableView_sql->setModel(model);
     }
 
     for (QVector<QString> &query_dispResult_:res){
-        for (int j=0;j<17;++j){
+        for (int j=0;j<20;++j){
         model->setItem(tab_num_,j,new QStandardItem(query_dispResult_.at(j)));
         //设置字符位置
         model->item(tab_num_,j)->setTextAlignment(Qt::AlignCenter);
         }
         tab_num_++;
-        //只显示前1000条，防止太多卡死
-        if (tab_num_ >1000){
-            return;
-        }
+
     }
 }

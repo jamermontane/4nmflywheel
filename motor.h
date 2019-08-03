@@ -252,7 +252,7 @@ public:
     //从外部得到当前非真空测试项目
     QList<double> getNoAirTestUnit() const;
     //读取采集到的电流
-    void getActCur()const{
+    double getActCur()const{
         return this->act_cur_;
     }
 public slots:
@@ -475,7 +475,7 @@ private:
     //当前运行间隔
     double current_interval = 0.5;
     //实际电流（从数据采集卡采到的）
-    double act_cur_;
+    double act_cur_ = 0;
     //斜坡模式
     bool xp_status_;
     double xp_end_spd_;

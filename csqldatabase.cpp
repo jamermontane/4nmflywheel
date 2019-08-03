@@ -151,9 +151,7 @@ void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString 
         query_str.append(" FLYWHEELMODE = ");
         query_str.append(motor_mode);
     }
-
-
-
+    query_str.append(" LIMIT 1000");
     doSqlQuery(query_str,true);
 }
 
@@ -170,14 +168,11 @@ void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res)
     QVector<QVector<QString> > res;
     while(query_res.next()){
         QVector<QString> t;
-        for (int i =0;i<17;++i){
+        for (int i =0;i<20;++i){
             t.append(query_res.value(i).toString());
         }
         res.push_back(std::move(t));
-        if (res.size() >50){
-            emit emitExpData(res);
-            res.clear();
-        }
+        emit emitExpData(res);
     }
 
 }

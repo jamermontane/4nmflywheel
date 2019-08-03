@@ -146,9 +146,9 @@ public:
     QLabel *label_31;
     QLineEdit *lineEdit_exp_cur_lim_1;
     QLabel *label_15;
-    QLineEdit *lineEdit;
+    QLineEdit *lineEdit_exp_address;
     QLabel *label_16;
-    QLineEdit *lineEdit_2;
+    QLineEdit *lineEdit_vacuum;
     QLabel *label_32;
     QPushButton *pushButton_system_power_1;
     QGroupBox *groupBox_3;
@@ -889,26 +889,26 @@ public:
 
         gridLayout_12->addWidget(label_15, 4, 0, 1, 1);
 
-        lineEdit = new QLineEdit(groupBox_2);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
-        sizePolicy1.setHeightForWidth(lineEdit->sizePolicy().hasHeightForWidth());
-        lineEdit->setSizePolicy(sizePolicy1);
-        lineEdit->setMaximumSize(QSize(130, 16777215));
+        lineEdit_exp_address = new QLineEdit(groupBox_2);
+        lineEdit_exp_address->setObjectName(QStringLiteral("lineEdit_exp_address"));
+        sizePolicy1.setHeightForWidth(lineEdit_exp_address->sizePolicy().hasHeightForWidth());
+        lineEdit_exp_address->setSizePolicy(sizePolicy1);
+        lineEdit_exp_address->setMaximumSize(QSize(130, 16777215));
 
-        gridLayout_12->addWidget(lineEdit, 4, 1, 1, 1);
+        gridLayout_12->addWidget(lineEdit_exp_address, 4, 1, 1, 1);
 
         label_16 = new QLabel(groupBox_2);
         label_16->setObjectName(QStringLiteral("label_16"));
 
         gridLayout_12->addWidget(label_16, 5, 0, 1, 1);
 
-        lineEdit_2 = new QLineEdit(groupBox_2);
-        lineEdit_2->setObjectName(QStringLiteral("lineEdit_2"));
-        sizePolicy1.setHeightForWidth(lineEdit_2->sizePolicy().hasHeightForWidth());
-        lineEdit_2->setSizePolicy(sizePolicy1);
-        lineEdit_2->setMaximumSize(QSize(130, 16777215));
+        lineEdit_vacuum = new QLineEdit(groupBox_2);
+        lineEdit_vacuum->setObjectName(QStringLiteral("lineEdit_vacuum"));
+        sizePolicy1.setHeightForWidth(lineEdit_vacuum->sizePolicy().hasHeightForWidth());
+        lineEdit_vacuum->setSizePolicy(sizePolicy1);
+        lineEdit_vacuum->setMaximumSize(QSize(130, 16777215));
 
-        gridLayout_12->addWidget(lineEdit_2, 5, 1, 1, 1);
+        gridLayout_12->addWidget(lineEdit_vacuum, 5, 1, 1, 1);
 
         label_32 = new QLabel(groupBox_2);
         label_32->setObjectName(QStringLiteral("label_32"));
