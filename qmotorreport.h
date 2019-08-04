@@ -27,7 +27,7 @@ private:
     QString             exp_vacuum_;
     QString             flywheel_no_;
     QString             flywheel_mode_;
-    QString             flywheel_act_cur_;
+    QVector<double>     flywheel_act_cur_;
     QVector<double>     flywheel_vol_;
     QVector<double>     flywheel_cur_;
     QVector<double>     flywheel_setSpd_;

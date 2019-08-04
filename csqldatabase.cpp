@@ -37,7 +37,7 @@ bool SqlDataBase::sqlInit()
     return true;
 }
 
-void SqlDataBase::doSqlQuery(QString query_str, bool need_return)
+void SqlDataBase::doSqlQuery(QString query_str, int dst)
 {
     if (!p_sql_query_->exec(query_str))
     {
@@ -45,8 +45,11 @@ void SqlDataBase::doSqlQuery(QString query_str, bool need_return)
         emit sendErrorText(p_sql_query_->lastError().text());
     }
     else{
-        if (need_return){
-            emit sendQueryRes(*p_sql_query_);
+        if (dst == 1){
+            emit sendQueryRes(*p_sql_query_,1);
+        }
+        else if (dst == 2){
+            emit sendQueryRes(*p_sql_query_,2);
         }
         else{
             return;
@@ -152,18 +155,18 @@ void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString 
         query_str.append(motor_mode);
     }
     query_str.append(" LIMIT 1000");
-    doSqlQuery(query_str,true);
+    doSqlQuery(query_str,1);
 }
 
 void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,QVector<QString> motor)
 {
 //    qDebug()<<"SQL:"<<QThread::currentThreadId();
     QString query_str = makeSaveString(exp_name, usr_name, exp_no,motor);
-    doSqlQuery(query_str,false);
+    doSqlQuery(query_str,0);
 
 }
 
-void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res)
+void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res,int dst)
 {
     QVector<QVector<QString> > res;
     while(query_res.next()){
@@ -172,9 +175,28 @@ void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res)
             t.append(query_res.value(i).toString());
         }
         res.push_back(std::move(t));
-        emit emitExpData(res);
+        if (dst == 1)
+            emit emitExpData(res);
+        else if (dst == 2){
+            emit emitLastExpData(res);
+        }
     }
 
+}
+
+void SqlDataBase::getLastExpData(QString motor_id,QString motor_mode)
+{
+    QString query_str = "SELECT * FROM ";
+    query_str.append(motor_id);
+    query_str.append(" WHERE EXPID = ");
+    query_str.append(getLastExpId(motor_id));
+    if (motor_mode.size() != 0){
+        query_str.append(" AND ");
+        query_str.append(" WHERE ");
+        query_str.append(" FLYWHEELMODE = ");
+        query_str.append(motor_mode);
+    }
+    doSqlQuery(query_str,2);
 }
 
 

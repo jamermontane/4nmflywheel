@@ -12,6 +12,7 @@
 #include "motor.h"
 #include "motordriver.h"
 #include "csqldatabase.h"
+#include "qmotorreport.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +30,7 @@ public:
     void updateMotor1Display();
     void initQCustomPlot1();
     void initSql();
+    void initReport();
     QVector<QString> makeSqlVector(Motor &);
 signals:
     void sendToSqlDB(QString,QString,QString,QVector<QString>);
@@ -57,6 +59,8 @@ private slots:
     void on_pushButton_sql_query_clicked();
 
     void updataSqlTableView(QVector<QVector<QString> >);
+    void on_pushButton_make_report_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -96,6 +100,9 @@ private:
     QThread* p_sql_thread_;
     uint tab_num_ = 0;
 
+    //报表部分
+    QMotorReport* p_repoter_;
+    QThread* p_repoter_thread_;
 };
 
 #endif // MAINWINDOW_H
