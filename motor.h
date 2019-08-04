@@ -251,8 +251,16 @@ public:
     }
     //从外部得到当前非真空测试项目
     QList<double> getNoAirTestUnit() const;
-
+    //读取采集到的电流
+    double getActCur()const{
+        return this->act_cur_;
+    }
 public slots:
+    //设置采集到的电流
+    void setActCur(double cur){
+        this->act_cur_ = cur;
+    }
+
     //get last ten
     void setLastTen(double spd){
 //        qDebug()<<"motor thread:"<<QThread::currentThreadId();
@@ -466,7 +474,8 @@ private:
     double reaction_moment_;
     //当前运行间隔
     double current_interval = 0.5;
-
+    //实际电流（从数据采集卡采到的）
+    double act_cur_ = 0;
     //斜坡模式
     bool xp_status_;
     double xp_end_spd_;

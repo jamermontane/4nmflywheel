@@ -77,6 +77,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
                        "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
                        "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
                        "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,[FLYWHEELMODE] VARCHAR (50),"
+                       "[VACUUM] VARCHAR (50),[EXPADDRESS] VARCHAR (50),[ACTCUR] DOUBLE ,"
                        "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
 
         QSqlQuery sql_query(m_data_base_);
@@ -91,7 +92,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append(motor.at(0));
         query_string.append("([EXPID],[EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
                             ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
-                            ",[FLYWHEELMODE]) VALUES(");
+                            ",[FLYWHEELMODE],[VACUUM],[EXPADDRESS],[ACTCUR]) VALUES(");
         query_string.append("'"+motor.at(1)+"',");
         query_string.append("'"+exp_name+"',");
         query_string.append("'"+usr_name+"',");
@@ -107,7 +108,10 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
         query_string.append("'"+motor.at(10)+"',");
         query_string.append("'"+motor.at(11)+"',");
         query_string.append("'"+motor.at(12)+"',");
-        query_string.append("'"+motor.at(13)+"'");
+        query_string.append("'"+motor.at(13)+"',");
+        query_string.append("'"+motor.at(14)+"',");
+        query_string.append("'"+motor.at(15)+"',");
+        query_string.append("'"+motor.at(16)+"'");
         query_string.append(")");
     }
     return query_string;
@@ -147,9 +151,7 @@ void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString 
         query_str.append(" FLYWHEELMODE = ");
         query_str.append(motor_mode);
     }
-
-
-
+    query_str.append(" LIMIT 1000");
     doSqlQuery(query_str,true);
 }
 
@@ -166,12 +168,13 @@ void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res)
     QVector<QVector<QString> > res;
     while(query_res.next()){
         QVector<QString> t;
-        for (int i =0;i<17;++i){
+        for (int i =0;i<20;++i){
             t.append(query_res.value(i).toString());
         }
         res.push_back(std::move(t));
+        emit emitExpData(res);
     }
-    emit emitExpData(res);
+
 }
 
 

@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
-
+QT       += core gui printsupport axcontainer
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 4nmflywheel
@@ -17,13 +16,15 @@ SOURCES += main.cpp\
     csqldatabase.cpp \
     motor.cpp \
     qcustomplot.cpp \
-    motordriver.cpp
+    motordriver.cpp \
+    qmotorreport.cpp
 
 HEADERS  += mainwindow.h \
     csqldatabase.h \
     motor.h \
     qcustomplot.h \
-    motordriver.h
+    motordriver.h \
+    qmotorreport.h
 
 FORMS    += mainwindow.ui
 
