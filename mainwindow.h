@@ -34,6 +34,8 @@ public:
     QVector<QString> makeSqlVector(Motor &);
 signals:
     void sendToSqlDB(QString,QString,QString,QVector<QString>);
+    //请求从数据库中请求实验数据
+    void getLastExpData(QString,QString);
 public slots:
     void logMsg(QString);
 

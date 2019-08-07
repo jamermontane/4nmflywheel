@@ -124,7 +124,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
 //为了测试完成后自动生成报表
 QString SqlDataBase::getLastExpId(QString motor_id)
 {
-    QString tempsql = QString("select * from %1 where EXPID is not "" ORDER BY EXPID ASC LIMIT 1 ").arg(motor_id);
+    QString tempsql = QString("select * from %1 where EXPID is not \"\" ORDER BY EXPID ASC LIMIT 1 ").arg(motor_id);
     QSqlQuery sql_query(m_data_base_);
     if (!sql_query.exec(tempsql))
     {
@@ -166,6 +166,7 @@ void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_n
 
 }
 
+
 void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res,int dst)
 {
     QVector<QVector<QString> > res;
@@ -174,16 +175,16 @@ void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res,int dst)
         for (int i =0;i<20;++i){
             t.append(query_res.value(i).toString());
         }
-        res.push_back(std::move(t));
-        if (dst == 1)
-            emit emitExpData(res);
-        else if (dst == 2){
-            emit emitLastExpData(res);
-        }
+        res.push_back(std::move(t));   
     }
-
+    if (dst == 1)
+        emit emitExpData(res);
+    else if (dst == 2){
+        emit emitLastExpData(res);
+    }
 }
 
+//得到最后一次实验数据
 void SqlDataBase::getLastExpData(QString motor_id,QString motor_mode)
 {
     QString query_str = "SELECT * FROM ";

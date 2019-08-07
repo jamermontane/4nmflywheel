@@ -2,8 +2,13 @@
 #define QMOTORREPORT_H
 
 #include <QObject>
+#include <QDebug>
+#include <QString>
+#include <QList>
+#include <QVector>
+#include <QSet>
+
 #include <qword.h>
-#include <qstring.h>
 
 class QMotorReport : public QObject
 {
@@ -11,11 +16,39 @@ class QMotorReport : public QObject
 public:
     explicit QMotorReport(QObject *parent = 0);
     void setExpInfomation(QVector<QString>&);
+
+    //计算设置速度-实际速度
+    void calExpDataSetSpd();
+    //计算最大反作用力矩
+
+    //计算稳速功耗
+
+    //计算最大功耗
+
+    //计算最大角动量
+
+    //计算力矩控制特性
+
+    //转速模式电机电流
+
+    //启动摩擦力矩
+
+    //最大损失力矩
+
+    //力矩响应时间
+
+    //整机滑行时间
+
+    //浪涌电流测试
+
+
 signals:
 
 public slots:
     void getDataFromSql(QVector<QVector<QString> > res);
 
+    //从原始数据中提取和初始化被测数据
+    void initExpData();
 private:
     //实验相关参数
     QString             exp_id_;
@@ -27,6 +60,8 @@ private:
     QString             exp_vacuum_;
     QString             flywheel_no_;
     QString             flywheel_mode_;
+
+    //实验原始数据
     QVector<double>     flywheel_act_cur_;
     QVector<double>     flywheel_vol_;
     QVector<double>     flywheel_cur_;
@@ -40,6 +75,11 @@ private:
     QVector<double>     flywheel_JDL_dynamic_;
 
     //需要计算的值
+    QList<double> m_test_unit_setspd_;  //设置速度测试
+
+    //测试结果存放地点
+    //速度测试 1.平均速度 2.
+    QVector<QVector<double> > m_result_spd_;
 };
 
 #endif // QMOTORREPORT_H

@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initDriver1();
     initQCustomPlot1();
     initSql();
+    initReport();
 
     m_timer_get_data_.setInterval(100); //get data timer 0.1s
 
@@ -101,7 +102,8 @@ void MainWindow::initReport()
 
     //将接受数据与处理函数连接
 //    connect(p_sql_,&SqlDataBase::emitExpData,p_repoter_,&QMotorReport::getDataFromSql);
-
+    connect(this,&MainWindow::getLastExpData,p_sql_,&SqlDataBase::getLastExpData);
+    connect(p_sql_,&SqlDataBase::emitLastExpData,p_repoter_,&QMotorReport::getDataFromSql);
     p_repoter_thread_->start();
 }
 
@@ -506,5 +508,5 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
 
 void MainWindow::on_pushButton_make_report_clicked()
 {
-
+    emit getLastExpData(ui->lineEdit_sql_motor_id->text(),ui->lineEdit_sql_motor_mode->text());
 }
