@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initDriver1();
     initQCustomPlot1();
     initSql();
+    initReport();
 
     m_timer_get_data_.setInterval(100); //get data timer 0.1s
 
@@ -48,7 +49,7 @@ bool MainWindow::initDriver1()
     p_driver1_->moveToThread(p_driver_thread1_);
 
     connect(p_driver_thread1_,&QThread::finished,p_driver1_,&MotorDriver::deleteLater);
-    connect(p_driver_thread1_,&QThread::finished,p_driver_thread1_,&MotorDriver::deleteLater);
+    connect(p_driver_thread1_,&QThread::finished,p_driver_thread1_,&QThread::deleteLater);
     connect(p_driver1_,&MotorDriver::sendErrText,this,&MainWindow::logMsg);
     connect(p_driver_thread1_,&QThread::started,p_driver1_,&MotorDriver::init);
     //seems that should connect driver obj later
@@ -79,10 +80,32 @@ void MainWindow::initSql()
     p_sql_thread_ = new QThread;
     p_sql_->moveToThread(p_sql_thread_);
     p_sql_->sqlInit();
+
+    connect(p_sql_thread_,&QThread::finished,p_sql_,&SqlDataBase::deleteLater);
+    connect(p_sql_thread_,&QThread::finished,p_sql_thread_,&QThread::deleteLater);
+
     connect(this,&MainWindow::sendToSqlDB,p_sql_,&SqlDataBase::insertIntoDB);
+
     connect(p_sql_,&SqlDataBase::sendErrorText,this,&MainWindow::logMsg);
     connect(p_sql_,&SqlDataBase::emitExpData,this,&MainWindow::updataSqlTableView);
     p_sql_thread_->start();
+}
+
+void MainWindow::initReport()
+{
+    p_repoter_ = new QMotorReport;
+    p_repoter_thread_ = new QThread;
+    p_repoter_->moveToThread(p_repoter_thread_);
+
+    connect(p_sql_thread_,&QThread::finished,p_repoter_,&QMotorReport::deleteLater);
+    connect(p_sql_thread_,&QThread::finished,p_repoter_thread_,&QThread::deleteLater);
+
+    //将接受数据与处理函数连接
+//    connect(p_sql_,&SqlDataBase::emitExpData,p_repoter_,&QMotorReport::getDataFromSql);
+    connect(this,&MainWindow::getLastExpData,p_sql_,&SqlDataBase::getLastExpData);
+    connect(p_sql_,&SqlDataBase::emitLastExpData,p_repoter_,&QMotorReport::getDataFromSql);
+    connect(p_repoter_,&QMotorReport::logMsg,this,&MainWindow::logMsg);
+    p_repoter_thread_->start();
 }
 
 void MainWindow::initCombox()
@@ -482,4 +505,9 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
             break;
         }
     }
+}
+
+void MainWindow::on_pushButton_make_report_clicked()
+{
+    emit getLastExpData(ui->lineEdit_sql_motor_id->text(),ui->lineEdit_sql_motor_mode->text());
 }

@@ -25,17 +25,19 @@ public:
         m_data_base_.close();
     }
 
-    void doSqlQuery(QString query_str,bool need_return);
+    void doSqlQuery(QString query_str, int dst);
     QString makeSaveString(QString exp_name, QString usr_name, QString exp_no, QVector<QString>);
     QString getLastExpId(QString motor_id);
     void getExpDataFromSqlDB(QString motor_id,QString exp_id,QString motor_mode);
 signals:
     void emitExpData(QVector<QVector<QString> >);
-    void sendQueryRes(QSqlQuery);
+    void emitLastExpData(QVector<QVector<QString> >);
+    void sendQueryRes(QSqlQuery,int);
     void sendErrorText(QString);
 public slots:
     void insertIntoDB(QString exp_name, QString usr_name, QString exp_no, QVector<QString> motor);
-    void analysisSqlForDocRes(QSqlQuery);
+    void analysisSqlForDocRes(QSqlQuery, int dst);
+    void getLastExpData(QString motor_id,QString motor_mode);
 private:
     QSqlDatabase m_data_base_;
     QSqlQuery* p_sql_query_;
