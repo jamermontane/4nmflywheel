@@ -232,7 +232,7 @@ void MotorDriver::resolveDataFromSerialport()
             recv_cur_.array[2] = recv_data_buf[6];
             recv_cur_.array[1] = recv_data_buf[7];
             recv_cur_.array[0] = recv_data_buf[8];
-            emit sendMotorCur(recv_cur_.cur * 0.0017);
+            emit sendMotorCur(recv_cur_.cur * 0.001);
 
             if (recv_data_buf.size() == 11){
                 recv_data_buf.clear();

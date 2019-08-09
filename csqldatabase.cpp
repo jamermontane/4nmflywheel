@@ -151,7 +151,7 @@ void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString 
         query_str.append(" FLYWHEELMODE = ");
         query_str.append(motor_mode);
     }
-    query_str.append(" LIMIT 1000");
+    query_str.append(" LIMIT 100");
     doSqlQuery(query_str,true);
 }
 

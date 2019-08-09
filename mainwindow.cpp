@@ -478,6 +478,8 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
         model->item(tab_num_,j)->setTextAlignment(Qt::AlignCenter);
         }
         tab_num_++;
-
+        if (tab_num_ > 100){
+            break;
+        }
     }
 }
