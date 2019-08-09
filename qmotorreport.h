@@ -9,6 +9,7 @@
 #include <QSet>
 #include <QDateTime>
 #include <QString>
+#include <QtMath>
 
 #include <qword.h>
 
@@ -49,6 +50,7 @@ public:
 
 signals:
     void logMsg(QString);
+    void reportCreated();
 public slots:
     void getDataFromSql(QVector<QVector<QString> > res);
 

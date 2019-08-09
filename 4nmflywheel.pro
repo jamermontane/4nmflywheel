@@ -7,6 +7,8 @@
 QT       += core gui printsupport axcontainer
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += C++ 11
+
 TARGET = 4nmflywheel
 TEMPLATE = app
 

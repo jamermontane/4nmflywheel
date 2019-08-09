@@ -50,7 +50,7 @@ void QMotorReport::createWordReport()
     word.setPageOrientation(0);			//页面方向
     word.setWordPageView(3);			//页面视图
     //sword.setFontName(QString::fromLocal8Bit("宋体"));
-//    word.setParagraphAlignment(0);		//下面文字位置
+    word.setParagraphAlignment(0);		//下面文字位置
 //    word.setFontSize(20);				//字体大小
 //    word.setFontBold(true);				//字体加粗
 //    word.insertText(tr("Electrical Equipment Infrared Diagnosis Report "));
@@ -64,7 +64,7 @@ void QMotorReport::createWordReport()
 //    word.insertText(tr("Report Generation Date:"));
 //    word.insertText(current_Time);
 
-    word.intsertTable(18,10);             //创建表格
+    word.intsertTable(22,10);             //创建表格
     word.setColumnHeight(1,1,10);
 
     //合并单元格
@@ -100,9 +100,9 @@ void QMotorReport::createWordReport()
     word.setCellString(1,2,1,tr("代号"));
 
     word.setCellFontBold(1,2,2,false);   //设置是否粗体
-    word.setRowAlignment(1,2,1);
+    word.setRowAlignment(1,2,0);
     word.setCellFontSize(1,2,2,10);
-    word.setCellString(1,2,2,tr("FW-GR.160.4-1A"));
+    word.setCellString(1,2,2,exp_no_);
 
     word.setCellFontBold(1,2,3,false);   //设置是否粗体
     word.setRowAlignment(1,2,0);
@@ -112,7 +112,7 @@ void QMotorReport::createWordReport()
     word.setCellFontBold(1,2,4,false);   //设置是否粗体
     word.setRowAlignment(1,2,0);
     word.setCellFontSize(1,2,4,10);
-    word.setCellString(1,2,4,tr("00100"));
+    word.setCellString(1,2,4,flywheel_no_);
 
     word.setCellFontBold(1,2,5,false);   //设置是否粗体
 //    word.setTableAutoFitBehavior(0);    //自动拉伸列
@@ -124,7 +124,7 @@ void QMotorReport::createWordReport()
     word.setCellFontBold(1,2,6,false);   //设置是否粗体
     word.setRowAlignment(1,2,0);
     word.setCellFontSize(1,2,6,10);
-    word.setCellString(1,2,6,tr("500"));
+    word.setCellString(1,2,6,exp_vacuum_);
 
     //第三行数据设置
     word.setCellFontBold(1,3,1,false);   //设置是否粗体
@@ -137,7 +137,7 @@ void QMotorReport::createWordReport()
     word.setCellFontBold(1,3,2,false);   //设置是否粗体
     word.setRowAlignment(1,3,0);
     word.setCellFontSize(1,3,2,10);
-    word.setCellString(1,3,2,tr("-"));
+    word.setCellString(1,3,2,exp_time_);
 
     word.setCellFontBold(1,3,3,false);   //设置是否粗体
     word.setRowAlignment(1,3,0);
@@ -147,7 +147,7 @@ void QMotorReport::createWordReport()
     word.setCellFontBold(1,3,4,false);   //设置是否粗体
     word.setRowAlignment(1,3,0);
     word.setCellFontSize(1,3,4,10);
-    word.setCellString(1,3,4,tr("-"));
+    word.setCellString(1,3,4,exp_address_);
 
     word.setCellFontBold(1,3,5,false);   //设置是否粗体
 //    word.setTableAutoFitBehavior(0);    //自动拉伸列
@@ -159,7 +159,7 @@ void QMotorReport::createWordReport()
     word.setCellFontBold(1,3,6,false);   //设置是否粗体
     word.setRowAlignment(1,3,0);
     word.setCellFontSize(1,3,6,10);
-    word.setCellString(1,3,6,tr("500"));
+    word.setCellString(1,3,6,this->usr_name_);
 
     //第四行数据设置
     word.setCellFontBold(1,4,1,false);   //设置是否粗体
@@ -197,7 +197,7 @@ void QMotorReport::createWordReport()
     word.setCellFontSize(1,4,7,8);
     word.setCellString(1,4,7,tr("备注"));
 
-    //速度测试向表里填数据
+    //速度测试：向表里填数据
     for (int spd_idx =0;spd_idx < m_test_unit_setspd_.size();++spd_idx){
         //写指令转速
         word.setCellFontBold(1,6+spd_idx,8,false);   //设置是否粗体
@@ -226,7 +226,7 @@ void QMotorReport::createWordReport()
     word.saveAs();
     word.close();
 
-    emit logMsg(tr("测试报表已生成！存储地址：%1").arg(save_path));
+    emit logMsg(tr("生成报告：测试报表已生成！(100%)，存储地址：%1").arg(save_path));
 }
 
 
@@ -248,15 +248,18 @@ void QMotorReport::getDataFromSql(QVector<QVector<QString> > res)
         this->flywheel_JDL_const_.push_back(data[14].toDouble());
         this->flywheel_act_cur_.push_back(data[18].toDouble());
     }
-    qDebug()<<"report: data recv complete!";
+    emit logMsg(tr("生成报告：数据查询完毕(20%)"));
 
 
     initExpData();
     calExpDataSetSpd();
 
     createWordReport();
+
+    emit reportCreated();
 }
 
+//初始化实验数据
 void QMotorReport::initExpData()
 {
     //提取setspd
@@ -269,8 +272,14 @@ void QMotorReport::initExpData()
     for (auto &set_spd:t_setspd){
         m_test_unit_setspd_.push_back(set_spd);
     }
+
+    //输出结果排序
+    std::sort(m_test_unit_setspd_.begin(),m_test_unit_setspd_.end(),[](const double &a,const double &b){
+        return qAbs(a) < qAbs(b);
+    });
 }
 
+//计算速度实验数据
 void QMotorReport::calExpDataSetSpd()
 {
     for (int idx = 0;idx<m_test_unit_setspd_.size();++idx){
@@ -297,7 +306,7 @@ void QMotorReport::calExpDataSetSpd()
         uint data_num = 0;
         for (int i = 0;i < need_test_spd.size();++i){
             double spd = need_test_spd.at(i);
-            if (start_test == false && spd < current_set_spd){
+            if (start_test == false && qAbs((spd) - (current_set_spd)) > 1){
                 continue;
             }
             else{
@@ -315,4 +324,5 @@ void QMotorReport::calExpDataSetSpd()
         tmp_res.push_back(avg_jdl_dynamic / data_num);
         m_result_spd_.push_back(tmp_res);
     }
+    emit logMsg(tr("生成报告：数据计算完毕(50%)"));
 }
