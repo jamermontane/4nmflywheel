@@ -124,7 +124,7 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
 //为了测试完成后自动生成报表
 QString SqlDataBase::getLastExpId(QString motor_id)
 {
-    QString tempsql = QString("select * from %1 where EXPID is not \"\" ORDER BY EXPID ASC LIMIT 1 ").arg(motor_id);
+    QString tempsql = QString("select * from %1 where EXPID is not \"\" ORDER BY EXPID DESC LIMIT 1 ").arg(motor_id);
     QSqlQuery sql_query(m_data_base_);
     if (!sql_query.exec(tempsql))
     {
