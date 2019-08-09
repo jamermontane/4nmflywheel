@@ -36,8 +36,6 @@ void QMotorReport::setExpInfomation(QVector<QString> &data)
 
 }
 
-
-
 //创建word报告
 void QMotorReport::createWordReport()
 {
@@ -228,8 +226,7 @@ void QMotorReport::createWordReport()
 
     emit logMsg(tr("生成报告：测试报表已生成！(100%)，存储地址：%1").arg(save_path));
 }
-
-
+//从sql中查询出数据
 void QMotorReport::getDataFromSql(QVector<QVector<QString> > res)
 {
     if (res.empty()) return;

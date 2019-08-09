@@ -11,6 +11,8 @@
 #include <QSharedPointer>
 #include <QDateTime>
 #include <QThread>
+#include <QFile>
+#include <QDir>
 
 #include "motor.h"
 

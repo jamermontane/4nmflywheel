@@ -14,6 +14,12 @@ SqlDataBase::SqlDataBase(QObject *parent) : QObject(parent)
 bool SqlDataBase::sqlInit()
 {
     //qDebug() << QSqlDatabase::drivers();查看当前支持的SQL驱动
+    //读取当前文件下面的所有.db文件
+//    QDir dir(path);
+//    QStringList nameFilters;
+//    nameFilters << "*.jpg" << "*.png";
+//    files = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);
+
 
     if (QSqlDatabase::contains("qt_sql_default_connection")) //判断是否存在这个连接
     {

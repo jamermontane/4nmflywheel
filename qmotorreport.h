@@ -81,12 +81,35 @@ private:
     QVector<double>     flywheel_JDL_const_;
     QVector<double>     flywheel_JDL_dynamic_;
 
-    //需要计算的值
-    QList<double> m_test_unit_setspd_;  //设置速度测试
+    /*-----------------师弟看这里----------------*/
+    //需要计算的值    11 12等为该测试项目的编号
+    QList<double> m_test_unit_setspd_;      //11.速度测试、17.转速模式电机电流
+    QList<double> m_test_unit_max_tor_;     //12.最大反作用力矩
+    QList<double> m_test_unit_avg_wate_;    //13.稳速功耗
+    QList<double> m_test_unit_max_wate_;    //14.最大功耗
+    QList<double> m_test_unit_max_jdl_;     //15.最大角动量
+    QList<double> m_test_unit_tor_;         //16.力矩模式
+    QList<double> m_test_unit_start_tor_;   //18.启动模式摩擦力矩
+    QList<double> m_test_unit_loss_tor_;    //19.最大损失力矩
+    QList<double> m_test_unit_tor_time_;    //110.力矩响应时间
+    QList<double> m_test_unit_hx_time_;     //111.整机滑行时间
+    QList<double> m_test_unit_start_cur_;   //112.浪涌电流测试
+
 
     //测试结果存放地点
-    //速度测试 1.平均速度 2.角动量常值偏差 3.角动量动态偏差
-    QVector<QVector<double> > m_result_spd_;
+    //如有多条记录，以1.2.3.的形式列出
+    QVector<QVector<double> > m_result_spd_;    //速度测试 1.平均速度 2.角动量常值偏差 3.角动量动态偏差
+    double  m_result_max_tor_;                  //最大力矩
+    QVector<double> m_result_wate_;             //稳速功耗
+    double m_result_max_wate_;                  //最大功耗
+    double m_result_max_jdl_;                   //最大角动量
+    QVector<QVector<double> > m_result_tor_;    //力矩控制特性 1.实测电机电流 2.实测输出力矩
+    QVector<QVector<double> > m_result_cur_;    //转速模式电机电流 1.测试口总电流 2.实测电机电流
+    double m_result_start_tor_;                 //启动摩擦力矩
+    double m_result_loss_tor_;                  //最大损失力矩
+    double m_result_tor_time_;                  //力矩响应时间
+    double m_result_hx_time_;                   //整机滑行时间
+    double m_result_start_cur_;                 //浪涌电流测试
 
 };
 
