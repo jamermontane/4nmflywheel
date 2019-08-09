@@ -104,6 +104,7 @@ void MainWindow::initReport()
 //    connect(p_sql_,&SqlDataBase::emitExpData,p_repoter_,&QMotorReport::getDataFromSql);
     connect(this,&MainWindow::getLastExpData,p_sql_,&SqlDataBase::getLastExpData);
     connect(p_sql_,&SqlDataBase::emitLastExpData,p_repoter_,&QMotorReport::getDataFromSql);
+    connect(p_repoter_,&QMotorReport::logMsg,this,&MainWindow::logMsg);
     p_repoter_thread_->start();
 }
 

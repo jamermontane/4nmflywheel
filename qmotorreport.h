@@ -7,6 +7,8 @@
 #include <QList>
 #include <QVector>
 #include <QSet>
+#include <QDateTime>
+#include <QString>
 
 #include <qword.h>
 
@@ -16,6 +18,9 @@ class QMotorReport : public QObject
 public:
     explicit QMotorReport(QObject *parent = 0);
     void setExpInfomation(QVector<QString>&);
+
+    //创建word报告
+    void createWordReport();
 
     //计算设置速度-实际速度
     void calExpDataSetSpd();
@@ -43,7 +48,7 @@ public:
 
 
 signals:
-
+    void logMsg(QString);
 public slots:
     void getDataFromSql(QVector<QVector<QString> > res);
 
@@ -78,8 +83,9 @@ private:
     QList<double> m_test_unit_setspd_;  //设置速度测试
 
     //测试结果存放地点
-    //速度测试 1.平均速度 2.
+    //速度测试 1.平均速度 2.角动量常值偏差 3.角动量动态偏差
     QVector<QVector<double> > m_result_spd_;
+
 };
 
 #endif // QMOTORREPORT_H
