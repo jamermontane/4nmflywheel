@@ -183,6 +183,7 @@ public:
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(setLastTen(double)));
 
         //非真空测试数据初始化
+        noair_test_containor_raw_data_.append(0);
         noair_test_containor_raw_data_.append(100);
         noair_test_containor_raw_data_.append(500);
         noair_test_containor_raw_data_.append(1000);
@@ -196,7 +197,7 @@ public:
         noair_test_containor_raw_data_.append(-1500);
         noair_test_containor_raw_data_.append(-1000);
         noair_test_containor_raw_data_.append(-500);
-        noair_test_containor_raw_data_.append(0);
+
 
     }
     ~Motor(){
