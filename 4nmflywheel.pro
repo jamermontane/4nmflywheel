@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     motordriver.cpp \
     qmotorreport.cpp \
-    qword.cpp
+    qword.cpp \
+    qdaqcard.cpp
 
 HEADERS  += mainwindow.h \
     csqldatabase.h \
@@ -28,13 +29,15 @@ HEADERS  += mainwindow.h \
     qcustomplot.h \
     motordriver.h \
     qmotorreport.h \
-    qword.h
+    qword.h \
+    D2kDask.h \
+    qdaqcard.h
 
 FORMS    += mainwindow.ui
 
 QT += sql
 
-#LIBS += -LC:/mycode/motionStudio -lTML_lib
+LIBS += -LC:/4nmflywheel/4nmflywheel -lD2K-Dask
 #LIBS += -LC:/mycode/motionStudio -ltmlcomm
 
 QT += serialport

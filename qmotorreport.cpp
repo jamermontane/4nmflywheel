@@ -36,10 +36,12 @@ void QMotorReport::setExpInfomation(QVector<QString> &data)
 
 }
 
+
+
 //创建word报告
 void QMotorReport::createWordReport()
 {
-    QString save_path = "E:/result.doc";
+    QString save_path = "E:/result.doc";//E:/result.doc
     QWord word;
     if (!word.createNewWord(save_path)){
         qDebug() << "qword:create word error!";
@@ -62,11 +64,11 @@ void QMotorReport::createWordReport()
 //    word.insertText(tr("Report Generation Date:"));
 //    word.insertText(current_Time);
 
-    word.intsertTable(22,10);             //创建表格
+    word.intsertTable(52,10); //24            //创建表格
     word.setColumnHeight(1,1,10);
 
     //合并单元格
-    word.MergeCells(1,1,1,1,10);          //第一行
+    word.MergeCells(1,1,1,1,10);          //第一行4Nms-1A 飞轮电性能测试记录表
 
     word.MergeCells(1,2,2,2,4);     //第二行
     word.MergeCells(1,2,4,2,5);
@@ -77,16 +79,142 @@ void QMotorReport::createWordReport()
     word.MergeCells(1,3,6,3,7);
 
     word.MergeCells(1,4,4,4,7); //第四行
+    word.MergeCells(1,4,5,5,8);//表示的是将c4l5的单元格与c5l8的单元格合并
+    //第五行
+    word.MergeCells(1,5,1,18,1);//（序号）1
+    word.MergeCells(1,5,2,18,2);//转速控制特性n(-6000-6000rpm)
+    word.MergeCells(1,5,3,18,3);//角动量控制偏差△H:≤0.002Nms常量偏差：≤0.005Nms
+    word.MergeCells(1,5,9,18,9);//结论下的数据
+    word.MergeCells(1,5,10,18,10);//转速可取多个数的平均值
+    //第六行
+    word.MergeCells(1,19,4,19,5);
+    word.MergeCells(1,19,5,19,7);
+    //word.MergeCells(1,6,6,6,);
+    //第七行
+    word.MergeCells(1,20,1,24,1);
+    word.MergeCells(1,20,2,24,2);
+    word.MergeCells(1,20,3,22,3);
+    word.MergeCells(1,23,3,24,3);
 
-    word.MergeCells(1,5,1,18,1); //第5行
-    word.MergeCells(1,5,2,18,2);
+    word.MergeCells(1,20,4,20,5);
+    word.MergeCells(1,20,5,20,7);
+    word.MergeCells(1,21,4,21,5);
+    word.MergeCells(1,21,5,21,7);
+    word.MergeCells(1,22,4,22,5);
+    word.MergeCells(1,22,5,22,7);
+    word.MergeCells(1,23,4,23,5);
+    word.MergeCells(1,23,5,23,7);
+    word.MergeCells(1,24,4,24,5);
+    word.MergeCells(1,24,5,24,7);
 
+    word.MergeCells(1,20,6,24,6);
+    word.MergeCells(1,20,7,24,7);
+    //第八行
+    word.MergeCells(1,25,4,25,5);
+    word.MergeCells(1,25,5,25,7);
+
+    word.MergeCells(1,20,6,25,6);
+    word.MergeCells(1,20,7,25,7);
+    //第九行
+    word.MergeCells(1,26,4,26,5);
+    word.MergeCells(1,26,5,26,7);
+    //第十行
+    word.MergeCells(1,27,1,35,1);
+    word.MergeCells(1,27,2,35,2);
+    word.MergeCells(1,27,3,35,3);
+
+    word.MergeCells(1,27,4,27,8);
+    word.MergeCells(1,27,5,27,6);
+
+    word.MergeCells(1,28,4,28,5);
+    word.MergeCells(1,28,5,28,6);
+
+    word.MergeCells(1,29,4,29,5);
+    word.MergeCells(1,29,5,29,6);
+
+    word.MergeCells(1,30,4,30,5);
+    word.MergeCells(1,30,5,30,6);
+
+    word.MergeCells(1,31,4,31,5);
+    word.MergeCells(1,31,5,31,6);
+
+    word.MergeCells(1,32,4,32,5);
+    word.MergeCells(1,32,5,32,6);
+
+    word.MergeCells(1,33,4,33,5);
+    word.MergeCells(1,33,5,33,6);
+
+    word.MergeCells(1,34,4,34,5);
+    word.MergeCells(1,34,5,34,6);
+
+    word.MergeCells(1,35,4,35,5);
+    word.MergeCells(1,35,5,35,6);
+
+    word.MergeCells(1,28,7,35,7);
+    word.MergeCells(1,28,8,35,8);
+    //第十一行
+    word.MergeCells(1,36,1,46,1);
+    word.MergeCells(1,36,2,46,2);
+    word.MergeCells(1,36,3,46,3);
+
+    word.MergeCells(1,36,4,36,5);
+    word.MergeCells(1,36,5,36,6);
+
+    word.MergeCells(1,37,4,37,5);
+    word.MergeCells(1,37,5,37,6);
+
+    word.MergeCells(1,38,4,38,5);
+    word.MergeCells(1,38,5,38,6);
+
+    word.MergeCells(1,39,4,39,5);
+    word.MergeCells(1,39,5,39,6);
+
+    word.MergeCells(1,40,4,40,5);
+    word.MergeCells(1,40,5,40,6);
+
+    word.MergeCells(1,41,4,41,5);
+    word.MergeCells(1,41,5,41,6);
+
+    word.MergeCells(1,42,4,42,5);
+    word.MergeCells(1,42,5,42,6);
+
+    word.MergeCells(1,43,4,43,5);
+    word.MergeCells(1,43,5,43,6);
+
+    word.MergeCells(1,44,4,44,5);
+    word.MergeCells(1,44,5,44,6);
+
+    word.MergeCells(1,45,4,45,5);
+    word.MergeCells(1,45,5,45,6);
+
+    word.MergeCells(1,46,4,46,5);
+    word.MergeCells(1,46,5,46,6);
+
+    word.MergeCells(1,36,7,46,7);
+    word.MergeCells(1,36,8,46,8);
+    //第十二行
+    word.MergeCells(1,47,4,47,5);
+    word.MergeCells(1,47,5,47,7);
+    //第十三行
+    word.MergeCells(1,48,4,48,5);
+    word.MergeCells(1,48,5,48,7);
+    //第十四行
+    word.MergeCells(1,49,4,49,5);
+    word.MergeCells(1,49,5,49,7);
+    //第十五行
+    word.MergeCells(1,50,4,50,5);
+    word.MergeCells(1,50,5,50,7);
+    //第十六行
+    word.MergeCells(1,51,4,51,5);
+    word.MergeCells(1,51,5,51,7);
+    //第十七行
+    word.MergeCells(1,52,1,52,10);
     //第一行数据设置
     word.setCellFontBold(1,1,1,true);   //设置是否粗体
 //    word.setTableAutoFitBehavior(0);    //自动拉伸列
     word.setCellFontSize(1,1,1,14);
-    word.setColumnWidth(1,1,120);
-    word.setRowAlignment(1,1,0);
+    word.setColumnWidth(1,1,120);//设置列的宽度
+    word.setRowAlignment(1,1,0);//设置行的对其方式
     word.setCellString(1,1,1,tr("4Nms-1A 飞轮电性能测试记录表"));
 
     //第二行数据设置
@@ -194,10 +322,326 @@ void QMotorReport::createWordReport()
     word.setRowAlignment(1,4,0);
     word.setCellFontSize(1,4,7,8);
     word.setCellString(1,4,7,tr("备注"));
+    //第五行数据
+    word.setCellFontBold(1,5,1,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,1,8);
+    word.setCellString(1,5,1,tr("1"));
 
-    emit logMsg(tr("生成报告：WORD生成完毕(70%)"));
+    word.setCellFontBold(1,5,2,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,2,8);
+    word.setCellString(1,5,2,tr("转速控制特性n(-6000~6000rpm)"));
+
+    word.setCellFontBold(1,5,3,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,3,8);
+    word.setCellString(1,5,3,tr("角动量控制偏差△H:≤0.002Nms常量偏差：≤0.005Nms"));
+
+    word.setCellFontBold(1,5,10,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,10,8);
+    word.setCellString(1,5,10,tr("转速可取多个数的平均值"));
+
+    word.setCellFontBold(1,5,4,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,4,8);
+    word.setCellString(1,5,4,tr("串口"));
+
+    word.setCellFontBold(1,5,5,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,5,8);
+    word.setCellString(1,5,5,tr("地测"));
+
+    word.setCellFontBold(1,5,6,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,6,8);
+    word.setCellString(1,5,6,tr("常值偏差"));
+
+    word.setCellFontBold(1,5,7,false);   //设置是否粗体
+    word.setRowAlignment(1,5,0);
+    word.setCellFontSize(1,5,7,8);
+    word.setCellString(1,5,7,tr("△H偏差"));
+    //第六行
+
+    word.setCellFontBold(1,19,1,false);   //设置是否粗体
+    word.setRowAlignment(1,19,0);
+    word.setCellFontSize(1,19,1,8);
+    word.setCellString(1,19,1,tr("2"));
+
+    word.setCellFontBold(1,19,2,false);   //设置是否粗体
+    word.setRowAlignment(1,19,0);
+    word.setCellFontSize(1,19,2,8);
+    word.setCellString(1,19,2,tr("最大反作用力矩T"));
+
+    word.setCellFontBold(1,19,3,false);   //设置是否粗体
+    word.setRowAlignment(1,19,0);
+    word.setCellFontSize(1,19,3,8);
+    word.setCellString(1,19,3,tr("绝对值≥0.1Nm"));
+
+    word.setCellFontBold(1,19,5,false);   //设置是否粗体
+    word.setRowAlignment(1,19,0);
+    word.setCellFontSize(1,19,5,8);
+    word.setCellString(1,19,5,tr("斜坡指令±60rpm 采样时间取0.4s"));
+
+    word.setCellFontBold(1,19,7,false);   //设置是否粗体
+    word.setRowAlignment(1,19,0);
+    word.setCellFontSize(1,19,7,8);
+    word.setCellString(1,19,7,tr("可取多次平均"));
+    //第七行
+    word.setCellFontBold(1,20,1,false);   //设置是否粗体
+    word.setRowAlignment(1,20,0);
+    word.setCellFontSize(1,20,1,8);
+    word.setCellString(1,20,1,tr("3"));
+
+    word.setCellFontBold(1,20,2,false);   //设置是否粗体
+    word.setRowAlignment(1,20,0);
+    word.setCellFontSize(1,20,2,8);
+    word.setCellString(1,20,2,tr("稳压功耗P（133Pa下）"));
+
+    word.setCellFontBold(1,20,3,false);   //设置是否粗体
+    word.setRowAlignment(1,20,0);
+    word.setCellFontSize(1,20,3,8);
+    word.setCellString(1,20,3,tr("≤7.5W"));
+
+    word.setCellFontBold(1,23,3,false);   //设置是否粗体
+    word.setRowAlignment(1,23,0);
+    word.setCellFontSize(1,23,3,8);
+    word.setCellString(1,23,3,tr("≤15W"));
+
+    word.setCellFontBold(1,20,7,false);   //设置是否粗体
+    word.setRowAlignment(1,20,0);
+    word.setCellFontSize(1,20,7,8);
+    word.setCellString(1,20,7,tr("P=U*I,     U、I可取多个数的平均值"));
+    //第八行
+    word.setCellFontBold(1,25,1,false);   //设置是否粗体
+    word.setRowAlignment(1,25,0);
+    word.setCellFontSize(1,25,1,8);
+    word.setCellString(1,25,1,tr("4"));
+
+    word.setCellFontBold(1,25,2,false);   //设置是否粗体
+    word.setRowAlignment(1,25,0);
+    word.setCellFontSize(1,25,2,8);
+    word.setCellString(1,25,2,tr("最大功耗Pmax"));
+
+    word.setCellFontBold(1,25,3,false);   //设置是否粗体
+    word.setRowAlignment(1,25,0);
+    word.setCellFontSize(1,25,3,8);
+    word.setCellString(1,25,3,tr("≤100W"));
+
+    word.setCellFontBold(1,25,5,false);   //设置是否粗体
+    word.setRowAlignment(1,25,0);
+    word.setCellFontSize(1,25,5,8);
+    word.setCellString(1,25,5,tr("按±（0.1±0.01）Nm加减速"));
+    //第九行
+    word.setCellFontBold(1,26,1,false);   //设置是否粗体
+    word.setRowAlignment(1,26,0);
+    word.setCellFontSize(1,26,1,8);
+    word.setCellString(1,26,1,tr("5"));
+
+    word.setCellFontBold(1,26,2,false);   //设置是否粗体
+    word.setRowAlignment(1,26,0);
+    word.setCellFontSize(1,26,2,8);
+    word.setCellString(1,26,2,tr("最大角动量Hmax"));
+
+    word.setCellFontBold(1,26,3,false);   //设置是否粗体
+    word.setRowAlignment(1,26,0);
+    word.setCellFontSize(1,26,3,8);
+    word.setCellString(1,26,3,tr("≥4Nms"));
+
+    word.setCellFontBold(1,26,5,false);   //设置是否粗体
+    word.setRowAlignment(1,26,0);
+    word.setCellFontSize(1,26,5,8);
+    word.setCellString(1,26,5,tr("转速绝对值≥6000rpm"));
+    //第十行
+    word.setCellFontBold(1,27,1,false);   //设置是否粗体
+    word.setRowAlignment(1,27,0);
+    word.setCellFontSize(1,27,1,8);
+    word.setCellString(1,27,1,tr("6"));
+
+    word.setCellFontBold(1,27,2,false);   //设置是否粗体
+    word.setRowAlignment(1,27,0);
+    word.setCellFontSize(1,27,2,8);
+    word.setCellString(1,27,2,tr("力矩控制特性n(-5500~5500rpm)"));
+
+    word.setCellFontBold(1,27,3,false);   //设置是否粗体
+    word.setRowAlignment(1,27,0);
+    word.setCellFontSize(1,27,3,8);
+    word.setCellString(1,27,3,tr("电流控制允许偏差绝对值≤0.24A,实测输出力矩绝对值≥|Tc|-10mNm"));
+
+    word.setCellFontBold(1,27,4,false);   //设置是否粗体
+    word.setRowAlignment(1,27,0);
+    word.setCellFontSize(1,27,4,8);
+    word.setCellString(1,27,4,tr("实测（计算）值"));
+
+    word.setCellFontBold(1,28,4,false);   //设置是否粗体
+    word.setRowAlignment(1,28,0);
+    word.setCellFontSize(1,28,4,8);
+    word.setCellString(1,28,4,tr("实测电机电流"));
+
+    word.setCellFontBold(1,28,5,false);   //设置是否粗体
+    word.setRowAlignment(1,28,0);
+    word.setCellFontSize(1,28,5,8);
+    word.setCellString(1,28,5,tr("实测输出力矩"));
+
+    word.setCellFontBold(1,28,6,false);   //设置是否粗体
+    word.setRowAlignment(1,28,0);
+    word.setCellFontSize(1,28,6,8);
+    word.setCellString(1,28,6,tr("力矩控制指令Tc"));
+
+    word.setCellFontBold(1,28,8,false);   //设置是否粗体
+    word.setRowAlignment(1,28,0);
+    word.setCellFontSize(1,28,8,8);
+    word.setCellString(1,28,8,tr("可取多次平均"));
+    //第十一行
+    word.setCellFontBold(1,36,1,false);   //设置是否粗体
+    word.setRowAlignment(1,36,0);
+    word.setCellFontSize(1,36,1,8);
+    word.setCellString(1,36,1,tr("7"));
+
+    word.setCellFontBold(1,36,2,false);   //设置是否粗体
+    word.setRowAlignment(1,36,0);
+    word.setCellFontSize(1,36,2,8);
+    word.setCellString(1,36,2,tr("转速模式电机电流"));
+
+    word.setCellFontBold(1,36,3,false);   //设置是否粗体
+    word.setRowAlignment(1,36,0);
+    word.setCellFontSize(1,36,3,8);
+    word.setCellString(1,36,3,tr("≤3.2A"));
+
+    word.setCellFontBold(1,36,4,false);   //设置是否粗体
+    word.setRowAlignment(1,36,0);
+    word.setCellFontSize(1,36,4,8);
+    word.setCellString(1,36,4,tr("测试口总电流"));
+
+    word.setCellFontBold(1,36,5,false);   //设置是否粗体
+    word.setRowAlignment(1,36,0);
+    word.setCellFontSize(1,36,5,8);
+    word.setCellString(1,36,5,tr("实测电机电流"));
+
+    word.setCellFontBold(1,36,6,false);   //设置是否粗体
+    word.setRowAlignment(1,36,0);
+    word.setCellFontSize(1,36,6,8);
+    word.setCellString(1,36,6,tr("转速指令"));
+
+    word.setCellFontBold(1,46,6,false);   //设置是否粗体
+    word.setRowAlignment(1,46,0);
+    word.setCellFontSize(1,46,6,8);
+    word.setCellString(1,46,6,tr("按±（0.1±0.01）Nm加减速"));
+
+    word.setCellFontBold(1,36,8,false);   //设置是否粗体
+    word.setRowAlignment(1,36,0);
+    word.setCellFontSize(1,36,8,8);
+    word.setCellString(1,36,8,tr("I可取多个数的平均值"));
+    //第十二行
+    word.setCellFontBold(1,47,1,false);   //设置是否粗体
+    word.setRowAlignment(1,47,0);
+    word.setCellFontSize(1,47,1,8);
+    word.setCellString(1,47,1,tr("8"));
+
+    word.setCellFontBold(1,47,2,false);   //设置是否粗体
+    word.setRowAlignment(1,47,0);
+    word.setCellFontSize(1,47,2,8);
+    word.setCellString(1,47,2,tr("启动摩擦力矩"));
+
+    word.setCellFontBold(1,47,3,false);   //设置是否粗体
+    word.setRowAlignment(1,47,0);
+    word.setCellFontSize(1,47,3,8);
+    word.setCellString(1,47,3,tr("≤10mNm"));
+
+    word.setCellFontBold(1,47,5,false);   //设置是否粗体
+    word.setRowAlignment(1,47,0);
+    word.setCellFontSize(1,47,5,8);
+    word.setCellString(1,47,5,tr("0rpm条件下发送力矩指令"));
+
+    word.setCellFontBold(1,47,7,false);   //设置是否粗体
+    word.setRowAlignment(1,47,0);
+    word.setCellFontSize(1,47,7,8);
+    word.setCellString(1,47,7,tr("可取多次平均"));
+    //第十三行
+    word.setCellFontBold(1,48,1,false);   //设置是否粗体
+    word.setRowAlignment(1,48,0);
+    word.setCellFontSize(1,48,1,8);
+    word.setCellString(1,48,1,tr("9"));
+
+    word.setCellFontBold(1,48,2,false);   //设置是否粗体
+    word.setRowAlignment(1,48,0);
+    word.setCellFontSize(1,48,2,8);
+    word.setCellString(1,48,2,tr("最大损失力矩"));
+
+    word.setCellFontBold(1,48,3,false);   //设置是否粗体
+    word.setRowAlignment(1,48,0);
+    word.setCellFontSize(1,48,3,8);
+    word.setCellString(1,48,3,tr("≤15mNm"));
+
+    word.setCellFontBold(1,48,5,false);   //设置是否粗体
+    word.setRowAlignment(1,48,0);
+    word.setCellFontSize(1,48,5,8);
+    word.setCellString(1,48,5,tr("分段滑行时测试"));
+
+    word.setCellFontBold(1,48,7,false);   //设置是否粗体
+    word.setRowAlignment(1,48,0);
+    word.setCellFontSize(1,48,7,8);
+    word.setCellString(1,48,7,tr("分段多次平均"));
+    //第十四行
+    word.setCellFontBold(1,49,1,false);   //设置是否粗体
+    word.setRowAlignment(1,49,0);
+    word.setCellFontSize(1,49,1,8);
+    word.setCellString(1,49,1,tr("10"));
+
+    word.setCellFontBold(1,49,2,false);   //设置是否粗体
+    word.setRowAlignment(1,49,0);
+    word.setCellFontSize(1,49,2,8);
+    word.setCellString(1,49,2,tr("力矩响应时间"));
+
+    word.setCellFontBold(1,49,3,false);   //设置是否粗体
+    word.setRowAlignment(1,49,0);
+    word.setCellFontSize(1,49,3,8);
+    word.setCellString(1,49,3,tr("≤20ms"));
+
+    word.setCellFontBold(1,49,5,false);   //设置是否粗体
+    word.setRowAlignment(1,49,0);
+    word.setCellFontSize(1,49,5,8);
+    word.setCellString(1,49,5,tr("由力矩控制模式条件下测试"));
+
+    //第十五行
+    word.setCellFontBold(1,50,1,false);   //设置是否粗体
+    word.setRowAlignment(1,50,0);
+    word.setCellFontSize(1,50,1,8);
+    word.setCellString(1,50,1,tr("11"));
+
+    word.setCellFontBold(1,50,2,false);   //设置是否粗体
+    word.setRowAlignment(1,50,0);
+    word.setCellFontSize(1,50,2,8);
+    word.setCellString(1,50,2,tr("整机滑行时间"));
+
+    word.setCellFontBold(1,50,3,false);   //设置是否粗体
+    word.setRowAlignment(1,50,0);
+    word.setCellFontSize(1,50,3,8);
+    word.setCellString(1,50,3,tr("不少于20min"));
+   //第十五行
+    word.setCellFontBold(1,51,1,false);   //设置是否粗体
+    word.setRowAlignment(1,51,0);
+    word.setCellFontSize(1,51,1,8);
+    word.setCellString(1,51,1,tr("12"));
+
+    word.setCellFontBold(1,51,2,false);   //设置是否粗体
+    word.setRowAlignment(1,51,0);
+    word.setCellFontSize(1,51,2,8);
+    word.setCellString(1,51,2,tr("浪涌电流测试"));
+
+    word.setCellFontBold(1,51,3,false);   //设置是否粗体
+    word.setRowAlignment(1,51,0);
+    word.setCellFontSize(1,51,3,8);
+    word.setCellString(1,51,3,tr("≤3A，15ms"));
+    //第十六行
+    word.setCellFontSize(1,52,1,8);
+   // word.setColumnWidth(1,1,120);//设置列的宽度
+    word.setRowAlignment(52,1,0);//设置行的对其方式
+    word.setCellString(1,52,1,tr("注1：改性能测试采用软件自动测试。注2：测试时真空度要保持在133Pa以下。"));
+
     //速度测试：向表里填数据
-    for (int spd_idx =0;spd_idx < m_test_unit_setspd_.size();++spd_idx){
+    for (int spd_idx =0;spd_idx < m_test_unit_setspd_.size()-1;++spd_idx){
         //写指令转速
         word.setCellFontBold(1,6+spd_idx,8,false);   //设置是否粗体
         word.setRowAlignment(1,6+spd_idx,0);
@@ -227,7 +671,8 @@ void QMotorReport::createWordReport()
 
     emit logMsg(tr("生成报告：测试报表已生成！(100%)，存储地址：%1").arg(save_path));
 }
-//从sql中查询出数据
+
+
 void QMotorReport::getDataFromSql(QVector<QVector<QString> > res)
 {
     if (res.empty()) return;
