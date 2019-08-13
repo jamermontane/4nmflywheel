@@ -317,7 +317,7 @@ void MainWindow::updateMotor1Display()
     ui->lineEdit_motor_set_spd_1->setText(QString::number(p_motor1_->getSetSpeed()));
     ui->lineEdit_motor_act_spd_1->setText(QString::number(p_motor1_->getSpeed()));
     ui->lineEdit_motor_cur_1->setText(QString::number(p_motor1_->getCurrent()));
-    ui->lineEdit_motor_act_tor_1->setText(QString::number(p_motor1_->getTorque()));
+    ui->lineEdit_motor_act_tor_1->setText(QString::number(p_motor1_->getReactionMoment_()));
     ui->lineEdit_motor_jdl_1->setText(QString::number(p_motor1_->getAngularMomentum()));
     ui->lineEdit_motor_jdl_czpc_1->setText(QString::number(p_motor1_->getAngularMomentumConst()));
     ui->lineEdit_motor_jdl_dtpc_1->setText(QString::number(p_motor1_->getAngularMomentumDynamic()));
