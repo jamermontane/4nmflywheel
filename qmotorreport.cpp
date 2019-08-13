@@ -195,6 +195,7 @@ void QMotorReport::createWordReport()
     word.setCellFontSize(1,4,7,8);
     word.setCellString(1,4,7,tr("备注"));
 
+    emit logMsg(tr("生成报告：WORD生成完毕(70%)"));
     //速度测试：向表里填数据
     for (int spd_idx =0;spd_idx < m_test_unit_setspd_.size();++spd_idx){
         //写指令转速

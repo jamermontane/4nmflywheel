@@ -171,7 +171,7 @@ void MainWindow::initQCustomPlot1()
 void MainWindow::logMsg(QString text)
 {
     qDebug() << text;
-    ui->statusBar->showMessage(text,2000);
+    ui->statusBar->showMessage(text,5000);
 }
 
 void MainWindow::on_pushButton_system_power_1_clicked()
