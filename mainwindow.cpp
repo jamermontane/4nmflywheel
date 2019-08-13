@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_sys_status_1_(false)
 {
     ui->setupUi(this);
+    m_timer_get_data_.setInterval(100); //get data timer 0.1s
     qRegisterMetaType<QVector<QVector<QString> >>("QVector<QVector<QString> >");
     qRegisterMetaType<QVector<QString>>("QVector<QString>");
     qDebug()<<"MAIN THREAD:"<<QThread::currentThreadId();
@@ -16,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initSql();
     initReport();
 
-    m_timer_get_data_.setInterval(100); //get data timer 0.1s
+
 
     m_timer_update_.setInterval(500);   //update view every 0.5s
     connect(&m_timer_update_,SIGNAL(timeout()),this,SLOT(updateMotor()));
@@ -69,7 +70,7 @@ bool MainWindow::initDriver1()
     connect(p_driver1_,&MotorDriver::sendMotorCur,p_motor1_,&Motor::setCurrent);
     connect(p_driver1_,&MotorDriver::sendMotorTmp,p_motor1_,&Motor::setTemperature);
     //采样间隔改了的话，记得改这个
-    p_motor1_->setCurrentInterval(m_timer_get_data_.interval() * 1000);
+    p_motor1_->setCurrentInterval(double(m_timer_get_data_.interval()) / 1000);
     return true;
 }
 
