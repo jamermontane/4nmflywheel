@@ -7,6 +7,7 @@
 
 #include "D2kDask.h"
 
+using namespace DAQCARD;
 class QDaqcard : public QObject
 {
     Q_OBJECT
@@ -23,7 +24,7 @@ public slots:
     void getStartCurrent(int channel);
 private:
     bool is_init_ = false;
-    I16 card_;
+    DAQCARD::I16 card_;
 };
 
 #endif // QDAQCARD_H

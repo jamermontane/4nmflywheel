@@ -13,6 +13,7 @@
 #include "motordriver.h"
 #include "csqldatabase.h"
 #include "qmotorreport.h"
+#include "qdaqcard.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,8 +30,9 @@ public:
     void initCombox();
     void updateMotor1Display();
     void initQCustomPlot1();
-    void initSql();
-    void initReport();
+    void initSql();             //数据库初始化
+    void initReport();          //报表初始化
+    void initDaqCard();         //数据采集卡初始化
     QVector<QString> makeSqlVector(Motor &);
 signals:
     void sendToSqlDB(QString,QString,QString,QVector<QString>);
@@ -105,6 +107,10 @@ private:
     //报表部分
     QMotorReport* p_repoter_;
     QThread* p_repoter_thread_;
+
+    //数据采集卡部分
+    QDaqcard* p_daqcard_;
+    QThread* p_daqcard_thread_;
 };
 
 #endif // MAINWINDOW_H

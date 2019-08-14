@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initQCustomPlot1();
     initSql();
     initReport();
-
+    initDaqCard();
 
 
     m_timer_update_.setInterval(500);   //update view every 0.5s
@@ -108,6 +108,21 @@ void MainWindow::initReport()
     connect(p_repoter_,&QMotorReport::logMsg,this,&MainWindow::logMsg);
 
     p_repoter_thread_->start();
+}
+
+void MainWindow::initDaqCard()
+{
+    p_daqcard_ = new QDaqcard;
+    p_daqcard_thread_ = new QThread;
+    p_daqcard_->moveToThread(p_daqcard_thread_);
+
+    connect(p_daqcard_thread_,&QThread::finished,p_daqcard_,&QMotorReport::deleteLater);
+    connect(p_daqcard_thread_,&QThread::finished,p_daqcard_thread_,&QThread::deleteLater);
+    connect(p_daqcard_,&QDaqcard::logMsg,this,&MainWindow::logMsg);
+    connect(p_daqcard_thread_,&QThread::started,p_daqcard_,&QDaqcard::init);
+
+
+    p_daqcard_thread_->start();
 }
 
 void MainWindow::initCombox()
@@ -298,7 +313,7 @@ void MainWindow::updateMotor()
             p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
 
-
+        p_daqcard_->readAllChannel();
         //更新显示界面
         updateMotor1Display();
         refreshCustomPlotData1();

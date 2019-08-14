@@ -1,12 +1,17 @@
 #ifndef		_D2K_DASK_H
 #define		_D2K_DASK_H
 
-typedef void* HANDLE;
-typedef bool BOOLEAN;
+
 
 #ifdef __cplusplus
+namespace DAQCARD {
+
+
 extern "C" {
 #endif
+
+typedef void* HANDLE;
+typedef bool BOOLEAN;
 
 //DAQ2000 Device
 #define DAQ_2010        1
@@ -38,7 +43,7 @@ typedef double          F64;
 #define MAX_CARD        32
 
 //Error Number
-#define NoError                       0
+//#define NoError                       0
 #define ErrorUnknownCardType         -1
 #define ErrorInvalidCardNumber       -2
 #define ErrorTooManyCardRegistered   -3
@@ -614,7 +619,7 @@ I16 __stdcall D2K_AI_GetEvent(U16 wCardNumber, HANDLE *hEvent);
 I16 __stdcall D2K_AO_GetEvent(U16 wCardNumber, HANDLE *hEvent);
 I16 __stdcall D2K_DI_GetEvent(U16 wCardNumber, HANDLE *hEvent);
 I16 __stdcall D2K_DO_GetEvent(U16 wCardNumber, HANDLE *hEvent);
-
+}
 #ifdef __cplusplus
 }
 #endif

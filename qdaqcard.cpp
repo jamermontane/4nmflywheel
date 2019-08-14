@@ -19,9 +19,10 @@ void QDaqcard::init()
     }
 
     //需要使用的采集卡channel
-    err = D2K_AI_CH_Config (card_, 0, AD_B_10_V);
-
-    if (err!=NoError) {
+    for (int i = 0;i < 7;++i){
+        err = D2K_AI_CH_Config (card_, i, AD_B_10_V);
+    }
+    if (err!=0) {
         logMsg(tr("D2K_AI_CH_Config error=%1").arg(QString::number(err)));
         return;
     }
@@ -33,13 +34,14 @@ void QDaqcard::readAllChannel()
     QVector<double> res;
     F64 chan_voltage;
     //使用循环去读取
-
-    I16 err = D2K_AI_VReadChannel (card_, 0, &chan_voltage);
-    if (err!=NoError) {
-        logMsg(tr("D2K_AI_ReadChannel error=%1").arg(QString::number(err)));
-        return;
+    for (int i = 0; i <7;++i){
+        I16 err = D2K_AI_VReadChannel (card_, i, &chan_voltage);
+        if (err!=0) {
+            logMsg(tr("D2K_AI_ReadChannel error=%1").arg(QString::number(err)));
+            return;
+        }
+        res.push_back(chan_voltage);
     }
-
     emit sendAllData(res);
 }
 
