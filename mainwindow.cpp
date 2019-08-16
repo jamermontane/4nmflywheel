@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_timer_get_data_.setInterval(100); //get data timer 0.1s
     qRegisterMetaType<QVector<QVector<QString> >>("QVector<QVector<QString> >");
     qRegisterMetaType<QVector<QString>>("QVector<QString>");
+    qRegisterMetaType<QVector<double>>("QVector<double>");
     qDebug()<<"MAIN THREAD:"<<QThread::currentThreadId();
     initCombox();
     initDriver1();
@@ -69,6 +70,10 @@ bool MainWindow::initDriver1()
     connect(p_driver1_,&MotorDriver::sendMotorSpd,p_motor1_,&Motor::setSpeed);
     connect(p_driver1_,&MotorDriver::sendMotorCur,p_motor1_,&Motor::setCurrent);
     connect(p_driver1_,&MotorDriver::sendMotorTmp,p_motor1_,&Motor::setTemperature);
+
+    connect(this,&MainWindow::sendCurrentSpdForAutoTest,p_motor1_,&Motor::runWithAirMode);
+
+
     //采样间隔改了的话，记得改这个
     p_motor1_->setCurrentInterval(double(m_timer_get_data_.interval()) / 1000);
     return true;
@@ -120,8 +125,8 @@ void MainWindow::initDaqCard()
     connect(p_daqcard_thread_,&QThread::finished,p_daqcard_thread_,&QThread::deleteLater);
     connect(p_daqcard_,&QDaqcard::logMsg,this,&MainWindow::logMsg);
     connect(p_daqcard_thread_,&QThread::started,p_daqcard_,&QDaqcard::init);
-
-
+    connect(&m_timer_get_data_,&QTimer::timeout,p_daqcard_,&QDaqcard::readAllChannel);
+    connect(p_daqcard_,&QDaqcard::sendAllData,this,&MainWindow::setMotorDataFromDAQCard);
     p_daqcard_thread_->start();
 }
 
@@ -312,16 +317,15 @@ void MainWindow::updateMotor()
         if (!p_motor1_->getXpStatus() && !p_motor1_->getNoAirMode()){
             p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
-
-        p_daqcard_->readAllChannel();
         //更新显示界面
         updateMotor1Display();
         refreshCustomPlotData1();
         //更新数据库
-
+        if (p_motor1_->getNoAirMode()){
+            emit sendCurrentSpdForAutoTest(p_motor1_->getSpeed());
+        }
         emit sendToSqlDB(ui->lineEdit_exp_name_1->text(),ui->lineEdit_exp_usr_name_1->text(),
                          ui->lineEdit_exp_fw_id_1->text(),makeSqlVector(*p_motor1_));
-
     }
 
     //...etc motor
@@ -330,6 +334,8 @@ void MainWindow::updateMotor()
 void MainWindow::updateMotor1Display()
 {
     //update lineedit
+    ui->lineEdit_sys_vol_1->setText(QString::number(p_motor1_->getVoltage()));
+    ui->lineEdit_sys_cur_1->setText(QString::number(p_motor1_->getActCur()));
     ui->lineEdit_motor_set_spd_1->setText(QString::number(p_motor1_->getSetSpeed()));
     ui->lineEdit_motor_act_spd_1->setText(QString::number(p_motor1_->getSpeed()));
     ui->lineEdit_motor_cur_1->setText(QString::number(p_motor1_->getCurrent()));
@@ -448,23 +454,21 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
             p_motor1_->setIsRunning(true);
             this_mode_running = true;
             m_timer_get_data_.start();
-//            p_motor1_->initTestModeWithAir();
             ui->pushButton_auto_test_with_air_power_1->setText("停止");
             ui->statusBar->showMessage("非真空性能测试运行中！");
-            //disconnect(ui->pushButton_auto_test_with_air_power_1,SIGNAL(clicked(bool)),p_motor1_,SLOT(initTestModeWithAir()));
             connect(p_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
+
         }
         else if (this_mode_running){
             p_motor1_->setSetSpeed(0);
+//            p_motor1_->setNoAirMode(false);
             p_motor1_->setIsRunning(false);
             this_mode_running = false;
             m_timer_get_data_.stop();
             ui->pushButton_auto_test_with_air_power_1->setText("启动");
             ui->statusBar->showMessage("非真空性能测试结束！",5000);
             QMessageBox::warning(this,"完成","非真空性能测试完成！");
-            //connect(ui->pushButton_auto_test_with_air_power_1,SIGNAL(clicked(bool)),p_motor1_,SLOT(initTestModeWithAir()));
             disconnect(p_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
-
         }
         else{
             QMessageBox::warning(this,"警告","运行失败，请检查当前状态。");
@@ -527,4 +531,11 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
 void MainWindow::on_pushButton_make_report_clicked()
 {
     emit getLastExpData(ui->lineEdit_sql_motor_id->text(),ui->lineEdit_sql_motor_mode->text());
+}
+
+void MainWindow::setMotorDataFromDAQCard(QVector<double> res)
+{
+    if (res.size() != 7) return;
+    p_motor1_->setVoltage(res[6]*10);
+    p_motor1_->setActCur(2.5 - res[0]);
 }

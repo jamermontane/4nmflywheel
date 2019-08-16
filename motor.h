@@ -197,8 +197,6 @@ public:
         noair_test_containor_raw_data_.append(-1500);
         noair_test_containor_raw_data_.append(-1000);
         noair_test_containor_raw_data_.append(-500);
-
-
     }
     ~Motor(){
 
@@ -246,6 +244,10 @@ public:
     bool getNoAirMode() const{
         return this->is_noair_init_;
     }
+    void setNoAirMode(bool mode){
+        this->is_noair_init_ = mode;
+    }
+
     QString getExpId() const{
         return this->exp_id_;
     }
@@ -383,7 +385,7 @@ public slots:
     }
 
     void initTestModeWithAir(){
-
+        if (getIsRunning()){
         setFlywheelMode(FLYWHEEL_MODE_AUTOTESTNOAIR);
 
         exp_id_ = QDateTime::currentDateTime().toString("yyMMddhhmmss");
@@ -397,11 +399,26 @@ public slots:
         if(p_timer_auto_test_ == nullptr){
             p_timer_auto_test_ = new QTimer;
         }
-        connect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
+
         connect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
         p_timer_auto_test_->setInterval(5000);
         is_timer_started = false;
-        this->setSetSpeed(0);
+        setSetSpeed(0);
+        }
+        else{
+            resetTestModeWithAir();
+        }
+    }
+
+    void resetTestModeWithAir(){
+        if(!getIsRunning() && is_noair_init_){
+            exp_id_.clear();
+            is_noair_init_ = false;
+            p_timer_auto_test_->stop();
+            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
+            disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+            return;
+        }
     }
 
     void runWithAirMode(double spd){

@@ -38,6 +38,10 @@ signals:
     void sendToSqlDB(QString,QString,QString,QVector<QString>);
     //请求从数据库中请求实验数据
     void getLastExpData(QString,QString);
+
+    //一键测试getdata信号
+    void sendCurrentSpdForAutoTest(double);
+
 public slots:
     void logMsg(QString);
 
@@ -63,7 +67,10 @@ private slots:
     void on_pushButton_sql_query_clicked();
 
     void updataSqlTableView(QVector<QVector<QString> >);
+
     void on_pushButton_make_report_clicked();
+
+    void setMotorDataFromDAQCard(QVector<double> res);
 
 private:
     Ui::MainWindow *ui;

@@ -169,7 +169,7 @@ void MotorDriver::resolveDataFromSerialport()
 {
     QByteArray tmp_data = serial_port_->readAll();
     for (int i = 0;i < tmp_data.size();++i){
-        recv_data_buf.push_back(tmp_data.at(i));
+
         /*flywheel 4nm
         //a full frame detected
         if (recv_data_buf.size() >= 7){
@@ -209,7 +209,23 @@ void MotorDriver::resolveDataFromSerialport()
             }
         }
         */
-        if (recv_data_buf.size() >= 11){
+
+
+        if (recv_data_buf.size() == 0){
+            if (tmp_data.at(i) == char(0xff)){
+                recv_data_buf.push_back(tmp_data.at(i));
+            }
+        }
+        else if (recv_data_buf.size() < 11)
+            recv_data_buf.push_back(tmp_data.at(i));
+        else if (recv_data_buf.size() == 11 &&( recv_data_buf[9] != char(0x11)
+                 || recv_data_buf[0] != char(0xff))){
+            recv_data_buf = recv_data_buf.mid(1);
+            recv_data_buf.push_back(tmp_data.at(i));
+            emit sendErrText("串口数据错位！");
+        }
+        if (recv_data_buf.size() == 11 && recv_data_buf[9] == char(0x11)
+                && recv_data_buf[0] == char(0xff)){
             //check frame
             uint8_t t = 0x00;
             for (uint i = 0; i < 10;++i){
@@ -218,7 +234,7 @@ void MotorDriver::resolveDataFromSerialport()
 
             if (t != uint8_t(recv_data_buf[10])){
                 recv_data_buf = recv_data_buf.mid(1);
-                emit sendErrText("recv message error! chack communication!");
+                emit sendErrText("校验和错误！");
                 return;
             }
             recv_spd_.array[3] = recv_data_buf[1];
@@ -233,13 +249,7 @@ void MotorDriver::resolveDataFromSerialport()
             recv_cur_.array[1] = recv_data_buf[7];
             recv_cur_.array[0] = recv_data_buf[8];
             emit sendMotorCur(recv_cur_.cur * 0.001);
-
-            if (recv_data_buf.size() == 11){
-                recv_data_buf.clear();
-            }
-            else{
-                recv_data_buf = recv_data_buf.mid(11);
-            }
+            recv_data_buf.clear();
         }
     }
 }

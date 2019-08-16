@@ -2,7 +2,7 @@
 
 QDaqcard::QDaqcard(QObject *parent) : QObject(parent)
 {
-
+    qRegisterMetaType<QVector<double>>("QVector<double>");
 }
 
 QDaqcard::~QDaqcard()
@@ -17,20 +17,33 @@ void QDaqcard::init()
         logMsg(tr("Register_Card error=%1").arg(QString::number(card_)));
         return;
     }
-
     //需要使用的采集卡channel
     for (int i = 0;i < 7;++i){
-        err = D2K_AI_CH_Config (card_, i, AD_B_10_V);
-    }
-    if (err!=0) {
-        logMsg(tr("D2K_AI_CH_Config error=%1").arg(QString::number(err)));
-        return;
+        err = D2K_AI_CH_Config (card_, i, AD_B_10_V | AI_DIFF);
+        if (err!=0) {
+            logMsg(tr("D2K_AI_CH_Config error=%1").arg(QString::number(err)));
+            return;
+        }
     }
     is_init_ = true;
+
+    //tmp do
+    //port configured
+    D2K_DIO_PortConfig(card_ ,Channel_P1A,
+    OUTPUT_PORT);
+    D2K_DIO_PortConfig(card_, Channel_P1B,
+    OUTPUT_PORT);
+    D2K_DIO_PortConfig(card_, Channel_P1CL,
+    OUTPUT_PORT);
+    D2K_DIO_PortConfig(card_, Channel_P1CH,
+    OUTPUT_PORT);
+    //DO operation
+    D2K_DO_WritePort(card_, Channel_P1A, 254);
 }
 
 void QDaqcard::readAllChannel()
 {
+    if (!is_init_) return;
     QVector<double> res;
     F64 chan_voltage;
     //使用循环去读取
