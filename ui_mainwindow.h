@@ -27,6 +27,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
@@ -153,9 +154,12 @@ public:
     QPushButton *pushButton_system_power_1;
     QGroupBox *groupBox_3;
     QGridLayout *gridLayout_11;
-    QCustomPlot *qcp_motor_spd_1;
     QCustomPlot *qcp_motor_cur_1;
+    QCustomPlot *qcp_motor_spd_1;
     QCustomPlot *qcp_motor_tmp_1;
+    QSlider *tab1_horizontalSlider;
+    QLabel *label_disp_num_tab1;
+    QLabel *label_tab1_disp_num;
     QGroupBox *groupBox_4;
     QGridLayout *gridLayout_13;
     QDoubleSpinBox *doubleSpinBox_motor_test_spd_1;
@@ -938,20 +942,51 @@ public:
         gridLayout_11->setSpacing(6);
         gridLayout_11->setContentsMargins(11, 11, 11, 11);
         gridLayout_11->setObjectName(QStringLiteral("gridLayout_11"));
-        qcp_motor_spd_1 = new QCustomPlot(groupBox_3);
-        qcp_motor_spd_1->setObjectName(QStringLiteral("qcp_motor_spd_1"));
-
-        gridLayout_11->addWidget(qcp_motor_spd_1, 0, 0, 1, 1);
-
         qcp_motor_cur_1 = new QCustomPlot(groupBox_3);
         qcp_motor_cur_1->setObjectName(QStringLiteral("qcp_motor_cur_1"));
 
-        gridLayout_11->addWidget(qcp_motor_cur_1, 1, 0, 1, 1);
+        gridLayout_11->addWidget(qcp_motor_cur_1, 1, 0, 1, 3);
+
+        qcp_motor_spd_1 = new QCustomPlot(groupBox_3);
+        qcp_motor_spd_1->setObjectName(QStringLiteral("qcp_motor_spd_1"));
+
+        gridLayout_11->addWidget(qcp_motor_spd_1, 0, 0, 1, 3);
 
         qcp_motor_tmp_1 = new QCustomPlot(groupBox_3);
         qcp_motor_tmp_1->setObjectName(QStringLiteral("qcp_motor_tmp_1"));
 
-        gridLayout_11->addWidget(qcp_motor_tmp_1, 2, 0, 1, 1);
+        gridLayout_11->addWidget(qcp_motor_tmp_1, 2, 0, 1, 3);
+
+        tab1_horizontalSlider = new QSlider(groupBox_3);
+        tab1_horizontalSlider->setObjectName(QStringLiteral("tab1_horizontalSlider"));
+        QSizePolicy sizePolicy7(QSizePolicy::Expanding, QSizePolicy::Minimum);
+        sizePolicy7.setHorizontalStretch(0);
+        sizePolicy7.setVerticalStretch(0);
+        sizePolicy7.setHeightForWidth(tab1_horizontalSlider->sizePolicy().hasHeightForWidth());
+        tab1_horizontalSlider->setSizePolicy(sizePolicy7);
+        tab1_horizontalSlider->setMaximumSize(QSize(16777215, 20));
+        tab1_horizontalSlider->setMinimum(20);
+        tab1_horizontalSlider->setMaximum(2000);
+        tab1_horizontalSlider->setValue(200);
+        tab1_horizontalSlider->setOrientation(Qt::Horizontal);
+
+        gridLayout_11->addWidget(tab1_horizontalSlider, 3, 2, 1, 1);
+
+        label_disp_num_tab1 = new QLabel(groupBox_3);
+        label_disp_num_tab1->setObjectName(QStringLiteral("label_disp_num_tab1"));
+        QSizePolicy sizePolicy8(QSizePolicy::Preferred, QSizePolicy::Minimum);
+        sizePolicy8.setHorizontalStretch(0);
+        sizePolicy8.setVerticalStretch(0);
+        sizePolicy8.setHeightForWidth(label_disp_num_tab1->sizePolicy().hasHeightForWidth());
+        label_disp_num_tab1->setSizePolicy(sizePolicy8);
+        label_disp_num_tab1->setMaximumSize(QSize(16777215, 30));
+
+        gridLayout_11->addWidget(label_disp_num_tab1, 3, 0, 1, 1);
+
+        label_tab1_disp_num = new QLabel(groupBox_3);
+        label_tab1_disp_num->setObjectName(QStringLiteral("label_tab1_disp_num"));
+
+        gridLayout_11->addWidget(label_tab1_disp_num, 3, 1, 1, 1);
 
 
         gridLayout_17->addWidget(groupBox_3, 0, 2, 4, 1);
@@ -1312,6 +1347,8 @@ public:
         label_32->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256\347\224\265\346\272\220", 0));
         pushButton_system_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\345\256\236\346\227\266\346\230\276\347\244\272", 0));
+        label_disp_num_tab1->setText(QApplication::translate("MainWindow", "\346\225\260\346\215\256\346\225\260\351\207\217", 0));
+        label_tab1_disp_num->setText(QApplication::translate("MainWindow", "0", 0));
         groupBox_4->setTitle(QApplication::translate("MainWindow", "\345\215\225\346\234\272\346\265\213\350\257\225\346\216\247\345\210\266", 0));
         pushButton_single_test_mode_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         label_setval_1->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\200\237\345\272\246", 0));

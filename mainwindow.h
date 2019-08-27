@@ -74,6 +74,8 @@ private slots:
 
     void on_pushButton_ele_test_ly_mode_power_1_clicked();
 
+    void on_tab1_horizontalSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 

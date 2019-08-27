@@ -187,6 +187,10 @@ void MainWindow::initQCustomPlot1()
 
         connect( ui->qcp_motor_tmp_1->xAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->xAxis2, SLOT(setRange(QCPRange)));
         connect( ui->qcp_motor_tmp_1->yAxis, SIGNAL(rangeChanged(QCPRange)),  ui->qcp_motor_tmp_1->yAxis2, SLOT(setRange(QCPRange)));
+
+        ui->qcp_motor_tmp_1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        ui->qcp_motor_spd_1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        ui->qcp_motor_cur_1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 }
 
 void MainWindow::logMsg(QString text)
@@ -410,7 +414,8 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_spd_1->graph(0)->setData(keyContainer,spdContainer,true);
         ui->qcp_motor_spd_1->graph(1)->setData(keyContainer,setSpdContainer,true);
         lastPointKey = key;
-        if (keyContainer.size() >= 400){
+        int disp_num = ui->label_tab1_disp_num->text().toInt();
+        if (keyContainer.size() >= disp_num){
             keyContainer.pop_front();
             tmpContainer.pop_front();
             curContainer.pop_front();
@@ -429,9 +434,9 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_tmp_1->yAxis->setRange(*std::min_element(tmpContainer.begin(),tmpContainer.end()),
                                              *std::max_element(tmpContainer.begin(),tmpContainer.end()));
 
-        ui->qcp_motor_cur_1->xAxis->setRange(key, 20, Qt::AlignRight);
-        ui->qcp_motor_spd_1->xAxis->setRange(key, 20, Qt::AlignRight);
-        ui->qcp_motor_tmp_1->xAxis->setRange(key, 20, Qt::AlignRight);
+        ui->qcp_motor_cur_1->xAxis->setRange(key, disp_num/20, Qt::AlignRight);
+        ui->qcp_motor_spd_1->xAxis->setRange(key, disp_num/20, Qt::AlignRight);
+        ui->qcp_motor_tmp_1->xAxis->setRange(key, disp_num/20, Qt::AlignRight);
 
         ui->qcp_motor_cur_1->replot();
         ui->qcp_motor_tmp_1->replot();
@@ -577,4 +582,9 @@ void MainWindow::on_pushButton_ele_test_ly_mode_power_1_clicked()
 
     ui->qcp_motor_tmp_1->xAxis->setRange(0, key.size(), Qt::AlignLeft);
     ui->qcp_motor_tmp_1->replot();
+}
+
+void MainWindow::on_tab1_horizontalSlider_valueChanged(int value)
+{
+    ui->label_tab1_disp_num->setText(QString::number(value));
 }
