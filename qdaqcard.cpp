@@ -3,10 +3,12 @@
 QDaqcard::QDaqcard(QObject *parent) : QObject(parent)
 {
     qRegisterMetaType<QVector<double>>("QVector<double>");
+    m_DO_port_status_ = 0xff;
 }
 
 QDaqcard::~QDaqcard()
 {
+    D2K_DO_WritePort(card_, Channel_P1A, 255);
     D2K_Release_Card(card_);
 }
 
@@ -37,8 +39,7 @@ void QDaqcard::init()
     OUTPUT_PORT);
     D2K_DIO_PortConfig(card_, Channel_P1CH,
     OUTPUT_PORT);
-    //DO operation
-    D2K_DO_WritePort(card_, Channel_P1A, 254);
+    D2K_DO_WritePort(card_, Channel_P1A, 255);
 }
 
 void QDaqcard::readAllChannel()
@@ -58,73 +59,86 @@ void QDaqcard::readAllChannel()
     emit sendAllData(res);
 }
 
-void QDaqcard::getStartCurrent(int channel)
+void QDaqcard::getSurgeCurrent(U16 channel,QVector<double> &v,int point_num)
 {
-    /*
-    I16 card, err, card_num,i,Id, tmpId = 0, card_type=0;
-        BOOLEAN halfReady, fStop, fok=0;
-        U32 count=0, count1, startPos;
+    F64 chan_voltage;
+    v.resize(point_num);
 
-        printf("This program inputs %d scans from CH-0 of DAQ-2005/2006 in %d Hz.\n", SCANCOUNT, (int)(BASETIME/SCAN_INTERVAL));
-        printf("Card Type: (0) DAQ_2005 or (1) DAQ2006 or (2) DAQ2016 ? ");
-        scanf(" %hd", &card_type);
-        printf("Please input a card number: ");
-        scanf(" %hd", &card_num);
-        if(card_type==1) card_type = DAQ_2006;
-        else if(card_type==2) card_type = DAQ_2016;
-        else card_type = DAQ_2005;
-        if ((card=D2K_Register_Card (card_type, card_num)) <0 ) {
-            printf("Register_Card error=%d", card);
-            exit(1);
+    for (int i = 0;i<point_num;++i){
+        if (i == int(point_num*0.2)){
+            setDOPort(channel+1,true);
         }
-        printf("Save data to a file (DmaData.dat): Yes(1) or No(0)? ");
-        scanf(" %hd", &fok);
-        err = D2K_AI_CH_Config (card, CHANNELNUMBER, AIRANGE);
-        if (err!=NoError) {
-           printf("D2K_AI_CH_Config error=%d", err);
-           exit(1);
+        if (i == int(point_num*0.8)){
+            setDOPort(channel+1,false);
         }
-        err = D2K_AI_Config (card, ADCONVERTSRC, ADTRIGSRC|ADTRIGMODE|ADTRIGPOL|DELAYMODE, DELAYCOUNT, 0, 0, BUFAUTORESET);
-        //Or you can use the following function
-        //err = D2K_AI_DelayTrig_Config (card, ADCONVERTSRC, ADTRIGSRC|ADTRIGPOL|DELAYMODE, DELAYCOUNT, 0, 0, BUFAUTORESET);
+        I16 err = D2K_AI_VReadChannel (card_, channel, &chan_voltage);
         if (err!=0) {
-           printf("D2K_AI_Config error=%d", err);
-           exit(1);
+            logMsg(tr("D2K_AI_ReadChannel error=%1").arg(QString::number(err)));
+            return;
         }
-        err=D2K_AI_AsyncDblBufferMode (card, 1);
-        if (err!=NoError) {
-           printf("D2K_AI_AsyncDblBufferMode error=%d", err);
-           exit(1);
-        }
-        if(fok) {
-            svfile = fopen("DmaData.dat", "w");
-            fprintf( svfile, "CH%d :\n", CHANNELNUMBER);
-        }
-        err=D2K_AI_ContBufferSetup (card, ai_buf, SCANCOUNT, &Id);
-        err=D2K_AI_ContBufferSetup (card, ai_buf2, SCANCOUNT, &Id);
-        err = D2K_AI_ContReadChannel (card, CHANNELNUMBER, Id, SCANCOUNT, SCAN_INTERVAL, SCAN_INTERVAL, ASYNCH_OP);
-        if (err!=0) {
-           printf("D2K_AI_ContReadChannel error=%d", err);
-           exit(1);
-        }
-        printf("\n\n\nStart Data Conversion by External Trigger Signal\nAnd Press any key to stop Opeartion.\n");
-        printf("\n\nData count : \n");
-        do {
-            do {
-                 D2K_AI_AsyncDblBufferHalfReady(card, &halfReady, &fStop);
-            } while (!halfReady && !fStop);
+        v[i] = 2.5 - chan_voltage;
+    }
 
-            //Here to handle the data stored in ready buffer
-            count += (SCANCOUNT);
-            printf("%d\r", count);
-            if(fok)
-               write_to_file( tmpId?ai_buf2:ai_buf, SCANCOUNT );
-            tmpId = (tmpId + 1) % 2;
-        } while(!kbhit());
-        D2K_AI_AsyncClear(card, &startPos, &count1);
-        if(fok) {
-         write_to_file( tmpId?ai_buf2:ai_buf, count1 );
-         fclose(svfile);
-        }
-        */
+    return;
+}
+
+//prot: 1 to 8 ,
+//status: open = true,close=false
+void QDaqcard::setDOPort(uint port, bool status)
+{
+    switch (port) {
+    case 1:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 254;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 1;
+        break;
+    case 2:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 253;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 2;
+        break;
+    case 3:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 251;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 4;
+        break;
+    case 4:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 247;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 8;
+        break;
+    case 5:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 239;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 16;
+        break;
+    case 6:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 223;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 32;
+        break;
+    case 7:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 191;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 64;
+        break;
+    case 8:
+        if (status)
+            m_DO_port_status_ = m_DO_port_status_ & 127;
+        else
+            m_DO_port_status_ = m_DO_port_status_ | 128;
+        break;
+    default:
+        return;
+        break;
+    }
+    //DO operation
+    D2K_DO_WritePort(card_, Channel_P1A, m_DO_port_status_);
 }
