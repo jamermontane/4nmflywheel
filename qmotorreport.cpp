@@ -718,7 +718,7 @@ void QMotorReport::initExpData()
 
     //输出结果排序
     std::sort(m_test_unit_setspd_.begin(),m_test_unit_setspd_.end(),[](const double &a,const double &b){
-        return qAbs(a) < qAbs(b);
+        return qAbs(a) < qAbs(b) || (qAbs(a) == qAbs(b) && a >= 0) ;
     });
 }
 

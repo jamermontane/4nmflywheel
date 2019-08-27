@@ -19,12 +19,15 @@ public:
 signals:
     void logMsg(QString);
     void sendAllData(QVector<double>);
+    void sendSurgeCurrnt(QVector<double>);
 public slots:
     void readAllChannel();
-    void getStartCurrent(int channel);
+    void getSurgeCurrent(U16 channel, QVector<double> &v, int point_num);
+    void setDOPort(uint port,bool status);
 private:
     bool is_init_ = false;
     DAQCARD::I16 card_;
+    uchar m_DO_port_status_ = 0xff;
 };
 
 #endif // QDAQCARD_H

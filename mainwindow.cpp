@@ -202,18 +202,13 @@ void MainWindow::on_pushButton_system_power_1_clicked()
 
         m_sys_status_1_ = true;
         ui->pushButton_system_power_1->setText("关闭");
-
+        p_daqcard_->setDOPort(1,true);
 
     }
     else{
         //power had open
-        //检查各个飞轮的状态
-        if (p_motor1_->getIsRunning()){
-            on_pushButton_single_test_mode_1_clicked();
-        }
-        //检查飞轮二。。。
 
-
+        p_daqcard_->setDOPort(1,false);
         m_sys_status_1_ = false;
         ui->pushButton_system_power_1->setText("启动");
 
@@ -320,12 +315,26 @@ void MainWindow::updateMotor()
         //更新显示界面
         updateMotor1Display();
         refreshCustomPlotData1();
-        //更新数据库
+
         if (p_motor1_->getNoAirMode()){
             emit sendCurrentSpdForAutoTest(p_motor1_->getSpeed());
         }
-        emit sendToSqlDB(ui->lineEdit_exp_name_1->text(),ui->lineEdit_exp_usr_name_1->text(),
-                         ui->lineEdit_exp_fw_id_1->text(),makeSqlVector(*p_motor1_));
+        //更新数据库,为了防止插入太快，每隔0.5S插入一次
+
+        static QTime time(QTime::currentTime());
+        // calculate two new data points:
+        double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds  elaspsed上次开始后得持续时间
+        static double lastPointKey = 0;
+        if (key-lastPointKey > 0.5){
+            emit sendToSqlDB(ui->lineEdit_exp_name_1->text(),ui->lineEdit_exp_usr_name_1->text(),
+                            ui->lineEdit_exp_fw_id_1->text(),makeSqlVector(*p_motor1_));
+            lastPointKey = key;
+            if (key > 43200){
+                //12h重置一次！
+                time.restart();
+                lastPointKey = 0;
+            }
+        }
     }
 
     //...etc motor
@@ -386,8 +395,9 @@ void MainWindow::refreshCustomPlotData1()
     // calculate two new data points:
     double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds  elaspsed上次开始后得持续时间
     static double lastPointKey = 0;
-    if (key-lastPointKey > 0.02) // at most add point every 0.5 s
+    if (key-lastPointKey > 0.01) // at most add point every 0.5 s
     {
+
       // add data to lines:
         keyContainer.push_back(key);
         tmpContainer.push_back(p_motor1_->getTemperature());
@@ -400,7 +410,7 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_spd_1->graph(0)->setData(keyContainer,spdContainer,true);
         ui->qcp_motor_spd_1->graph(1)->setData(keyContainer,setSpdContainer,true);
         lastPointKey = key;
-        if (keyContainer.size() >= 300){
+        if (keyContainer.size() >= 400){
             keyContainer.pop_front();
             tmpContainer.pop_front();
             curContainer.pop_front();
@@ -427,6 +437,16 @@ void MainWindow::refreshCustomPlotData1()
         ui->qcp_motor_tmp_1->replot();
         ui->qcp_motor_spd_1->replot();
 
+        if (key > 43200){
+            //12h重置一次！
+            time.restart();
+            lastPointKey = 0;
+            keyContainer.clear();
+            tmpContainer.clear();
+            curContainer.clear();
+            spdContainer.clear();
+            setSpdContainer.clear();
+        }
 
     }
     // make key axis range scroll with the data (at a constant range size of 8):
@@ -538,4 +558,23 @@ void MainWindow::setMotorDataFromDAQCard(QVector<double> res)
     if (res.size() != 7) return;
     p_motor1_->setVoltage(res[6]*10);
     p_motor1_->setActCur(2.5 - res[0]);
+    p_motor1_->setWate();
+}
+
+void MainWindow::on_pushButton_ele_test_ly_mode_power_1_clicked()
+{
+    if (m_sys_status_1_) return;
+    QVector<double> current;
+    p_daqcard_->getSurgeCurrent(0,current,1024);
+    QVector<double> key;
+    for (int i =0;i<current.size();++i){
+        key.push_back(i);
+    }
+    ui->qcp_motor_tmp_1->graph(0)->setData(key,current,true);
+    ui->qcp_motor_tmp_1->graph(0)->rescaleValueAxis(true);
+    ui->qcp_motor_tmp_1->yAxis->setRange(*std::min_element(current.begin(),current.end()),
+                                         *std::max_element(current.begin(),current.end()));
+
+    ui->qcp_motor_tmp_1->xAxis->setRange(0, key.size(), Qt::AlignLeft);
+    ui->qcp_motor_tmp_1->replot();
 }

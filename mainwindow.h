@@ -72,6 +72,8 @@ private slots:
 
     void setMotorDataFromDAQCard(QVector<double> res);
 
+    void on_pushButton_ele_test_ly_mode_power_1_clicked();
+
 private:
     Ui::MainWindow *ui;
 
