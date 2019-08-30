@@ -15,6 +15,7 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
+#include <QtWidgets/QDateTimeEdit>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
@@ -205,6 +206,10 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QSpacerItem *horizontalSpacer_8;
     QSpacerItem *horizontalSpacer_9;
+    QDateTimeEdit *dateTimeEdit_start_time;
+    QDateTimeEdit *dateTimeEdit_end_time;
+    QLabel *label_17;
+    QLabel *label_18;
     QGroupBox *groupBox_9;
     QGridLayout *gridLayout_6;
     QTableView *tableView_sql;
@@ -967,7 +972,7 @@ public:
         tab1_horizontalSlider->setMaximumSize(QSize(16777215, 20));
         tab1_horizontalSlider->setMinimum(20);
         tab1_horizontalSlider->setMaximum(2000);
-        tab1_horizontalSlider->setValue(200);
+        tab1_horizontalSlider->setValue(1000);
         tab1_horizontalSlider->setOrientation(Qt::Horizontal);
 
         gridLayout_11->addWidget(tab1_horizontalSlider, 3, 2, 1, 1);
@@ -1215,6 +1220,26 @@ public:
 
         gridLayout_5->addItem(horizontalSpacer_9, 0, 8, 1, 1);
 
+        dateTimeEdit_start_time = new QDateTimeEdit(groupBox_8);
+        dateTimeEdit_start_time->setObjectName(QStringLiteral("dateTimeEdit_start_time"));
+
+        gridLayout_5->addWidget(dateTimeEdit_start_time, 1, 1, 1, 1);
+
+        dateTimeEdit_end_time = new QDateTimeEdit(groupBox_8);
+        dateTimeEdit_end_time->setObjectName(QStringLiteral("dateTimeEdit_end_time"));
+
+        gridLayout_5->addWidget(dateTimeEdit_end_time, 1, 4, 1, 1);
+
+        label_17 = new QLabel(groupBox_8);
+        label_17->setObjectName(QStringLiteral("label_17"));
+
+        gridLayout_5->addWidget(label_17, 1, 0, 1, 1);
+
+        label_18 = new QLabel(groupBox_8);
+        label_18->setObjectName(QStringLiteral("label_18"));
+
+        gridLayout_5->addWidget(label_18, 1, 3, 1, 1);
+
 
         gridLayout_15->addWidget(groupBox_8, 0, 0, 1, 1);
 
@@ -1239,7 +1264,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1401, 26));
+        menuBar->setGeometry(QRect(0, 0, 1401, 23));
         menu = new QMenu(menuBar);
         menu->setObjectName(QStringLiteral("menu"));
         menu_2 = new QMenu(menuBar);
@@ -1256,7 +1281,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(6);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -1348,7 +1373,7 @@ public:
         pushButton_system_power_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\345\256\236\346\227\266\346\230\276\347\244\272", 0));
         label_disp_num_tab1->setText(QApplication::translate("MainWindow", "\346\225\260\346\215\256\346\225\260\351\207\217", 0));
-        label_tab1_disp_num->setText(QApplication::translate("MainWindow", "0", 0));
+        label_tab1_disp_num->setText(QApplication::translate("MainWindow", "1000", 0));
         groupBox_4->setTitle(QApplication::translate("MainWindow", "\345\215\225\346\234\272\346\265\213\350\257\225\346\216\247\345\210\266", 0));
         pushButton_single_test_mode_1->setText(QApplication::translate("MainWindow", "\345\220\257\345\212\250", 0));
         label_setval_1->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\351\200\237\345\272\246", 0));
@@ -1381,6 +1406,8 @@ public:
         label_13->setText(QApplication::translate("MainWindow", "\351\243\236\350\275\256ID", 0));
         pushButton_sql_query->setText(QApplication::translate("MainWindow", "\346\237\245\350\257\242", 0));
         pushButton_make_report->setText(QApplication::translate("MainWindow", "\347\224\237\346\210\220\346\212\245\345\221\212", 0));
+        label_17->setText(QApplication::translate("MainWindow", "\345\274\200\345\247\213\346\227\266\351\227\264", 0));
+        label_18->setText(QApplication::translate("MainWindow", "\347\273\223\346\235\237\346\227\266\351\227\264", 0));
         groupBox_9->setTitle(QApplication::translate("MainWindow", "\346\237\245\350\257\242\347\273\223\346\236\234", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\237\245\350\257\242\345\216\206\345\217\262\346\225\260\346\215\256", 0));
         menu->setTitle(QApplication::translate("MainWindow", "\347\263\273\347\273\237\350\256\276\347\275\256", 0));

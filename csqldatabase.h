@@ -30,7 +30,7 @@ public:
     void doSqlQuery(QString query_str, int dst);
     QString makeSaveString(QString exp_name, QString usr_name, QString exp_no, QVector<QString>);
     QString getLastExpId(QString motor_id);
-    void getExpDataFromSqlDB(QString motor_id,QString exp_id,QString motor_mode);
+    void getExpDataFromSqlDB(QString motor_id,QString exp_id,QString motor_mode,QString,QString);
 signals:
     void emitExpData(QVector<QVector<QString> >);
     void emitLastExpData(QVector<QVector<QString> >);
