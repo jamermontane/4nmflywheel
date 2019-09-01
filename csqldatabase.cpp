@@ -146,7 +146,7 @@ QString SqlDataBase::getLastExpId(QString motor_id)
 }
 
 //调用该接口，从数据库中查询数据并返回查询结果
-void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString motor_mode)
+void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString motor_mode,QString start_time,QString end_time)
 {
     QString query_str = "SELECT * FROM ";
     query_str.append(motor_id);
@@ -154,11 +154,30 @@ void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString 
         query_str.append(" WHERE EXPID = ");
         query_str.append(exp_id);
     }
-    if (motor_mode.size() != 0){
+    if (exp_id.size()!=0 && motor_mode.size() != 0){
         if (exp_id.size() != 0) query_str.append(" AND ");
         else query_str.append(" WHERE ");
         query_str.append(" FLYWHEELMODE = ");
         query_str.append(motor_mode);
+    }
+    QString ss = "WHERE";
+    if (!query_str.contains(ss)){
+        query_str.append(" WHERE ");
+        query_str.append(" TIME >= \"");
+        query_str.append(start_time);
+        query_str.append("\" AND ");
+        query_str.append(" TIME <= \"");
+        query_str.append(end_time);
+        query_str.append("\"");
+    }
+    else{
+        query_str.append(" AND ");
+        query_str.append(" TIME >= \"");
+        query_str.append(start_time);
+        query_str.append("\" AND ");
+        query_str.append(" TIME <= \"");
+        query_str.append(end_time);
+        query_str.append("\"");
     }
     query_str.append(" LIMIT 1000");
     doSqlQuery(query_str,1);

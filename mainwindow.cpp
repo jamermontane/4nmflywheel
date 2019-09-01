@@ -95,6 +95,9 @@ void MainWindow::initSql()
     connect(p_sql_,&SqlDataBase::sendErrorText,this,&MainWindow::logMsg);
     connect(p_sql_,&SqlDataBase::emitExpData,this,&MainWindow::updataSqlTableView);
     p_sql_thread_->start();
+
+
+
 }
 
 void MainWindow::initReport()
@@ -113,6 +116,9 @@ void MainWindow::initReport()
     connect(p_repoter_,&QMotorReport::logMsg,this,&MainWindow::logMsg);
 
     p_repoter_thread_->start();
+
+    ui->dateTimeEdit_start_time->setDateTime(QDateTime::currentDateTime());
+    ui->dateTimeEdit_end_time->setDateTime(QDateTime::currentDateTime());
 }
 
 void MainWindow::initDaqCard()
@@ -356,6 +362,8 @@ void MainWindow::updateMotor1Display()
     ui->lineEdit_motor_jdl_1->setText(QString::number(p_motor1_->getAngularMomentum()));
     ui->lineEdit_motor_jdl_czpc_1->setText(QString::number(p_motor1_->getAngularMomentumConst()));
     ui->lineEdit_motor_jdl_dtpc_1->setText(QString::number(p_motor1_->getAngularMomentumDynamic()));
+    ui->lineEdit_motor_wate_1->setText(QString::number(p_motor1_->getWate()));
+    ui->lineEdit_motor_wate_overview_1->setText(QString::number(p_motor1_->getWate()));
 }
 //转速改变响应函数
 void MainWindow::on_doubleSpinBox_motor_test_spd_1_editingFinished()
@@ -505,7 +513,7 @@ void MainWindow::on_pushButton_sql_query_clicked()
 {
     tab_num_ = 0;
     p_sql_->getExpDataFromSqlDB(ui->lineEdit_sql_motor_id->text(),ui->lineEdit_sql_exp_id->text()
-                                ,ui->lineEdit_sql_motor_mode->text());
+                                ,ui->lineEdit_sql_motor_mode->text(),ui->dateTimeEdit_start_time->dateTime().toString("yyyy-MM-dd hh::mm::ss"),ui->dateTimeEdit_end_time->dateTime().toString("yyyy-MM-dd hh::mm::ss"));
 }
 
 void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
