@@ -72,6 +72,7 @@ bool MainWindow::initDriver1()
     connect(p_driver1_,&MotorDriver::sendMotorCur,p_motor1_,&Motor::setCurrent);
     connect(p_driver1_,&MotorDriver::sendMotorTmp,p_motor1_,&Motor::setTemperature);
 
+    connect(this,&MainWindow::startAutoTestModeNoAir,p_motor1_,&Motor::initTestModeNOAir);
     connect(this,&MainWindow::sendCurrentSpdForAutoTest,p_motor1_,&Motor::runWithAirMode);
     connect(this,&MainWindow::refreshAutoTestSpd,p_motor1_,&Motor::setSpdOfAutoTestSpdMode);
     connect(this,&MainWindow::refreshAutoTestHX,p_motor1_,&Motor::setSpdOfAutoTestHXMode);
@@ -319,8 +320,9 @@ void MainWindow::updateMotor()
 {
     if (p_motor1_->getIsRunning()){
         //斜坡模式不用发
-
-        if (!p_motor1_->getXpStatus() && !p_motor1_->getAirMode()){
+        if (!p_motor1_->getXpStatus() && !p_motor1_->getAirMode() &&
+            !p_motor1_->getAutoTestSpdMode() && !p_motor1_->getHXMode())
+        {
             p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
         //更新显示界面
@@ -654,7 +656,13 @@ void MainWindow::on_pushButton_auto_test_noair_power_1_clicked()
             ui->statusBar->showMessage("飞轮1真空性能测试结束！",5000);
             QMessageBox::warning(this,"完成","飞轮1真空性能测试完成！");
             disconnect(p_motor1_,SIGNAL(autoTestEnd()),this,SLOT(on_pushButton_auto_test_noair_power_1_clicked()));
+            emit getLastExpData(tr("MOTOR1"),tr(""));
         }
     }
-     emit getLastExpData(tr("MOTOR1"),tr(""));
+}
+
+void MainWindow::on_doubleSpinBox_motor_test_acc_valueChanged(double arg1)
+{
+    if (arg1>0 && arg1 < 200)
+        p_motor1_->setAccelerate(arg1);
 }

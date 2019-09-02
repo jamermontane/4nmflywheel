@@ -66,7 +66,7 @@ private:
     QString             exp_address_;
     QString             exp_vacuum_;
     QString             flywheel_no_;
-    QString             flywheel_mode_;
+
 
     //实验原始数据
     QVector<double>     flywheel_act_cur_;
@@ -80,6 +80,7 @@ private:
     QVector<double>     flywheel_JDL_;
     QVector<double>     flywheel_JDL_const_;
     QVector<double>     flywheel_JDL_dynamic_;
+    QVector<int>        flywheel_mode_;
 
     /*-----------------师弟看这里----------------*/
     //需要计算的值    11 12等为该测试项目的编号

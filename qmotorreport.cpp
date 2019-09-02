@@ -28,7 +28,7 @@ void QMotorReport::setExpInfomation(QVector<QString> &data)
     this->flywheel_JDL_.push_back( data[12].toDouble());
     this->flywheel_JDL_dynamic_.push_back(data[13].toDouble());
     this->flywheel_JDL_const_.push_back(data[14].toDouble());
-    this->flywheel_mode_ =data[15];
+    this->flywheel_mode_.push_back(data[15].toInt());
     this->exp_vacuum_       = data[16];
     this->exp_address_      = data[17];
     this->flywheel_act_cur_.push_back(data[18].toDouble());
@@ -690,6 +690,7 @@ void QMotorReport::getDataFromSql(QVector<QVector<QString> > res)
         this->flywheel_JDL_dynamic_.push_back(data[13].toDouble());
         this->flywheel_JDL_const_.push_back(data[14].toDouble());
         this->flywheel_act_cur_.push_back(data[18].toDouble());
+        this->flywheel_mode_.push_back(data[15].toInt());
     }
     emit logMsg(tr("生成报告：数据查询完毕(20%)"));
 
@@ -707,8 +708,11 @@ void QMotorReport::initExpData()
 {
     //提取setspd
     QSet<double> t_setspd;
+    int idx = 0;
     for (double &setspd:flywheel_setSpd_){
-        t_setspd.insert(setspd);
+        //判断是否是速度模式
+        if (flywheel_mode_.at(idx++) == 0)
+            t_setspd.insert(setspd);
     }
 
     m_test_unit_setspd_.clear();
@@ -733,7 +737,8 @@ void QMotorReport::calExpDataSetSpd()
         QVector<double> jdl_const;
         QVector<double> jdl_dynamic;
         for (int i =0;i < flywheel_setSpd_.size();++i){
-            if (flywheel_setSpd_.at(i) == current_set_spd){
+            //spd 模式编号为0
+            if (flywheel_setSpd_.at(i) == current_set_spd && flywheel_mode_.at(i) == 0){
                 need_test_spd.push_back(flywheel_spd_.at(i));
                 jdl_const.push_back(flywheel_JDL_const_.at(i));
                 jdl_dynamic.push_back(flywheel_JDL_dynamic_.at(i));

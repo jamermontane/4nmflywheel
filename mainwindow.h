@@ -84,6 +84,8 @@ private slots:
 
     void on_pushButton_auto_test_noair_power_1_clicked();
 
+    void on_doubleSpinBox_motor_test_acc_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
 
