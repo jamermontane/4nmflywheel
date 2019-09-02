@@ -104,7 +104,6 @@ void Motor::setSpdOfAutoTestSpdMode()
 
 void Motor::initHXMode()
 {
-    setFlywheelMode(FLYWHEEL_MODE_HX);
     is_hx_mode_init = true;
     reach_target_ = false;
     hx_mode_target_spd_ = 4000;
