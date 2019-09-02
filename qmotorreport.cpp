@@ -365,7 +365,7 @@ void QMotorReport::createWordReport()
     int cur_idx = 6;
     //第六行
     //速度测试：向表里填数据
-    for (int spd_idx =0;spd_idx < m_test_unit_setspd_.size()-1;++spd_idx,++cur_idx){
+    for (int spd_idx =0;spd_idx < m_test_unit_setspd_.size()-2;++spd_idx,++cur_idx){
         //写指令转速
         word.setCellFontBold(1,cur_idx,8,false);   //设置是否粗体
         word.setRowAlignment(1,cur_idx,0);
@@ -563,7 +563,8 @@ void QMotorReport::createWordReport()
     word.setCellFontSize(1,cur_idx,8,8);
     word.setCellString(1,cur_idx,8,tr("I可取多个数的平均值"));
     cur_idx++;
-    for (int spd_idx =0;spd_idx < m_test_unit_setspd_.size()-1;++spd_idx,++cur_idx){
+    //m_test_unit_setspd_.size()-1
+    for (int spd_idx =0;spd_idx < 1;++spd_idx,++cur_idx){
         //写指令转速
         word.setCellFontBold(1,cur_idx,6,false);   //设置是否粗体
         word.setRowAlignment(1,cur_idx,0);
