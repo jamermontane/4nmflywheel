@@ -7,6 +7,8 @@
 
 #include "D2kDask.h"
 
+//该数据采集卡型号为adlink DAQ2213
+
 using namespace DAQCARD;
 class QDaqcard : public QObject
 {

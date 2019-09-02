@@ -39,9 +39,15 @@ signals:
     //请求从数据库中请求实验数据
     void getLastExpData(QString,QString);
 
-    //一键测试getdata信号
+    //非真空getdata信号
     void sendCurrentSpdForAutoTest(double);
 
+    //真空一键测试--发送需要测试的模式
+    void startAutoTestModeNoAir(QVector<QString>);
+    //速度模式刷新信号
+    void refreshAutoTestSpd();
+    //滑行模式刷新信号
+    void refreshAutoTestHX();
 public slots:
     void logMsg(QString);
 
@@ -75,6 +81,8 @@ private slots:
     void on_pushButton_ele_test_ly_mode_power_1_clicked();
 
     void on_tab1_horizontalSlider_valueChanged(int value);
+
+    void on_pushButton_auto_test_noair_power_1_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -122,6 +130,7 @@ private:
     //数据采集卡部分
     QDaqcard* p_daqcard_;
     QThread* p_daqcard_thread_;
+
 };
 
 #endif // MAINWINDOW_H

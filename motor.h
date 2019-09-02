@@ -14,14 +14,15 @@
 static const double J_ = 0.0064;
 static const double PI_ = 3.1415926;
 
-//模式编号定义
+//模式编号定义-在后面添加
 enum FLYWHEEL_MODE{
     FLYWHEEL_MODE_SPD,          //速度
     FLYWHEEL_MODE_XP,           //斜坡
     FLYWHEEL_MODE_TOR,          //力矩
-    FLYWHEEL_MODE_AUTOTESTNOAIR,    //自动测试1
+    FLYWHEEL_MODE_AUTOTESTNOAIR,//自动测试1
     FLYWHEEL_MODE_AUTOTEST2,    //自动测试2
     FLYWHEEL_MODE_AUTOTEST3,    //自动测试3
+    FLYWHEEL_MODE_HX            //滑行模式
 };
 /*
  * 电机类
@@ -183,20 +184,37 @@ public:
         connect(this,SIGNAL(spdChanged(double)),this,SLOT(setLastTen(double)));
 
         //非真空测试数据初始化
-        noair_test_containor_raw_data_.append(0);
-        noair_test_containor_raw_data_.append(100);
-        noair_test_containor_raw_data_.append(500);
-        noair_test_containor_raw_data_.append(1000);
-        noair_test_containor_raw_data_.append(1500);
-        noair_test_containor_raw_data_.append(2000);
-        noair_test_containor_raw_data_.append(2500);
-        noair_test_containor_raw_data_.append(3000);
-        noair_test_containor_raw_data_.append(-3000);
-        noair_test_containor_raw_data_.append(-2500);
-        noair_test_containor_raw_data_.append(-2000);
-        noair_test_containor_raw_data_.append(-1500);
-        noair_test_containor_raw_data_.append(-1000);
-        noair_test_containor_raw_data_.append(-500);
+        air_test_containor_raw_data_.append(0);
+        air_test_containor_raw_data_.append(100);
+        air_test_containor_raw_data_.append(500);
+        air_test_containor_raw_data_.append(1000);
+        air_test_containor_raw_data_.append(1500);
+        air_test_containor_raw_data_.append(2000);
+        air_test_containor_raw_data_.append(2500);
+        air_test_containor_raw_data_.append(3000);
+        air_test_containor_raw_data_.append(-3000);
+        air_test_containor_raw_data_.append(-2500);
+        air_test_containor_raw_data_.append(-2000);
+        air_test_containor_raw_data_.append(-1500);
+        air_test_containor_raw_data_.append(-1000);
+        air_test_containor_raw_data_.append(-500);
+        //一键测试，速度模式初始化
+        auto_test_spd_mode__containor_raw_data_.append(0);
+        auto_test_spd_mode__containor_raw_data_.append(100);
+        auto_test_spd_mode__containor_raw_data_.append(500);
+        auto_test_spd_mode__containor_raw_data_.append(1000);
+        auto_test_spd_mode__containor_raw_data_.append(1500);
+        auto_test_spd_mode__containor_raw_data_.append(2000);
+        auto_test_spd_mode__containor_raw_data_.append(2500);
+        auto_test_spd_mode__containor_raw_data_.append(3000);
+        auto_test_spd_mode__containor_raw_data_.append(-3000);
+        auto_test_spd_mode__containor_raw_data_.append(-2500);
+        auto_test_spd_mode__containor_raw_data_.append(-2000);
+        auto_test_spd_mode__containor_raw_data_.append(-1500);
+        auto_test_spd_mode__containor_raw_data_.append(-1000);
+        auto_test_spd_mode__containor_raw_data_.append(-500);
+
+        connect(this,SIGNAL(autoTestStart()),this,SLOT(selectTestMode()));
     }
     ~Motor(){
 
@@ -241,11 +259,11 @@ public:
     bool getXpStatus() const{
         return this->xp_status_;
     }
-    bool getNoAirMode() const{
-        return this->is_noair_init_;
+    bool getAirMode() const{
+        return this->is_air_init_;
     }
-    void setNoAirMode(bool mode){
-        this->is_noair_init_ = mode;
+    void setAirMode(bool mode){
+        this->is_air_init_ = mode;
     }
 
     QString getExpId() const{
@@ -383,56 +401,54 @@ public slots:
             setSetSpeed(xp_end_spd_);
         }
     }
-
+    //非真空一键测试函数1
     void initTestModeWithAir(){
         if (getIsRunning()){
-        setFlywheelMode(FLYWHEEL_MODE_AUTOTESTNOAIR);
+            setFlywheelMode(FLYWHEEL_MODE_AUTOTESTNOAIR);
 
-        exp_id_ = QDateTime::currentDateTime().toString("yyMMddhhmmss");
-        if (is_noair_init_){
-            return;
-        }
-        noair_test_containor_.clear();
-        noair_test_containor_ = noair_test_containor_raw_data_;
+            exp_id_ = QDateTime::currentDateTime().toString("yyMMddhhmmss");
+            if (is_air_init_){
+                return;
+            }
+            air_test_containor_.clear();
+            air_test_containor_ = air_test_containor_raw_data_;
 
-        is_noair_init_ = true;
-        if(p_timer_auto_test_ == nullptr){
-            p_timer_auto_test_ = new QTimer;
-        }
+            is_air_init_ = true;
+            if(p_timer_auto_test_ == nullptr){
+                p_timer_auto_test_ = new QTimer;
+            }
 
-        connect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
-        p_timer_auto_test_->setInterval(5000);
-        is_timer_started = false;
-        setSetSpeed(0);
+            connect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
+            p_timer_auto_test_->setInterval(5000);
+            is_timer_started = false;
+            setSetSpeed(0);
         }
         else{
             resetTestModeWithAir();
         }
     }
-
+//非真空一键测试函数1
     void resetTestModeWithAir(){
-        if(!getIsRunning() && is_noair_init_){
+        if(!getIsRunning() && is_air_init_){
             exp_id_.clear();
-            is_noair_init_ = false;
+            is_air_init_ = false;
             p_timer_auto_test_->stop();
-            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
             disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             return;
         }
     }
-
+//为了减少定时器的使用，因此这个槽函数通过mainwindow的定时器调用。
     void runWithAirMode(double spd){
         if(!getIsRunning()){
             exp_id_.clear();
-            is_noair_init_ = false;
+            is_air_init_ = false;
             p_timer_auto_test_->stop();
-            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
             disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             return;
         }
-        if (!noair_test_containor_.empty()){
-            this->setSetSpeed(noair_test_containor_.front());
-            if (abs(spd - noair_test_containor_.front()) < 10){
+        if (!air_test_containor_.empty()){
+            this->setSetSpeed(air_test_containor_.front());
+            if (abs(spd - air_test_containor_.front()) < 10){
                 if (!is_timer_started){
                     p_timer_auto_test_->start();
                     is_timer_started = true;
@@ -440,30 +456,59 @@ public slots:
             }
         }
     }
-
+//非真空一键测试函数1
     void nxtWithAirModeTestSpd(){
         if(!getIsRunning()){
             exp_id_.clear();
-            is_noair_init_ = false;
+            is_air_init_ = false;
             p_timer_auto_test_->stop();
-            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
             disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             return;
         }
         is_timer_started = false;
         p_timer_auto_test_->stop();
-        noair_test_containor_.pop_front();
-        if (noair_test_containor_.empty()){
-            is_noair_init_ = false;
-            disconnect(this,SIGNAL(spdChanged(double)),this,SLOT(runWithAirMode(double)));
+        air_test_containor_.pop_front();
+        if (air_test_containor_.empty()){
+            is_air_init_ = false;
             disconnect(p_timer_auto_test_,SIGNAL(timeout()),this,SLOT(nxtWithAirModeTestSpd()));
             emit airTestEnd();
         }
     }
 
+    //真空一键测试函数-初始化
+    void initTestModeNOAir(QVector<QString> mode_lst);
 
+    //测试模式初始化
+    void selectTestMode();
+
+    //初始化一键测试的速度模式
+    void initAutoTestSpdMode();
+
+    //负责保持一段时间
+    void nxtNoAirModeTestSpd();
+
+    //负责控制速度
+    void setSpdOfAutoTestSpdMode();
+
+    bool getAutoTestSpdMode() const
+    {
+        return auto_test_spd_mode_;
+    }
+
+    //滑行模式init
+    void initHXMode();
+
+    bool getHXMode() const
+    {
+        return is_hx_mode_init;
+    }
+
+    //负责控制滑行模式速度
+    void setSpdOfAutoTestHXMode();
 signals:
     void airTestEnd();
+    void autoTestStart();
+    void autoTestEnd();
 private:
     double temperature_;
     double wate_;
@@ -499,15 +544,24 @@ private:
     double xp_spd_interval_;
 
     //非真空测试
-    QList<double> noair_test_containor_;
-    QList<double> noair_test_containor_raw_data_;
-    bool is_noair_init_ = false;
+    QList<double> air_test_containor_;
+    QList<double> air_test_containor_raw_data_;
+    bool is_air_init_ = false;
     bool is_timer_started = false;
     QTimer* p_timer_auto_test_ = nullptr;
 
+    //真空测试
+    QList<int> all_test_mode_;  //存放所有需要测试的项目
+
+    QList<double> auto_test_spd_mode_containor_;
+    QList<double> auto_test_spd_mode__containor_raw_data_;
+    bool auto_test_spd_mode_ = false;
 
     QString exp_id_; //用来记录一键测试的编号（用以区分不同实验）
-
+    //滑行模式
+    bool is_hx_mode_init = false;
+    double hx_mode_target_spd_;
+    bool reach_target_ = false;
 };
 
 #endif // MOTOR_H
