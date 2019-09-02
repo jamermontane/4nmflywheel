@@ -43,6 +43,7 @@ bool MainWindow::initDriver1()
     p_motor1_->setAccelerate(50);
     p_motor1_->moveToThread(p_motor_thread1_);
     connect(ui->pushButton_auto_test_with_air_power_1,SIGNAL(clicked(bool)),p_motor1_,SLOT(initTestModeWithAir()));
+
     p_motor_thread1_->start();
 
     //driver thread 1
@@ -72,8 +73,8 @@ bool MainWindow::initDriver1()
     connect(p_driver1_,&MotorDriver::sendMotorTmp,p_motor1_,&Motor::setTemperature);
 
     connect(this,&MainWindow::sendCurrentSpdForAutoTest,p_motor1_,&Motor::runWithAirMode);
-
-
+    connect(this,&MainWindow::refreshAutoTestSpd,p_motor1_,&Motor::setSpdOfAutoTestSpdMode);
+    connect(this,&MainWindow::refreshAutoTestHX,p_motor1_,&Motor::setSpdOfAutoTestHXMode);
     //采样间隔改了的话，记得改这个
     p_motor1_->setCurrentInterval(double(m_timer_get_data_.interval()) / 1000);
     return true;
@@ -319,18 +320,28 @@ void MainWindow::updateMotor()
     if (p_motor1_->getIsRunning()){
         //斜坡模式不用发
 
-        if (!p_motor1_->getXpStatus() && !p_motor1_->getNoAirMode()){
+        if (!p_motor1_->getXpStatus() && !p_motor1_->getAirMode()){
             p_motor1_->setSetSpeed(ui->doubleSpinBox_motor_test_spd_1->text().toDouble());
         }
         //更新显示界面
         updateMotor1Display();
         refreshCustomPlotData1();
 
-        if (p_motor1_->getNoAirMode()){
+        //非真空速度测试
+        if (p_motor1_->getAirMode()){
             emit sendCurrentSpdForAutoTest(p_motor1_->getSpeed());
         }
-        //更新数据库,为了防止插入太快，每隔0.5S插入一次
+        //一键测试，速度模式
+        else if (p_motor1_->getAutoTestSpdMode()){
+            emit refreshAutoTestSpd();
+        }
+        //一键测试，滑行模式
+        else if (p_motor1_->getHXMode()){
+            emit refreshAutoTestHX();
+        }
 
+
+        //更新数据库,为了防止插入太快，每隔0.5S插入一次
         static QTime time(QTime::currentTime());
         // calculate two new data points:
         double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds  elaspsed上次开始后得持续时间
@@ -488,19 +499,19 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
             this_mode_running = true;
             m_timer_get_data_.start();
             ui->pushButton_auto_test_with_air_power_1->setText("停止");
-            ui->statusBar->showMessage("非真空性能测试运行中！");
+//            ui->statusBar->showMessage("非真空性能测试运行中！");
             connect(p_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
 
         }
         else if (this_mode_running){
             p_motor1_->setSetSpeed(0);
-//            p_motor1_->setNoAirMode(false);
+//            p_motor1_->setAirMode(false);
             p_motor1_->setIsRunning(false);
             this_mode_running = false;
             m_timer_get_data_.stop();
             ui->pushButton_auto_test_with_air_power_1->setText("启动");
-            ui->statusBar->showMessage("非真空性能测试结束！",5000);
-            QMessageBox::warning(this,"完成","非真空性能测试完成！");
+            ui->statusBar->showMessage("飞轮1非真空性能测试结束！",5000);
+            QMessageBox::warning(this,"完成","飞轮1非真空性能测试完成！");
             disconnect(p_motor1_,SIGNAL(airTestEnd()),this,SLOT(on_pushButton_auto_test_with_air_power_1_clicked()));
         }
         else{
@@ -508,7 +519,7 @@ void MainWindow::on_pushButton_auto_test_with_air_power_1_clicked()
         }
     }
 }
-
+//数据库查询按钮
 void MainWindow::on_pushButton_sql_query_clicked()
 {
     tab_num_ = 0;
@@ -560,12 +571,12 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
         }
     }
 }
-
+//生成最后一次实验的实验报告
 void MainWindow::on_pushButton_make_report_clicked()
 {
     emit getLastExpData(ui->lineEdit_sql_motor_id->text(),ui->lineEdit_sql_motor_mode->text());
 }
-
+//DAQ CARD 响应函数，从数据采集卡得到电压电流
 void MainWindow::setMotorDataFromDAQCard(QVector<double> res)
 {
     if (res.size() != 7) return;
@@ -573,10 +584,13 @@ void MainWindow::setMotorDataFromDAQCard(QVector<double> res)
     p_motor1_->setActCur(2.5 - res[0]);
     p_motor1_->setWate();
 }
-
+//浪涌电流测试
 void MainWindow::on_pushButton_ele_test_ly_mode_power_1_clicked()
 {
-    if (m_sys_status_1_) return;
+    if (m_sys_status_1_){
+        QMessageBox::warning(this,"警告","请关闭该飞轮电源后重试！");
+        return;
+    }
     QVector<double> current;
     p_daqcard_->getSurgeCurrent(0,current,1024);
     QVector<double> key;
@@ -591,8 +605,56 @@ void MainWindow::on_pushButton_ele_test_ly_mode_power_1_clicked()
     ui->qcp_motor_tmp_1->xAxis->setRange(0, key.size(), Qt::AlignLeft);
     ui->qcp_motor_tmp_1->replot();
 }
-
+//绘图间隔改变
 void MainWindow::on_tab1_horizontalSlider_valueChanged(int value)
 {
     ui->label_tab1_disp_num->setText(QString::number(value));
+    if (!p_motor1_->getIsRunning()){
+        double key = ui->qcp_motor_cur_1->xAxis->range().upper;
+        double disp_num = value;
+        ui->qcp_motor_cur_1->xAxis->setRange(key, disp_num/20, Qt::AlignRight);
+        ui->qcp_motor_spd_1->xAxis->setRange(key, disp_num/20, Qt::AlignRight);
+        ui->qcp_motor_tmp_1->xAxis->setRange(key, disp_num/20, Qt::AlignRight);
+        ui->qcp_motor_cur_1->replot();
+        ui->qcp_motor_tmp_1->replot();
+        ui->qcp_motor_spd_1->replot();
+    }
+}
+//一键测试模式启动按钮
+void MainWindow::on_pushButton_auto_test_noair_power_1_clicked()
+{
+    static bool this_mode_running = false;
+    if (!m_sys_status_1_){
+        QMessageBox::warning(this,"警告","飞轮电源未打开！");
+    }
+    else{
+        if(!p_motor1_->getIsRunning() && !this_mode_running){
+            //如果选择了该模式，启动测试流程
+            p_motor1_->setIsRunning(true);
+            this_mode_running = true;
+            m_timer_get_data_.start();
+            ui->pushButton_auto_test_noair_power_1->setText("停止");
+
+            //筛选选中的测试模式---在这里添加更多的
+            QVector<QString> selected_test_mode;
+            if (ui->checkBox_hs_mode_1->isChecked())
+                selected_test_mode.push_back(QString::number(FLYWHEEL_MODE_SPD));
+            if (ui->checkBox_hx_mode_1->isChecked())
+                selected_test_mode.push_back(QString::number(FLYWHEEL_MODE_HX));
+
+            emit startAutoTestModeNoAir(selected_test_mode);
+            connect(p_motor1_,SIGNAL(autoTestEnd()),this,SLOT(on_pushButton_auto_test_noair_power_1_clicked()));
+        }
+        else if (this_mode_running){
+            p_motor1_->setSetSpeed(0);
+            p_motor1_->setIsRunning(false);
+            this_mode_running = false;
+            m_timer_get_data_.stop();
+            ui->pushButton_auto_test_noair_power_1->setText("启动");
+            ui->statusBar->showMessage("飞轮1真空性能测试结束！",5000);
+            QMessageBox::warning(this,"完成","飞轮1真空性能测试完成！");
+            disconnect(p_motor1_,SIGNAL(autoTestEnd()),this,SLOT(on_pushButton_auto_test_noair_power_1_clicked()));
+        }
+    }
+     emit getLastExpData(tr("MOTOR1"),tr(""));
 }

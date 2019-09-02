@@ -2197,7 +2197,7 @@ protected:
   QFont getLabelFont() const;
   QColor getTickLabelColor() const;
   QColor getLabelColor() const;
-  
+
 private:
   Q_DISABLE_COPY(QCPAxis)
   
