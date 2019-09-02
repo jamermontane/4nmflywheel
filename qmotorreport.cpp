@@ -64,7 +64,7 @@ void QMotorReport::createWordReport()
 //    word.insertText(tr("Report Generation Date:"));
 //    word.insertText(current_Time);
 
-    word.intsertTable(52,10); //24            //创建表格
+    word.intsertTable(70,10); //24            //创建表格
     word.setColumnHeight(1,1,10);
 
     //合并单元格
