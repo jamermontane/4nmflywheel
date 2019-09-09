@@ -2,7 +2,7 @@
 
 SqlDataBase::SqlDataBase(QObject *parent) : QObject(parent)
 {
-    sqlInit();
+//    sqlInit();
     qRegisterMetaType<QSqlQuery>("QSqlQuery");
     qRegisterMetaType<QVector<QString>>("QVector<QString>");
     qRegisterMetaType<QVector<QVector<QString> >>("QVector<QVector<QString> >");
@@ -13,14 +13,7 @@ SqlDataBase::SqlDataBase(QObject *parent) : QObject(parent)
 
 bool SqlDataBase::sqlInit()
 {
-    //qDebug() << QSqlDatabase::drivers();查看当前支持的SQL驱动
-    //读取当前文件下面的所有.db文件
-//    QDir dir(path);
-//    QStringList nameFilters;
-//    nameFilters << "*.jpg" << "*.png";
-//    files = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);
-
-
+    //qDebug() << QSqlDatabase::drivers();//查看当前支持的SQL驱动
     if (QSqlDatabase::contains("qt_sql_default_connection")) //判断是否存在这个连接
     {
         m_data_base_ = QSqlDatabase::database("qt_sql_default_connection");
@@ -41,6 +34,26 @@ bool SqlDataBase::sqlInit()
     }
     p_sql_query_ = new QSqlQuery(m_data_base_);
     return true;
+}
+
+void SqlDataBase::initMySQL()
+{
+    if (QSqlDatabase::contains("qt_sql_default_connection")) //判断是否存在这个连接
+    {
+        m_data_base_ = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        m_data_base_ = QSqlDatabase::addDatabase("QMYSQL");
+        m_data_base_.setUserName("root");
+        m_data_base_.setDatabaseName("flywheel");
+        m_data_base_.setPassword("123456");
+    }
+    if (!m_data_base_.open()){
+        qDebug()<<" mysql init error!";
+        emit sendErrorText("mysql init error!");
+    }
+    p_sql_query_ = new QSqlQuery(m_data_base_);
 }
 
 void SqlDataBase::doSqlQuery(QString query_str, int dst)
@@ -77,19 +90,20 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
     if (exp_no.isEmpty()){
         exp_no = QDateTime::currentDateTime().toString("YYMMDDHHMMSS");
     }
-
-    if(!m_data_base_.tables().contains(motor.at(0)))
+    if(!m_data_base_.tables().contains(motor.at(0).toLower()))
     {
         QString tempsql = "CREATE TABLE ";
         tempsql.append(motor.at(0));
-        tempsql.append("([EXPID] VARCHAR (50),[EXPNAME] VARCHAR (50),[USRNAME] VARCHAR (50),[EXPNO] VARCHAR (50),"
-                       "[MOTORID] VARCHAR (50),[VOL] DOUBLE, [CURRENT] DOUBLE, [SETSPEED] DOUBLE, [SPEED] DOUBLE,"
-                       "[SETTORQUE] DOUBLE,[TORQUE] DOUBLE,[WATE] DOUBLE,[ANGULARMOMENTUM] DOUBLE,"
-                       "[ANGULARMOMENTUMDT] DOUBLE,[ANGULARMOMENTUMJT] DOUBLE,[FLYWHEELMODE] VARCHAR (50),"
-                       "[VACUUM] VARCHAR (50),[EXPADDRESS] VARCHAR (50),[ACTCUR] DOUBLE ,"
-                       "[TIME] TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))");
+        //rowid int UNSIGNED  primary key AUTO_INCREMENT,
+        tempsql.append("( EXPID  VARCHAR (50), EXPNAME  VARCHAR (50), USRNAME  VARCHAR (50), EXPNO  VARCHAR (50),"
+                       " MOTORID  VARCHAR (50), VOL  float(20,4),  CURRENT  float(20,4),  SETSPEED  float(20,4),  SPEED  float(20,4),"
+                       " SETTORQUE  float(20,4), TORQUE  float(20,4), WATE  float(20,4), ANGULARMOMENTUM  float(20,4),"
+                       " ANGULARMOMENTUMDT  float(20,4), ANGULARMOMENTUMJT  float(20,4), FLYWHEELMODE  VARCHAR (50),"
+                       " VACUUM  VARCHAR (50), EXPADDRESS  VARCHAR (50), ACTCUR  float(20,4) ,"
+                       " TIME  TimeStamp NOT NULL DEFAULT CURRENT_TIMESTAMP) character set = utf8;");
 
         QSqlQuery sql_query(m_data_base_);
+
         if (!sql_query.exec(tempsql))
         {
             qDebug() << sql_query.lastError().text();
@@ -99,9 +113,9 @@ QString SqlDataBase::makeSaveString(QString exp_name, QString usr_name, QString 
     else{
         query_string.append("INSERT INTO ");
         query_string.append(motor.at(0));
-        query_string.append("([EXPID],[EXPNAME],[USRNAME],[EXPNO],[MOTORID],[VOL],[CURRENT],[SETSPEED],[SPEED]"
-                            ",[SETTORQUE],[TORQUE],[WATE],[ANGULARMOMENTUM],[ANGULARMOMENTUMDT],[ANGULARMOMENTUMJT]"
-                            ",[FLYWHEELMODE],[VACUUM],[EXPADDRESS],[ACTCUR]) VALUES(");
+        query_string.append("( EXPID , EXPNAME , USRNAME , EXPNO , MOTORID , VOL , CURRENT , SETSPEED , SPEED "
+                            ", SETTORQUE , TORQUE , WATE , ANGULARMOMENTUM , ANGULARMOMENTUMDT , ANGULARMOMENTUMJT "
+                            ", FLYWHEELMODE , VACUUM , EXPADDRESS , ACTCUR ) VALUES(");
         query_string.append("'"+motor.at(1)+"',");
         query_string.append("'"+exp_name+"',");
         query_string.append("'"+usr_name+"',");
@@ -183,7 +197,7 @@ void SqlDataBase::getExpDataFromSqlDB(QString motor_id, QString exp_id, QString 
     doSqlQuery(query_str,1);
 }
 
-void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,QVector<QString> motor)
+void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_no,const QVector<QString> &motor)
 {
 //    qDebug()<<"SQL:"<<QThread::currentThreadId();
     QString query_str = makeSaveString(exp_name, usr_name, exp_no,motor);
@@ -192,7 +206,7 @@ void SqlDataBase::insertIntoDB(QString exp_name, QString usr_name, QString exp_n
 }
 
 
-void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res,int dst)
+void SqlDataBase::analysisSqlForDocRes(QSqlQuery query_res, int dst)
 {
     QVector<QVector<QString> > res;
     while(query_res.next()){

@@ -18,7 +18,7 @@ class QMotorReport : public QObject
     Q_OBJECT
 public:
     explicit QMotorReport(QObject *parent = 0);
-    void setExpInfomation(QVector<QString>&);
+    void setExpInfomation(const QVector<QString>&);
 
     //创建word报告
     void createWordReport();
@@ -52,7 +52,7 @@ signals:
     void logMsg(QString);
     void reportCreated();
 public slots:
-    void getDataFromSql(QVector<QVector<QString> > res);
+    void getDataFromSql(const QVector<QVector<QString> > &res);
 
     //从原始数据中提取和初始化被测数据
     void initExpData();

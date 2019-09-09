@@ -5,7 +5,7 @@ QMotorReport::QMotorReport(QObject *parent) : QObject(parent)
     qRegisterMetaType<QVector<QVector<QString> >>("QVector<QVector<QString> >");
 }
 
-void QMotorReport::setExpInfomation(QVector<QString> &data)
+void QMotorReport::setExpInfomation(const QVector<QString> &data)
 {
     //数据库改变的话，size = 20 也需要改变
     if (data.size() != 20) {
@@ -697,7 +697,7 @@ void QMotorReport::createWordReport()
 }
 
 
-void QMotorReport::getDataFromSql(QVector<QVector<QString> > res)
+void QMotorReport::getDataFromSql(const QVector<QVector<QString> > &res)
 {
     if (res.empty()) return;
     setExpInfomation(*res.begin());

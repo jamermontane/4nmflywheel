@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //斜坡模式输入diable
 //    ui->doubleSpinBox_motor_test_acc->setEnabled(false);
+    qApp->setStyle(QStyleFactory::create("fusion"));
 }
 
 MainWindow::~MainWindow()
@@ -86,7 +87,8 @@ void MainWindow::initSql()
     p_sql_ = new SqlDataBase;
     p_sql_thread_ = new QThread;
     p_sql_->moveToThread(p_sql_thread_);
-    p_sql_->sqlInit();
+//    p_sql_->sqlInit();
+    p_sql_->initMySQL();
 
     connect(p_sql_thread_,&QThread::finished,p_sql_,&SqlDataBase::deleteLater);
     connect(p_sql_thread_,&QThread::finished,p_sql_thread_,&QThread::deleteLater);
@@ -343,12 +345,12 @@ void MainWindow::updateMotor()
         }
 
 
-        //更新数据库,为了防止插入太快，每隔0.5S插入一次
+        //更新数据库,为了防止插入太快，每隔0.1S插入一次
         static QTime time(QTime::currentTime());
         // calculate two new data points:
         double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds  elaspsed上次开始后得持续时间
         static double lastPointKey = 0;
-        if (key-lastPointKey > 0.5){
+        if (key - lastPointKey > 0.1){
             emit sendToSqlDB(ui->lineEdit_exp_name_1->text(),ui->lineEdit_exp_usr_name_1->text(),
                             ui->lineEdit_exp_fw_id_1->text(),makeSqlVector(*p_motor1_));
             lastPointKey = key;
@@ -359,7 +361,6 @@ void MainWindow::updateMotor()
             }
         }
     }
-
     //...etc motor
 }
 //更新电机1---数据显示
@@ -485,6 +486,7 @@ void MainWindow::refreshCustomPlotData1()
 void MainWindow::on_doubleSpinBox_moto_test_time_valueChanged(double arg1)
 {
     m_timer_update_.setInterval(arg1*1000);
+    p_motor1_->setCurrentInterval(arg1*1000);
 }
 
 //非真空性能测试响应函数
@@ -529,7 +531,7 @@ void MainWindow::on_pushButton_sql_query_clicked()
                                 ,ui->lineEdit_sql_motor_mode->text(),ui->dateTimeEdit_start_time->dateTime().toString("yyyy-MM-dd hh::mm::ss"),ui->dateTimeEdit_end_time->dateTime().toString("yyyy-MM-dd hh::mm::ss"));
 }
 
-void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
+void MainWindow::updataSqlTableView(const QVector<QVector<QString> > &res)
 {
     static QStandardItemModel  *model = nullptr;
     if (model == nullptr){
@@ -561,7 +563,7 @@ void MainWindow::updataSqlTableView(QVector<QVector<QString> > res)
         ui->tableView_sql->setModel(model);
     }
 
-    for (QVector<QString> &query_dispResult_:res){
+    for (const QVector<QString> &query_dispResult_:res){
         for (int j=0;j<20;++j){
         model->setItem(tab_num_,j,new QStandardItem(query_dispResult_.at(j)));
         //设置字符位置
@@ -579,7 +581,7 @@ void MainWindow::on_pushButton_make_report_clicked()
     emit getLastExpData(ui->lineEdit_sql_motor_id->text(),ui->lineEdit_sql_motor_mode->text());
 }
 //DAQ CARD 响应函数，从数据采集卡得到电压电流
-void MainWindow::setMotorDataFromDAQCard(QVector<double> res)
+void MainWindow::setMotorDataFromDAQCard(const QVector<double> &res)
 {
     if (res.size() != 7) return;
     p_motor1_->setVoltage(res[6]*10);

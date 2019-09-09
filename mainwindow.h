@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QTime>
+#include <qstylefactory.h>
 
 #include "motor.h"
 #include "motordriver.h"
@@ -72,11 +73,11 @@ private slots:
 
     void on_pushButton_sql_query_clicked();
 
-    void updataSqlTableView(QVector<QVector<QString> >);
+    void updataSqlTableView(const QVector<QVector<QString> > &);
 
     void on_pushButton_make_report_clicked();
 
-    void setMotorDataFromDAQCard(QVector<double> res);
+    void setMotorDataFromDAQCard(const QVector<double> &res);
 
     void on_pushButton_ele_test_ly_mode_power_1_clicked();
 

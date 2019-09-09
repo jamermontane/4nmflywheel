@@ -20,8 +20,8 @@ public:
 
 signals:
     void logMsg(QString);
-    void sendAllData(QVector<double>);
-    void sendSurgeCurrnt(QVector<double>);
+    void sendAllData(const QVector<double>&);
+    void sendSurgeCurrnt(const QVector<double>&);
 public slots:
     void readAllChannel();
     void getSurgeCurrent(U16 channel, QVector<double> &v, int point_num);
